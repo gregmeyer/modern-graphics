@@ -100,9 +100,9 @@ PROMPTS_PLAN.md
 # Test template directory
 examples/output/template_tests/
 
-# Test output directory (dedicated test files)
-/tests/output/
-/tests/output/**
+# Test directory (exclude all test files)
+/tests/
+/tests/**
 
 # Internal checklists
 SHARING_CHECKLIST.md
