@@ -23,7 +23,7 @@ def generate_timeline_diagram(
         event_class = event.get('class', event_id.replace(' ', '-').lower())
         
         step_style = event.get('style')
-        css = generate_step_style(step_style, color)
+        css = generate_step_style(step_style, color, template=generator.template)
         events_css.append(f"""
         .event.{event_class} {{ 
             {css}
@@ -65,7 +65,8 @@ def generate_timeline_diagram(
         
         .timeline {{
             display: flex;
-            align-items: center;
+            flex-direction: {'column' if orientation == 'vertical' else 'row'};
+            align-items: {'center' if orientation == 'vertical' else 'center'};
             gap: 24px;
             width: 100%;
             max-width: 1000px;
@@ -73,9 +74,11 @@ def generate_timeline_diagram(
         
         .timeline-item {{
             display: flex;
+            flex-direction: {'column' if orientation == 'vertical' else 'row'};
             align-items: center;
             gap: 24px;
-            flex: 1;
+            flex: {'none' if orientation == 'vertical' else '1'};
+            width: {'100%' if orientation == 'vertical' else 'auto'};
         }}
         
         .event {{
@@ -110,9 +113,8 @@ def generate_timeline_diagram(
         }}
         
         .timeline-line {{
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, #007AFF 0%, #007AFF 100%);
+            {'width: 2px; height: 40px;' if orientation == 'vertical' else 'width: 60px; height: 2px;'}
+            background: {'linear-gradient(180deg, #007AFF 0%, #007AFF 100%)' if orientation == 'vertical' else 'linear-gradient(90deg, #007AFF 0%, #007AFF 100%)'};
             opacity: 0.4;
             flex-shrink: 0;
         }}

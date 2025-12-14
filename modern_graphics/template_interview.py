@@ -16,6 +16,7 @@ from .eval import log_template_creation_eval, log_interview_eval
 def interview_for_template(
     model: str = "gpt-4",
     conversation_history: Optional[list] = None,
+    initial_prompt: Optional[str] = None,
     log_eval: bool = True
 ) -> Optional[StyleTemplate]:
     """Interview user to create a template using OpenAI
@@ -23,6 +24,8 @@ def interview_for_template(
     Args:
         model: OpenAI model to use (default: "gpt-4")
         conversation_history: Optional existing conversation history
+        initial_prompt: Optional initial prompt/description to start the conversation
+                       (e.g., "I need a dark professional theme for corporate presentations")
         log_eval: Whether to log evaluation to Braintrust (default: True)
         
     Returns:
@@ -52,6 +55,13 @@ def interview_for_template(
         {"role": "system", "content": TEMPLATE_INTERVIEW_SYSTEM_PROMPT},
         {"role": "user", "content": TEMPLATE_INTERVIEW_USER_PROMPT}
     ]
+    
+    # If initial prompt provided, add it to start the conversation
+    if initial_prompt:
+        messages.append({
+            "role": "user",
+            "content": f"Here's what I'm looking for: {initial_prompt}"
+        })
     
     if conversation_history:
         messages.extend(conversation_history)

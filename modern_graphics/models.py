@@ -11,6 +11,16 @@ class Attribution:
     context: Optional[str] = None
     position: Literal["bottom-right", "bottom-center", "below-element"] = "bottom-right"
     margin_top: int = 20
+    
+    # Styling options
+    font_size: str = "12px"
+    font_color: str = "#8E8E93"
+    font_weight: str = "400"
+    background_color: Optional[str] = None  # None = transparent
+    opacity: float = 0.8
+    padding: str = "8px 12px"
+    border_radius: str = "6px"
+    show: bool = True  # Set to False to hide attribution completely
 
 
 @dataclass

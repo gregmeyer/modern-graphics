@@ -153,14 +153,38 @@ class ModernGraphicsGenerator(BaseGenerator):
     
     def generate_story_slide(
         self,
-        title: str,
-        what_changed: str,
-        time_period: str,
-        what_it_means: str,
+        title: Optional[str] = None,
+        what_changed: Optional[str] = None,
+        time_period: Optional[str] = None,
+        what_it_means: Optional[str] = None,
+        prompt: Optional[str] = None,
         insight: Optional[str] = None,
-        evolution_data: Optional[List[Dict[str, str]]] = None
+        evolution_data: Optional[List[Dict[str, str]]] = None,
+        hero_headline: Optional[str] = None,
+        hero_subheadline: Optional[str] = None,
+        hero_prompt: Optional[str] = None,
+        use_ai_hero: bool = True,
+        use_unified: bool = True
     ) -> str:
-        """Generate a story-driven slide"""
+        """Generate a story-driven slide
+        
+        Supports both prompt-based (new) and parameter-based (legacy) approaches.
+        If prompt is provided, uses unified generator. Otherwise uses legacy parameters.
+        
+        Args:
+            prompt: Optional prompt describing the story (preferred, uses unified generator)
+            title: Main slide title (legacy parameter)
+            what_changed: What changed (the change) (legacy parameter)
+            time_period: Over what time period (legacy parameter)
+            what_it_means: What it means (the meaning/implication) (legacy parameter)
+            insight: Optional key insight/takeaway
+            evolution_data: Optional list of evolution stages
+            hero_headline: Optional custom hero headline (overrides AI generation)
+            hero_subheadline: Optional custom hero subheadline (overrides AI generation)
+            hero_prompt: Optional custom prompt for AI hero generation
+            use_ai_hero: If True, use AI to generate hero content (default: True)
+            use_unified: If True and prompt provided, use unified generator (default: True)
+        """
         from .diagrams.story_slide import generate_story_slide as _generate
         return _generate(
             self,
@@ -168,6 +192,74 @@ class ModernGraphicsGenerator(BaseGenerator):
             what_changed=what_changed,
             time_period=time_period,
             what_it_means=what_it_means,
+            prompt=prompt,
             insight=insight,
-            evolution_data=evolution_data
+            evolution_data=evolution_data,
+            hero_headline=hero_headline,
+            hero_subheadline=hero_subheadline,
+            hero_prompt=hero_prompt,
+            use_ai_hero=use_ai_hero,
+            use_unified=use_unified
         )
+    
+    def generate_creative_story_slide(
+        self,
+        title: str,
+        headline: str,
+        subheadline: Optional[str] = None,
+        story_elements: Optional[List[Dict[str, str]]] = None,
+        visualization_type: str = "line",
+        data_points: Optional[List[Dict]] = None,
+        annotations: Optional[List[str]] = None,
+        insight: Optional[str] = None,
+        time_range: Optional[str] = None,
+        data_source: Optional[str] = None
+    ) -> str:
+        """Generate a creative, flexible story slide
+        
+        Args:
+            title: Main slide title/category
+            headline: Hero headline (main insight)
+            subheadline: Optional subheadline
+            story_elements: List of key metrics with 'label' and 'value'
+            visualization_type: Type of chart (line, bar, area, comparison)
+            data_points: Optional data points for visualization
+            annotations: List of annotation texts explaining the change
+            insight: Key insight text
+            time_range: Time range covered
+            data_source: Data source attribution
+        """
+        from .diagrams.creative_story_slide import generate_creative_story_slide as _generate
+        return _generate(
+            self,
+            title=title,
+            headline=headline,
+            subheadline=subheadline,
+            story_elements=story_elements,
+            visualization_type=visualization_type,
+            data_points=data_points,
+            annotations=annotations,
+            insight=insight,
+            time_range=time_range,
+            data_source=data_source
+        )
+    
+    def generate_intelligent_story_slide(
+        self,
+        prompt: str,
+        model: str = "gpt-4-turbo-preview"
+    ) -> str:
+        """Generate an intelligent, data-driven story slide from a prompt
+        
+        Uses AI to determine the best visual composition by combining:
+        - Data visualizations (charts)
+        - Story elements (key metrics)
+        - Visual primitives (timelines, comparisons, cycles)
+        - Narrative structure
+        
+        Args:
+            prompt: Detailed prompt describing the story/data visualization
+            model: OpenAI model to use
+        """
+        from .diagrams.intelligent_story_slide import generate_intelligent_story_slide as _generate
+        return _generate(self, prompt, model)

@@ -1,6 +1,11 @@
 """Example: Creating and using a custom template"""
 
+import sys
 from pathlib import Path
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from modern_graphics import ModernGraphicsGenerator, Attribution
 from modern_graphics.templates import TemplateBuilder, register_template
 

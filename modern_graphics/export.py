@@ -75,138 +75,140 @@ def export_html_to_png(
         )
         temp_png_path = Path(temp_png_file.name)
         temp_png_file.close()
-    
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
         
-        # Create context with high resolution settings
-        context = browser.new_context(
-            viewport={"width": viewport_width, "height": viewport_height},
-            device_scale_factor=device_scale_factor
-        )
-        page = context.new_page()
-        page.goto(f"file://{temp_html_path.resolve()}", wait_until="networkidle")
-        
-        # Wait for content to load
-        page.wait_for_timeout(500)
-        
-        # Take full page screenshot first
-        page.screenshot(path=str(temp_png_path), full_page=True)
-        
-        # Get bounding box of the main content using JavaScript
-        try:
-            # Check if this is a story slide - use container directly
-            is_story_slide = page.evaluate("""() => {
-                return document.querySelector('.story-slide-container') !== null;
-            }""")
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
             
-            # Check if this is a hero card
-            is_hero_card = page.evaluate("""() => {
-                return document.querySelector('.hero-card-container') !== null;
-            }""")
+            # Create context with high resolution settings
+            context = browser.new_context(
+                viewport={"width": viewport_width, "height": viewport_height},
+                device_scale_factor=device_scale_factor
+            )
+            page = context.new_page()
+            page.goto(f"file://{temp_html_path.resolve()}", wait_until="networkidle")
             
-            # Check if this is a minimal data card
-            is_data_card = page.evaluate("""() => {
-                return document.querySelector('.data-card-container') !== null;
-            }""")
+            # Wait for content to load
+            page.wait_for_timeout(500)
             
-            # Check if this is a minimal infographic
-            is_infographic = page.evaluate("""() => {
-                return document.querySelector('.infographic-container') !== null;
-            }""")
+            # Take full page screenshot first
+            page.screenshot(path=str(temp_png_path), full_page=True)
             
-            # Check if this is a minimal story-driven slide
-            is_story_driven = page.evaluate("""() => {
-                return document.querySelector('.story-driven-container') !== null;
-            }""")
-            
-            if is_story_slide:
-                content_bbox = page.evaluate("""() => {
-                    const container = document.querySelector('.story-slide-container');
-                    if (!container) return null;
-                    
-                    const containerRect = container.getBoundingClientRect();
-                    return {
-                        x: containerRect.left,
-                        y: containerRect.top,
-                        width: containerRect.width,
-                        height: containerRect.height
-                    };
+            # Get bounding box of the main content using JavaScript
+            try:
+                # Check if this is a story slide - use container directly
+                is_story_slide = page.evaluate("""() => {
+                    return document.querySelector('.story-slide-container') !== null;
                 }""")
-            elif is_hero_card:
-                content_bbox = page.evaluate("""() => {
-                    const card = document.querySelector('.hero-card');
-                    if (!card) return null;
-                    
-                    const cardRect = card.getBoundingClientRect();
-                    return {
-                        x: cardRect.left,
-                        y: cardRect.top,
-                        width: cardRect.width,
-                        height: cardRect.height
-                    };
-                }""")
-            elif is_data_card:
-                content_bbox = page.evaluate("""() => {
-                    const container = document.querySelector('.data-card-container');
-                    if (!container) return null;
-                    
-                    const containerRect = container.getBoundingClientRect();
-                    return {
-                        x: containerRect.left,
-                        y: containerRect.top,
-                        width: containerRect.width,
-                        height: containerRect.height
-                    };
-                }""")
-            elif is_infographic:
-                content_bbox = page.evaluate("""() => {
-                    const container = document.querySelector('.infographic-container');
-                    if (!container) return null;
-                    
-                    const containerRect = container.getBoundingClientRect();
-                    return {
-                        x: containerRect.left,
-                        y: containerRect.top,
-                        width: containerRect.width,
-                        height: containerRect.height
-                    };
-                }""")
-            elif is_story_driven:
-                content_bbox = page.evaluate("""() => {
-                    const container = document.querySelector('.story-driven-container');
-                    if (!container) return null;
-                    
-                    const containerRect = container.getBoundingClientRect();
-                    return {
-                        x: containerRect.left,
-                        y: containerRect.top,
-                        width: containerRect.width,
-                        height: containerRect.height
-                    };
-                }""")
-            else:
-                content_bbox = None
-            
-            if content_bbox:
-                scaled_padding = padding * device_scale_factor
-                x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
-                y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
-                width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
-                height = int(content_bbox['height'] * device_scale_factor + scaled_padding * 2)
                 
-                img = Image.open(temp_png_path)
-                img_width, img_height = img.size
-                x = max(0, min(x, img_width - 1))
-                y = max(0, min(y, img_height - 1))
-                width = min(width, img_width - x)
-                height = min(height, img_height - y)
+                # Check if this is a hero card
+                is_hero_card = page.evaluate("""() => {
+                    return document.querySelector('.hero-card-container') !== null;
+                }""")
                 
-                cropped = img.crop((x, y, x + width, y + height))
-                cropped.save(output_path)
-                temp_png_path.unlink()
-            elif not is_story_slide and not is_hero_card and not is_data_card and not is_infographic and not is_story_driven:
-                bbox = page.evaluate("""() => {
+                # Check if this is a minimal data card
+                is_data_card = page.evaluate("""() => {
+                    return document.querySelector('.data-card-container') !== null;
+                }""")
+                
+                # Check if this is a minimal infographic
+                is_infographic = page.evaluate("""() => {
+                    return document.querySelector('.infographic-container') !== null;
+                }""")
+                
+                # Check if this is a minimal story-driven slide
+                is_story_driven = page.evaluate("""() => {
+                    return document.querySelector('.story-driven-container') !== null;
+                }""")
+                
+                if is_story_slide:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.story-slide-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_hero_card:
+                    content_bbox = page.evaluate("""() => {
+                        const card = document.querySelector('.hero-card');
+                        if (!card) return null;
+                        
+                        const cardRect = card.getBoundingClientRect();
+                        return {
+                            x: cardRect.left,
+                            y: cardRect.top,
+                            width: cardRect.width,
+                            height: cardRect.height
+                        };
+                    }""")
+                elif is_data_card:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.data-card-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_infographic:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.infographic-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_story_driven:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.story-driven-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                else:
+                    content_bbox = None
+                
+                if content_bbox:
+                    scaled_padding = padding * device_scale_factor
+                    x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
+                    y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
+                    width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
+                    height = int(content_bbox['height'] * device_scale_factor + scaled_padding * 2)
+                    
+                    img = Image.open(temp_png_path)
+                    img_width, img_height = img.size
+                    x = max(0, min(x, img_width - 1))
+                    y = max(0, min(y, img_height - 1))
+                    width = min(width, img_width - x)
+                    height = min(height, img_height - y)
+                    
+                    cropped = img.crop((x, y, x + width, y + height))
+                    cropped.save(output_path)
+                    temp_png_path.unlink()
+                else:
+                    # Fallback: try to find bounding box from elements
+                    if not is_story_slide and not is_hero_card and not is_data_card and not is_infographic and not is_story_driven:
+                        bbox = page.evaluate("""() => {
                     const elements = [
                         ...document.querySelectorAll('.step'),
                         ...document.querySelectorAll('.arrow'),
@@ -267,35 +269,54 @@ def export_html_to_png(
                         height: maxY - minY
                     };
                 }""")
-                
-                # Check if this is a slide card diagram
-                is_slide_card = page.evaluate("""() => {
-                    return document.querySelector('.slide-cards-row') !== null || 
-                           document.querySelector('.slide-comparison-row') !== null;
-                }""")
-                
-                if is_slide_card:
-                    content_bbox = page.evaluate("""() => {
-                        const container = document.querySelector('.slide-cards-container') || document.querySelector('.slide-comparison-container');
-                        if (!container) return null;
                         
-                        const containerRect = container.getBoundingClientRect();
-                        return {
-                            x: containerRect.left,
-                            y: containerRect.top,
-                            width: containerRect.width,
-                            height: containerRect.height
-                        };
-                    }""")
-                    
-                    if content_bbox:
+                        # Check if this is a slide card diagram
+                        is_slide_card = page.evaluate("""() => {
+                        return document.querySelector('.slide-cards-row') !== null || 
+                               document.querySelector('.slide-comparison-row') !== null;
+                        }""")
+                        
+                        if is_slide_card:
+                            content_bbox = page.evaluate("""() => {
+                            const container = document.querySelector('.slide-cards-container') || document.querySelector('.slide-comparison-container');
+                            if (!container) return null;
+                            
+                            const containerRect = container.getBoundingClientRect();
+                            return {
+                                x: containerRect.left,
+                                y: containerRect.top,
+                                width: containerRect.width,
+                                height: containerRect.height
+                            };
+                        }""")
+                        
+                        if content_bbox:
+                            scaled_padding = padding * device_scale_factor
+                            x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
+                            y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
+                            width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
+                            height = int(content_bbox['height'] * device_scale_factor + scaled_padding * 2)
+                            
+                            img = Image.open(temp_png_path)
+                            img_width, img_height = img.size
+                            x = max(0, min(x, img_width - 1))
+                            y = max(0, min(y, img_height - 1))
+                            width = min(width, img_width - x)
+                            height = min(height, img_height - y)
+                            
+                            cropped = img.crop((x, y, x + width, y + height))
+                            cropped.save(output_path)
+                            temp_png_path.unlink()
+                        else:
+                            temp_png_path.rename(output_path)
+                    elif bbox:
                         scaled_padding = padding * device_scale_factor
-                        x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
-                        y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
-                        width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
-                        height = int(content_bbox['height'] * device_scale_factor + scaled_padding * 2)
+                        x = max(0, int(bbox['x'] * device_scale_factor - scaled_padding))
+                        y = max(0, int(bbox['y'] * device_scale_factor - scaled_padding))
+                        width = int(bbox['width'] * device_scale_factor + scaled_padding * 2)
+                        height = int(bbox['height'] * device_scale_factor + scaled_padding * 2)
                         
-                        img = Image.open(temp_path)
+                        img = Image.open(temp_png_path)
                         img_width, img_height = img.size
                         x = max(0, min(x, img_width - 1))
                         y = max(0, min(y, img_height - 1))
@@ -307,34 +328,15 @@ def export_html_to_png(
                         temp_png_path.unlink()
                     else:
                         temp_png_path.rename(output_path)
-                elif bbox:
-                    scaled_padding = padding * device_scale_factor
-                    x = max(0, int(bbox['x'] * device_scale_factor - scaled_padding))
-                    y = max(0, int(bbox['y'] * device_scale_factor - scaled_padding))
-                    width = int(bbox['width'] * device_scale_factor + scaled_padding * 2)
-                    height = int(bbox['height'] * device_scale_factor + scaled_padding * 2)
-                    
-                    img = Image.open(temp_path)
-                    img_width, img_height = img.size
-                    x = max(0, min(x, img_width - 1))
-                    y = max(0, min(y, img_height - 1))
-                    width = min(width, img_width - x)
-                    height = min(height, img_height - y)
-                    
-                    cropped = img.crop((x, y, x + width, y + height))
-                    cropped.save(output_path)
-                    temp_png_path.unlink()
-                else:
+            except Exception as e:
+                print(f"Warning: Could not crop ({e}), using full page")
+                if temp_png_path and temp_png_path.exists():
                     temp_png_path.rename(output_path)
-        except Exception as e:
-            print(f"Warning: Could not crop ({e}), using full page")
-            if temp_png_path and temp_png_path.exists():
-                temp_png_path.rename(output_path)
-            else:
-                # Fallback: save full page screenshot
-                page.screenshot(path=str(output_path), full_page=True)
-        
-        browser.close()
+                else:
+                    # Fallback: save full page screenshot
+                    page.screenshot(path=str(output_path), full_page=True)
+            
+            browser.close()
     
     finally:
         # Clean up temporary files

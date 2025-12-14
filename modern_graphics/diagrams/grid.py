@@ -36,9 +36,19 @@ def generate_grid_diagram(
         </div>"""
     
     css_content = f"""
+        .wrapper {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }}
+        
         .container {{
             max-width: 900px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }}
         
         .title {{
@@ -56,6 +66,7 @@ def generate_grid_diagram(
             grid-template-columns: repeat({columns}, 1fr);
             gap: 16px;
             margin-bottom: 32px;
+            width: 100%;
         }}
         
         .test {{
@@ -127,12 +138,14 @@ def generate_grid_diagram(
         """
     
     html_content = f"""
-    <div class="container">
-        <div class="title">{generator.title}</div>
-        <div class="tests-grid">
+    <div class="wrapper">
+        <div class="container">
+            <div class="title">{generator.title}</div>
+            <div class="tests-grid">
 {''.join(items_html)}
-        </div>{convergence_html}
-        {generator._generate_attribution_html()}
+            </div>{convergence_html}
+            {generator._generate_attribution_html()}
+        </div>
     </div>
         """
     

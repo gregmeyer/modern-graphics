@@ -12,6 +12,8 @@ from .before_after import generate_before_after_diagram
 from .funnel import generate_funnel_diagram
 from .slide_cards import generate_slide_card_diagram, generate_slide_card_comparison
 from .story_slide import generate_story_slide
+from .creative_story_slide import generate_combo_chart
+from .unified_story_slide import generate_unified_story_slide
 
 # Registry of diagram types
 DIAGRAM_REGISTRY: Dict[str, Type[DiagramGenerator]] = {
@@ -44,4 +46,6 @@ __all__ = [
     'generate_slide_card_diagram',
     'generate_slide_card_comparison',
     'generate_story_slide',
+    'generate_combo_chart',
+    'generate_unified_story_slide',
 ]

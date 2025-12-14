@@ -5,27 +5,137 @@ from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
 
 
-def generate_story_slide(
-    generator: BaseGenerator,
-    title: str,
+def _generate_hero_content_with_prompt(
     what_changed: str,
     time_period: str,
     what_it_means: str,
+    title: str,
+    hero_prompt: Optional[str] = None
+) -> tuple[str, str]:
+    """
+    Generate hero headline and subheadline using OpenAI prompt
+    
+    Args:
+        what_changed: What changed (the change)
+        time_period: Over what time period
+        what_it_means: What it means (the meaning/implication)
+        title: Main slide title
+        hero_prompt: Optional custom prompt. If None, uses default prompt.
+        
+    Returns:
+        Tuple of (headline, subheadline)
+    """
+    try:
+        from ..env_config import get_openai_key
+        api_key = get_openai_key()
+        if not api_key:
+            # Fallback to default if no API key
+            return title, "Start Building Stories"
+        
+        import openai
+        client = openai.OpenAI(api_key=api_key)
+        
+        # Default prompt if none provided
+        if hero_prompt is None:
+            hero_prompt = """Create a compelling hero headline and subheadline for a story-driven slide.
+
+The story is about:
+- What Changed: {what_changed}
+- Time Period: {time_period}
+- What It Means: {what_it_means}
+- Title: {title}
+
+Generate:
+1. A powerful, concise headline (5-8 words max, impactful, forward-looking)
+2. A compelling subheadline (8-15 words, explains the transformation or opportunity)
+
+Format as JSON:
+{{"headline": "...", "subheadline": "..."}}
+
+Make it inspiring, modern, and focused on the transformation or opportunity.""".format(
+                what_changed=what_changed,
+                time_period=time_period,
+                what_it_means=what_it_means,
+                title=title
+            )
+        
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system", "content": "You are an expert at creating compelling, modern hero headlines for presentations. Always respond with valid JSON."},
+                {"role": "user", "content": hero_prompt}
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.7,
+            max_tokens=200
+        )
+        
+        import json
+        result = json.loads(response.choices[0].message.content)
+        headline = result.get("headline", title)
+        subheadline = result.get("subheadline", "Start Building Stories")
+        
+        return headline, subheadline
+        
+    except Exception as e:
+        # Fallback to defaults on any error
+        return title, "Start Building Stories"
+
+
+def generate_story_slide(
+    generator: BaseGenerator,
+    title: Optional[str] = None,
+    what_changed: Optional[str] = None,
+    time_period: Optional[str] = None,
+    what_it_means: Optional[str] = None,
+    prompt: Optional[str] = None,
     insight: Optional[str] = None,
-    evolution_data: Optional[List[Dict[str, str]]] = None
+    evolution_data: Optional[List[Dict[str, str]]] = None,
+    hero_headline: Optional[str] = None,
+    hero_subheadline: Optional[str] = None,
+    hero_prompt: Optional[str] = None,
+    use_ai_hero: bool = True,
+    use_unified: bool = True
 ) -> str:
     """
     Generate a compelling story-driven hero slide
     
+    Supports both prompt-based (new) and parameter-based (legacy) approaches.
+    If prompt is provided, uses unified generator. Otherwise uses legacy parameters.
+    
     Args:
         generator: BaseGenerator instance
-        title: Main slide title
-        what_changed: What changed (the change)
-        time_period: Over what time period
-        what_it_means: What it means (the meaning/implication)
+        prompt: Optional prompt describing the story (preferred, uses unified generator)
+        title: Main slide title (legacy parameter)
+        what_changed: What changed (the change) (legacy parameter)
+        time_period: Over what time period (legacy parameter)
+        what_it_means: What it means (the meaning/implication) (legacy parameter)
         insight: Optional key insight/takeaway
         evolution_data: Optional list of evolution stages
+        hero_headline: Optional custom hero headline (overrides AI generation)
+        hero_subheadline: Optional custom hero subheadline (overrides AI generation)
+        hero_prompt: Optional custom prompt for AI hero generation
+        use_ai_hero: If True, use AI to generate hero content (default: True)
+        use_unified: If True and prompt provided, use unified generator (default: True)
     """
+    # If prompt provided, use unified generator
+    if prompt and use_unified:
+        try:
+            from .unified_story_slide import generate_unified_story_slide
+            return generate_unified_story_slide(generator, prompt)
+        except Exception as e:
+            # Fallback to legacy if unified fails
+            print(f"Unified generator failed, using legacy: {e}")
+    
+    # Legacy parameter-based approach
+    if not title:
+        title = "Data Story"
+    if not what_changed:
+        what_changed = "Data transformation"
+    if not time_period:
+        time_period = "Recent period"
+    if not what_it_means:
+        what_it_means = "Significant change"
     
     if insight is None:
         insight = "What changed, over what time period, and what does it mean? This is the basic insight you're building when you tell a story about data."
@@ -36,6 +146,26 @@ def generate_story_slide(
             {'era': '2020s', 'label': 'Automated Slides', 'icon': '⚡'},
             {'era': '2024+', 'label': 'Story-Driven', 'icon': '✨'}
         ]
+    
+    # Generate hero content - default to AI if available
+    if hero_headline and hero_subheadline:
+        # Use provided custom content
+        final_headline = hero_headline
+        final_subheadline = hero_subheadline
+    elif use_ai_hero:
+        # Generate with AI prompt (default behavior)
+        try:
+            final_headline, final_subheadline = _generate_hero_content_with_prompt(
+                what_changed, time_period, what_it_means, title, hero_prompt
+            )
+        except Exception:
+            # Fallback if AI fails
+            final_headline = title
+            final_subheadline = "Start Building Stories"
+    else:
+        # Use defaults
+        final_headline = title
+        final_subheadline = "Start Building Stories"
     
     # Hero visual: Forward-looking story-driven transformation
     # Shows: Manual pain → Story input → Dynamic AI-generated output
@@ -181,71 +311,57 @@ def generate_story_slide(
         }}
         
         .hero-section {{
-            background: linear-gradient(135deg, #AF52DE 0%, #8243B5 100%);
-            padding: 100px 80px 80px;
-            text-align: center;
             position: relative;
-            overflow: hidden;
-        }}
-        
-        .hero-section::before {{
-            content: '';
-            position: absolute;
-            top: -40%;
-            right: -8%;
-            width: 700px;
-            height: 700px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-        }}
-        
-        .hero-section::after {{
-            content: '';
-            position: absolute;
-            bottom: -25%;
-            left: -3%;
-            width: 500px;
-            height: 500px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 50%;
+            background: linear-gradient(135deg, #F9F0FF 0%, #F3E5F5 100%);
+            border: 1px solid rgba(130, 67, 181, 0.18);
+            border-radius: 24px;
+            padding: 60px 80px;
+            margin: 40px auto;
+            max-width: 1000px;
+            box-shadow: 0 24px 48px rgba(130, 67, 181, 0.22), 0 8px 16px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: visible;
         }}
         
         .hero-headline {{
-            font-size: 112px;
+            font-size: 56px;
             font-weight: 700;
-            color: #FFFFFF;
-            margin-bottom: 20px;
-            letter-spacing: -0.06em;
-            line-height: 1.0;
+            color: #8243B5;
+            margin-bottom: 16px;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
             position: relative;
-            z-index: 1;
         }}
         
         .hero-subheadline {{
-            font-size: 40px;
+            font-size: 24px;
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
-            letter-spacing: -0.03em;
-            line-height: 1.2;
-            margin-bottom: 60px;
+            color: #8243B5;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+            margin-bottom: 40px;
+            opacity: 0.9;
             position: relative;
-            z-index: 1;
         }}
         
         .hero-visual {{
-            margin-top: 40px;
+            margin-top: 20px;
             position: relative;
-            z-index: 1;
+            width: 100%;
+            max-width: 600px;
         }}
         
-        .transformation-icon {{
+        .hero-slide-mockup {{
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             height: auto;
             margin: 0 auto;
         }}
         
-        .transformation-icon svg {{
+        .hero-slide-mockup svg {{
             width: 100%;
             height: auto;
         }}
@@ -457,14 +573,18 @@ def generate_story_slide(
         <path d="M 65 45 L 70 50 L 65 55" stroke="#1B7A4E" stroke-width="3" fill="none" stroke-linecap="round"/>
     </svg>"""
     
+    # Generate slide mockup SVG for hero (like slide cards)
+    from ..svg_generator import generate_slide_mockup
+    hero_slide_mockup = generate_slide_mockup(final_headline, 'purple')
+    
     html_content = f"""
     <div class="story-slide-container">
         <div class="hero-section">
-            <div class="hero-headline">{title}</div>
-            <div class="hero-subheadline">Start Building Stories</div>
+            <div class="hero-headline">{final_headline}</div>
+            <div class="hero-subheadline">{final_subheadline}</div>
             <div class="hero-visual">
-                <div class="transformation-icon">
-                    {hero_visual}
+                <div class="hero-slide-mockup">
+                    {hero_slide_mockup}
                 </div>
             </div>
         </div>
