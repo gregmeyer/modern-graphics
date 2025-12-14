@@ -39,6 +39,8 @@ playwright install chromium
 
 That's it! No complex setup needed.
 
+**Note:** Most features work **without an OpenAI API key**. Only prompt-based generation (optional) requires OpenAI. See [Working Without OpenAI](#working-without-openai) below.
+
 ### Your First Graphic
 
 Copy and paste this code:
@@ -287,6 +289,62 @@ print(DEFAULT_DIAGRAM_PROMPTS['cycle'])
 Both approaches work - choose based on your needs!
 
 **Requirements:** Prompt-based generation requires `OPENAI_API_KEY` in your `.env` file.
+
+## Working Without OpenAI
+
+**Good news:** Most features work **without an OpenAI API key**! You only need OpenAI for prompt-based generation (which is optional).
+
+### What Works Without OpenAI ✅
+
+All structured data generation works without OpenAI:
+
+- ✅ **Cycle diagrams** - `generate_cycle_diagram(steps)`
+- ✅ **Comparison diagrams** - `generate_comparison_diagram(left, right)`
+- ✅ **Timeline diagrams** - `generate_timeline_diagram(events)`
+- ✅ **Grid diagrams** - `generate_grid_diagram(items)`
+- ✅ **Flywheel diagrams** - `generate_flywheel_diagram(elements)`
+- ✅ **Slide cards** - `generate_slide_card_diagram(cards)`
+- ✅ **Story slides** - `generate_story_slide(title, what_changed, time_period, what_it_means)`
+- ✅ **Before/After diagrams** - `generate_before_after_diagram(before, after)`
+- ✅ **Funnel diagrams** - `generate_funnel_diagram(stages, values)`
+- ✅ **Pyramid diagrams** - `generate_pyramid_diagram(layers)`
+- ✅ **CLI commands** - All CLI commands work without OpenAI
+- ✅ **PNG export** - Export works without OpenAI
+- ✅ **Templates** - Using existing templates works without OpenAI
+
+### What Requires OpenAI ⚠️
+
+Only these **optional** prompt-based features require OpenAI:
+
+- ⚠️ **Prompt-based generation** - `generate_*_from_prompt()` functions
+- ⚠️ **AI template creation** - `quick_template_from_description()`
+- ⚠️ **Story slides from prompts** - `create_story_slide_from_prompt()`
+
+### Example: No OpenAI Needed
+
+```python
+from modern_graphics import ModernGraphicsGenerator, Attribution
+from pathlib import Path
+
+# Works without OpenAI API key!
+generator = ModernGraphicsGenerator("My Diagram", Attribution())
+
+# Generate slide card (structured data - no OpenAI)
+cards = [{
+    "title": "Revenue Transformation",
+    "tagline": "Q2-Q4 2025",
+    "subtext": "Revenue model shifted from licenses to subscriptions",
+    "color": "blue",
+    "badge": "+24% QoQ",
+    "features": ["Predictable revenue", "20% higher retention"]
+}]
+
+html = generator.generate_slide_card_diagram(cards)
+generator.export_to_png(html, Path('output.png'))
+# ✓ Generated without OpenAI!
+```
+
+**Bottom line:** Use structured data (dictionaries, lists) and you don't need OpenAI. Use prompts (natural language) and you'll need an OpenAI API key.
 
 ### Export Options
 
@@ -781,12 +839,22 @@ playwright install chromium
 #### AI Features Issues
 
 **"OPENAI_API_KEY not found" error:**
-- Ensure `.env` file exists with `OPENAI_API_KEY=your_key`
-- Or set environment variable: `export OPENAI_API_KEY=your_key`
+- **You only see this if using prompt-based features** (optional)
+- **Solution 1**: Use structured data instead (no OpenAI needed) - see [Working Without OpenAI](#working-without-openai)
+  ```python
+  # Instead of: generate_cycle_diagram_from_prompt(generator, prompt="...")
+  # Use: generator.generate_cycle_diagram([{'text': 'Step 1', 'color': 'blue'}])
+  ```
+- **Solution 2**: If you want prompt-based generation:
+  - Ensure `.env` file exists with `OPENAI_API_KEY=your_key`
+  - Or set environment variable: `export OPENAI_API_KEY=your_key`
+  - Verify API key is valid and has credits
+  - Check OpenAI model availability
 
 **Template generation fails:**
-- Verify API key is valid and has credits
-- Check OpenAI model availability
+- Only affects AI-assisted template creation (optional)
+- Use existing templates or create templates manually (no OpenAI needed)
+- If using AI template creation, verify API key is valid and has credits
 
 ## Additional Resources
 

@@ -77,7 +77,18 @@ def export_html_to_png(
         temp_png_file.close()
         
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
+            try:
+                browser = p.chromium.launch(headless=True)
+            except Exception:
+                # Retry without the Chromium sandbox (required in some locked-down environments)
+                try:
+                    browser = p.chromium.launch(headless=True, chromium_sandbox=False)
+                except Exception as chromium_error:
+                    # As a final fallback, try WebKit before giving up
+                    try:
+                        browser = p.webkit.launch(headless=True)
+                    except Exception:
+                        raise chromium_error
             
             # Create context with high resolution settings
             context = browser.new_context(
