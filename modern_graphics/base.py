@@ -11,10 +11,11 @@ from .templates import StyleTemplate, DEFAULT_TEMPLATE
 class BaseGenerator:
     """Base class for Modern Graphics generators"""
     
-    def __init__(self, title: str, template: Optional[StyleTemplate] = None, attribution: Optional[Attribution] = None):
+    def __init__(self, title: str, template: Optional[StyleTemplate] = None, attribution: Optional[Attribution] = None, use_svg_js: bool = False):
         self.title = title
         self.template = template or DEFAULT_TEMPLATE
         self.attribution = attribution or Attribution()
+        self.use_svg_js = use_svg_js
     
     def _generate_attribution_html(self) -> str:
         """Generate attribution bug HTML with customizable styling"""
@@ -84,7 +85,14 @@ class BaseGenerator:
                     template_overrides.append(f'            font-family: {self.template.font_family};')
                 
                 if template_overrides:
-                    base_styles += f'\n        body {{\n{"\n".join(template_overrides)}\n        }}'
+                    overrides_text = "\n".join(template_overrides)
+                    base_styles += f'\n        body {{\n{overrides_text}\n        }}'
+        
+        # Include SVG.js if enabled
+        svg_js_script = ""
+        if self.use_svg_js:
+            from .svg_utils import generate_svg_js_cdn_script
+            svg_js_script = generate_svg_js_cdn_script()
         
         return f"""<!DOCTYPE html>
 <html lang="en">
@@ -93,6 +101,7 @@ class BaseGenerator:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{self.title}</title>
     <link href="https://fonts.googleapis.com/css2?family={font_name}:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {svg_js_script}
     <style>
         {base_styles}
         {styles}

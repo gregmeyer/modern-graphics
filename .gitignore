@@ -51,6 +51,14 @@ test_*.png
 test_*.html
 examples/output/template_tests/
 
+# Test scripts
+scripts/test_*.py
+**/test_*.py
+
+# Generation scripts
+scripts/generate_*.py
+**/generate_*.py
+
 # Output files (generated graphics)
 *.html
 *.png
@@ -106,3 +114,7 @@ examples/output/template_tests/
 
 # Internal checklists
 SHARING_CHECKLIST.md
+
+# Node.js
+node_modules/
+package-lock.json

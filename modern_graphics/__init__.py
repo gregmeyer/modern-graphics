@@ -45,6 +45,23 @@ from .convenience import (
     generate_modern_hero,
     generate_modern_hero_triptych,
 )
+from .svg_decision_helper import should_use_svg_js, get_recommendation_reason
+from .svg_utils import (
+    generate_svg_container,
+    generate_svg_init_script,
+    create_svg_circle,
+    create_svg_rect,
+    create_svg_line,
+    create_svg_path,
+    create_svg_text,
+    create_svg_group,
+    generate_svg_js_cdn_script,
+    generate_complete_svg_example,
+)
+from .illustration_review import review_illustration, generate_with_review
+from .illustration_validator import IllustrationValidator
+from .design_review_agent import DesignReviewAgent
+from .svg_element_parser import SVGElementParser
 
 __all__ = [
     # Models
@@ -114,6 +131,25 @@ __all__ = [
     'generate_story_slide',
     'generate_modern_hero',
     'generate_modern_hero_triptych',
+    # SVG.js utilities
+    'should_use_svg_js',
+    'get_recommendation_reason',
+    'generate_svg_container',
+    'generate_svg_init_script',
+    'create_svg_circle',
+    'create_svg_rect',
+    'create_svg_line',
+    'create_svg_path',
+    'create_svg_text',
+    'create_svg_group',
+    'generate_svg_js_cdn_script',
+    'generate_complete_svg_example',
+    # Illustration review system
+    'review_illustration',
+    'generate_with_review',
+    'IllustrationValidator',
+    'DesignReviewAgent',
+    'SVGElementParser',
 ]
 
 # Version

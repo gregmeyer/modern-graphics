@@ -647,6 +647,97 @@ generator = ModernGraphicsGenerator("My Diagram", template=dark_template)
 - `.set_background_color(color)` - Set default background
 - `.copy_from(template)` - Copy from existing template
 
+### SVG.js Integration
+
+Create dynamic, programmatic SVG graphics using the SVG.js library. Perfect for complex diagrams, animations, and interactive elements.
+
+**Enable SVG.js:**
+
+```python
+from modern_graphics import ModernGraphicsGenerator, Attribution
+from modern_graphics.svg_utils import (
+    generate_svg_container,
+    generate_svg_init_script,
+    create_svg_circle,
+    create_svg_line,
+    create_svg_text,
+)
+
+# Enable SVG.js support
+generator = ModernGraphicsGenerator("My Diagram", Attribution(), use_svg_js=True)
+
+# Create SVG container
+container = generate_svg_container("my-svg", 800, 600)
+
+# Generate SVG elements
+svg_elements = [
+    create_svg_circle(400, 300, 100, "#4A90E2", stroke="#2E5C8A", stroke_width=3),
+    create_svg_line(200, 300, 300, 300, "#666", stroke_width=2),
+    create_svg_text(400, 320, "Center", font_size=20, fill="#333"),
+]
+
+# Generate initialization script
+elements_code = '\n        '.join(svg_elements)
+script = generate_svg_init_script("my-svg", 800, 600, elements_code)
+
+# Wrap in HTML
+content = f"""
+<div style="padding: 40px;">
+    {container}
+    {script}
+</div>
+"""
+
+html = generator._wrap_html(content, "")
+generator.export_to_png(html, Path("output.png"))
+```
+
+**Available SVG.js Helpers:**
+
+- `generate_svg_container(id, width, height)` - Create HTML container
+- `generate_svg_init_script(id, width, height, custom_code)` - Generate initialization script
+- `create_svg_circle(x, y, radius, fill, stroke, stroke_width)` - Create circle
+- `create_svg_rect(x, y, width, height, fill, rx, stroke)` - Create rectangle
+- `create_svg_line(x1, y1, x2, y2, stroke, stroke_width)` - Create line
+- `create_svg_path(path_data, fill, stroke, stroke_width)` - Create path
+- `create_svg_text(x, y, text, font_size, fill, font_family)` - Create text
+- `create_svg_group(elements, transform)` - Create group of elements
+
+**Custom JavaScript:**
+
+You can also write custom JavaScript code that uses the SVG.js API:
+
+```python
+custom_script = """
+    // Create gradient
+    const gradient = draw.gradient('linear', function(stop) {
+        stop.at(0, '#4A90E2')
+        stop.at(1, '#8B5CF6')
+    })
+    
+    // Create shapes
+    draw.circle(100).move(350, 250).fill(gradient)
+    draw.text('SVG.js').move(360, 320).font({size: 32}).fill('#333')
+"""
+
+script = generate_svg_init_script("my-svg", 800, 600, custom_script)
+```
+
+**When to Use SVG.js:**
+
+- ✅ Complex diagrams with many elements
+- ✅ Dynamic or animated graphics
+- ✅ Programmatic shape generation
+- ✅ Custom visualizations
+
+**When to Use Static SVG:**
+
+- ✅ Simple shapes and icons
+- ✅ Static diagrams
+- ✅ Performance-critical graphics
+
+See `scripts/svg_js_example.py` for complete examples.
+
 ### Custom Diagram Types
 
 Extend the system with your own diagram types:
@@ -908,7 +999,7 @@ High-quality showcase examples are available in `examples/output/showcase/`:
 |------------------|-------------------|-------------------|
 | ![Corporate Report](examples/output/showcase/use-cases/corporate-report.png) | ![Tech Startup Pitch](examples/output/showcase/use-cases/tech-pitch.png) | ![Educational Course](examples/output/showcase/use-cases/educational-course.png) |
 
-**Regenerate showcase:** Run `python scripts/generate_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
+**Regenerate showcase:** Run `python scripts/run_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
 
 #### Example Scripts
 
@@ -920,7 +1011,7 @@ The `scripts/` directory contains comprehensive example and utility scripts:
 - **`attribution_examples.py`** - Customizing attribution
 - **`export_options.py`** - PNG export options and settings
 - **`use_case_*.py`** - Real-world use case examples
-- **`generate_showcase.py`** - Generate showcase examples for README
+- **`run_showcase.py`** - Generate showcase examples for README
 
 **Output Location:** All example scripts save outputs to `examples/output/generated/` (not tracked in git).
 

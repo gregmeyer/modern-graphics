@@ -33,7 +33,7 @@ High-quality showcase examples suitable for README display and documentation:
   - `tech-pitch.png` - Tech startup pitch deck example
   - `educational-course.png` - Educational course materials example
 
-**Regenerate showcase:** Run `python scripts/generate_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
+**Regenerate showcase:** Run `python scripts/run_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
 
 ### `generated/` - Temporary Outputs (Gitignored)
 
@@ -70,7 +70,7 @@ ls examples/output/showcase/use-cases/
 To regenerate all showcase examples with the latest code:
 
 ```bash
-python scripts/generate_showcase.py
+python scripts/run_showcase.py
 ```
 
 This will regenerate all showcase examples in `showcase/` directories.
