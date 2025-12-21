@@ -85,7 +85,8 @@ class BaseGenerator:
                     template_overrides.append(f'            font-family: {self.template.font_family};')
                 
                 if template_overrides:
-                    base_styles += f'\n        body {{\n{"\n".join(template_overrides)}\n        }}'
+                    overrides_text = "\n".join(template_overrides)
+                    base_styles += f'\n        body {{\n{overrides_text}\n        }}'
         
         # Include SVG.js if enabled
         svg_js_script = ""
