@@ -1,6 +1,6 @@
 """Story-driven slide generator - Compelling Apple-style hero slide"""
 
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Tuple
 from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
 
@@ -11,7 +11,7 @@ def _generate_hero_content_with_prompt(
     what_it_means: str,
     title: str,
     hero_prompt: Optional[str] = None
-) -> tuple[str, str]:
+) -> Tuple[str, str]:
     """
     Generate hero headline and subheadline using OpenAI prompt
     
