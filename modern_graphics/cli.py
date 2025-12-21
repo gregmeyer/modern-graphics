@@ -16,6 +16,7 @@ Usage:
 import argparse
 import json
 from pathlib import Path
+from typing import Optional
 
 from . import (
     ModernGraphicsGenerator,
@@ -31,6 +32,8 @@ from . import (
     generate_slide_card_diagram,
     generate_slide_card_comparison,
     generate_story_slide,
+    generate_modern_hero,
+    generate_modern_hero_triptych,
 )
 
 
@@ -150,6 +153,29 @@ def parse_funnel_stages(stages_str: str, values_str: str = None, colors_str: str
             'color': color
         })
     return stages
+
+
+def parse_highlights_arg(highlights_str: Optional[str]) -> Optional[list]:
+    """Parse comma-separated highlight string into list."""
+    if not highlights_str:
+        return None
+    return [item.strip() for item in highlights_str.split(',') if item.strip()]
+
+
+def parse_stats_arg(stats_str: Optional[str]) -> Optional[list]:
+    """Parse comma-separated stats in Label:Value format."""
+    if not stats_str:
+        return None
+    stats = []
+    for chunk in stats_str.split(','):
+        if not chunk.strip():
+            continue
+        if ':' in chunk:
+            label, value = chunk.split(':', 1)
+        else:
+            label, value = chunk, ''
+        stats.append({'label': label.strip(), 'value': value.strip()})
+    return stats
 
 
 def main():
@@ -280,6 +306,48 @@ def main():
     story_slide_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
     story_slide_parser.add_argument('--context', help='Optional context line for attribution')
     story_slide_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML')
+
+    # Modern hero (open)
+    modern_hero_parser = subparsers.add_parser('modern-hero', help='Generate modern open hero layout')
+    modern_hero_parser.add_argument('--title', required=True, help='Document title scope')
+    modern_hero_parser.add_argument('--headline', required=True, help='Hero headline')
+    modern_hero_parser.add_argument('--subheadline', help='Supporting line')
+    modern_hero_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
+    modern_hero_parser.add_argument('--highlights', help='Comma-separated highlight list')
+    modern_hero_parser.add_argument('--highlight-tiles', help='JSON array of tile objects ({"label": "...", "icon": "manual"})')
+    modern_hero_parser.add_argument('--flow-nodes', help='JSON array describing flow nodes for a freeform layout')
+    modern_hero_parser.add_argument('--flow-connections', help='Optional JSON array of {\"from\":\"id\",\"to\":\"id\"} connections')
+    modern_hero_parser.add_argument('--freeform-canvas', help='Raw HTML/SVG snippet to inject into the hero body')
+    modern_hero_parser.add_argument('--stats', help='Comma-separated stats in Label:Value format')
+    modern_hero_parser.add_argument('--cta', help='CTA copy')
+    modern_hero_parser.add_argument('--visual-description', help='Optional freeform description (keywords like "curved arrow" or "glassmorphism")')
+    modern_hero_parser.add_argument('--background', default='light', choices=['light', 'dark'], help='Background variant (default: light)')
+    modern_hero_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    modern_hero_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    modern_hero_parser.add_argument('--context', help='Optional context line for attribution')
+    modern_hero_parser.add_argument('--png', action='store_true', help='Export as PNG')
+
+    # Modern hero triptych
+    modern_triptych_parser = subparsers.add_parser('modern-hero-triptych', help='Generate modern hero triptych layout')
+    modern_triptych_parser.add_argument('--title', required=True, help='Document title scope')
+    modern_triptych_parser.add_argument('--headline', required=True, help='Hero headline')
+    modern_triptych_parser.add_argument('--subheadline', help='Supporting line')
+    modern_triptych_parser.add_argument('--columns', required=True, help='JSON array describing the three columns (title, items[], optional icon)')
+    modern_triptych_parser.add_argument('--stats', help='Comma-separated stats in Label:Value format')
+    modern_triptych_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
+    modern_triptych_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    modern_triptych_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    modern_triptych_parser.add_argument('--context', help='Optional context line for attribution')
+    modern_triptych_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    
+    # Modern hero from prompt (JSON)
+    hero_prompt_parser = subparsers.add_parser('modern-hero-prompt', help='Generate modern hero layout from JSON prompt file')
+    hero_prompt_parser.add_argument('--title', default='Modern Hero Prompt', help='Document title scope')
+    hero_prompt_parser.add_argument('--prompt-file', required=True, help='Path to JSON prompt describing the hero (layout, headline, stats, etc.)')
+    hero_prompt_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    hero_prompt_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    hero_prompt_parser.add_argument('--context', help='Optional context line for attribution')
+    hero_prompt_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
     args = parser.parse_args()
     
@@ -485,6 +553,122 @@ def main():
             generator.save(html, output_path)
             print(f"Generated slide card comparison: {output_path}")
     
+    elif args.command == 'modern-hero':
+        highlights = parse_highlights_arg(getattr(args, 'highlights', None))
+        highlight_tiles = None
+        if getattr(args, 'highlight_tiles', None):
+            try:
+                highlight_tiles = json.loads(args.highlight_tiles)
+            except json.JSONDecodeError as exc:
+                raise SystemExit(f"Invalid JSON for --highlight-tiles: {exc}")
+        flow_nodes = None
+        if getattr(args, 'flow_nodes', None):
+            try:
+                flow_nodes = json.loads(args.flow_nodes)
+            except json.JSONDecodeError as exc:
+                raise SystemExit(f"Invalid JSON for --flow-nodes: {exc}")
+        flow_connections = None
+        if getattr(args, 'flow_connections', None):
+            try:
+                flow_connections = json.loads(args.flow_connections)
+            except json.JSONDecodeError as exc:
+                raise SystemExit(f"Invalid JSON for --flow-connections: {exc}")
+        freeform_canvas = getattr(args, 'freeform_canvas', None)
+        stats = parse_stats_arg(getattr(args, 'stats', None))
+        html = generate_modern_hero(
+            title=args.title,
+            headline=args.headline,
+            subheadline=getattr(args, 'subheadline', None),
+            eyebrow=getattr(args, 'eyebrow', None),
+            highlights=highlights,
+            highlight_tiles=highlight_tiles,
+            flow_nodes=flow_nodes,
+            flow_connections=flow_connections,
+            freeform_canvas=freeform_canvas,
+            stats=stats,
+            cta=getattr(args, 'cta', None),
+            background_variant=getattr(args, 'background', 'light'),
+            visual_description=getattr(args, 'visual_description', None),
+            attribution=attribution
+        )
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=1700, viewport_height=1100, padding=30)
+            print(f"Generated modern hero PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated modern hero: {output_path}")
+
+    elif args.command == 'modern-hero-triptych':
+        stats = parse_stats_arg(getattr(args, 'stats', None))
+        try:
+            columns = json.loads(args.columns)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid JSON for --columns: {exc}")
+        html = generate_modern_hero_triptych(
+            title=args.title,
+            headline=args.headline,
+            subheadline=getattr(args, 'subheadline', None),
+            columns=columns,
+            stats=stats,
+            eyebrow=getattr(args, 'eyebrow', None),
+            attribution=attribution
+        )
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=1700, viewport_height=1100, padding=30)
+            print(f"Generated modern hero triptych PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated modern hero triptych: {output_path}")
+
+    elif args.command == 'modern-hero-prompt':
+        prompt_path = Path(args.prompt_file)
+        try:
+            prompt_data = json.loads(prompt_path.read_text(encoding='utf-8'))
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid JSON prompt file: {exc}")
+        layout = prompt_data.get('layout', 'open')
+        stats = prompt_data.get('stats')
+        eyebrow = prompt_data.get('eyebrow')
+        headline = prompt_data.get('headline') or "Modern Hero"
+        subheadline = prompt_data.get('subheadline')
+        visual_description = prompt_data.get('visual_description')
+        if layout == 'triptych':
+            columns = prompt_data.get('columns')
+            if not columns:
+                raise SystemExit("Triptych layout requires 'columns' array in prompt JSON.")
+            html = generate_modern_hero_triptych(
+                title=prompt_data.get('title', args.prompt_file),
+                headline=headline,
+                subheadline=subheadline,
+                columns=columns,
+                stats=stats,
+                eyebrow=eyebrow,
+                attribution=attribution
+            )
+        else:
+            html = generate_modern_hero(
+                title=prompt_data.get('title', args.prompt_file),
+                headline=headline,
+                subheadline=subheadline,
+                eyebrow=eyebrow,
+                highlights=prompt_data.get('highlights'),
+                highlight_tiles=prompt_data.get('highlight_tiles'),
+                flow_nodes=prompt_data.get('flow_nodes'),
+                flow_connections=prompt_data.get('flow_connections'),
+                freeform_canvas=prompt_data.get('freeform_canvas'),
+                stats=stats,
+                cta=prompt_data.get('cta'),
+                background_variant=prompt_data.get('background', 'light'),
+                visual_description=visual_description,
+                attribution=attribution
+            )
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=1700, viewport_height=1100, padding=30)
+            print(f"Generated modern hero from prompt PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated modern hero from prompt: {output_path}")
+
     elif args.command == 'story-slide':
         evolution_data = None
         

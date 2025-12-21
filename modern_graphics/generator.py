@@ -1,6 +1,6 @@
 """Generator class for Modern Graphics"""
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from pathlib import Path
 
 from .models import Attribution, StepStyle
@@ -19,6 +19,7 @@ from .diagrams import (
     DIAGRAM_REGISTRY,
     get_diagram_generator,
 )
+from .diagrams.modern_hero import generate_modern_hero, generate_modern_hero_triptych
 
 
 class ModernGraphicsGenerator(BaseGenerator):
@@ -150,6 +151,56 @@ class ModernGraphicsGenerator(BaseGenerator):
     ) -> str:
         """Generate a side-by-side slide card comparison"""
         return generate_slide_card_comparison(self, left_card, right_card, vs_text)
+
+    def generate_modern_hero(
+        self,
+        headline: str,
+        subheadline: Optional[str] = None,
+        eyebrow: Optional[str] = None,
+        highlights: Optional[List[str]] = None,
+        highlight_tiles: Optional[List[Dict[str, str]]] = None,
+        flow_nodes: Optional[List[Dict[str, Any]]] = None,
+        flow_connections: Optional[List[Dict[str, str]]] = None,
+        freeform_canvas: Optional[str] = None,
+        stats: Optional[List[Dict[str, str]]] = None,
+        cta: Optional[str] = None,
+        background_variant: str = "light",
+        visual_description: Optional[str] = None,
+    ) -> str:
+        """Generate the open modern hero layout."""
+        return generate_modern_hero(
+            self,
+            headline=headline,
+            subheadline=subheadline,
+            eyebrow=eyebrow,
+            highlights=highlights,
+            highlight_tiles=highlight_tiles,
+            flow_nodes=flow_nodes,
+            flow_connections=flow_connections,
+            freeform_canvas=freeform_canvas,
+            stats=stats,
+            cta=cta,
+            background_variant=background_variant,
+            visual_description=visual_description,
+        )
+
+    def generate_modern_hero_triptych(
+        self,
+        headline: str,
+        subheadline: Optional[str],
+        columns: List[Dict[str, any]],
+        stats: Optional[List[Dict[str, str]]] = None,
+        eyebrow: Optional[str] = None,
+    ) -> str:
+        """Generate the triptych hero layout (manual → templates → outputs)."""
+        return generate_modern_hero_triptych(
+            self,
+            headline=headline,
+            subheadline=subheadline,
+            columns=columns,
+            stats=stats,
+            eyebrow=eyebrow,
+        )
     
     def generate_story_slide(
         self,

@@ -42,6 +42,8 @@ from .convenience import (
     generate_slide_card_diagram,
     generate_slide_card_comparison,
     generate_story_slide,
+    generate_modern_hero,
+    generate_modern_hero_triptych,
 )
 
 __all__ = [
@@ -110,6 +112,8 @@ __all__ = [
     'generate_slide_card_diagram',
     'generate_slide_card_comparison',
     'generate_story_slide',
+    'generate_modern_hero',
+    'generate_modern_hero_triptych',
 ]
 
 # Version

@@ -176,6 +176,165 @@ generator = ModernGraphicsGenerator("My Diagram", attribution=attribution)
 
 Practical patterns for real-world usage.
 
+### Hero Layouts (New)
+
+Need a hero image for an article or landing page? The new `modern-hero` family renders Apple-style slides with calm gradients, orbit accents, and structured triptychs. Each layout was designed around a narrative prompt so you can quickly “describe the slide” before rendering.
+
+#### 1. Modern Hero (Open Canvas)
+
+- **Prompt**
+
+    ```
+    You are the Modern Graphics Generator. Render a calm, open hero slide with a white card, light purple halo, and rounded pills that explain how we route every story beat through a template-driven graphics agent. Keep it editorial: headline, subhead, highlight pills (“Capture story beat,” “Map to template,” “Paste prompt + numbers,” “Ship hero visuals”), CTA ribbon (“Templates are visual infrastructure”), and a stat strip showing Design time (2h → 5m), Consistency (Low → High), Reusability (One-off → Regenerate).
+    ```
+
+- **CLI**
+
+    ```bash
+    python -m modern_graphics.cli modern-hero \
+      --title "Build Presentation Graphics" \
+      --headline "Build a Graphics System, Not Just Slides" \
+      --subheadline "Route every story beat through templates so each visual ships with intent." \
+      --highlights "Capture story beat,Map to template,Paste prompt + numbers,Ship hero visuals" \
+      --stats "Design time:2h → 5m,Consistency:Low → High,Reusability:One-off → Regenerate" \
+      --cta "Templates are visual infrastructure" \
+      --output examples/output/modern-hero-open.html --png
+    ```
+
+#### 2. Modern Hero (Nightfall)
+
+- **Prompt**
+
+    ```
+    Render a cinematic nightfall hero slide: deep purple gradient background inside a neutral frame, soft orbit lines, and glowing stats. Show the same story beat flow as the open hero, but switch `--background dark` so typography inverts and the CTA glows.
+    ```
+
+- **Python**
+
+```python
+from pathlib import Path
+from modern_graphics import ModernGraphicsGenerator, Attribution
+
+generator = ModernGraphicsGenerator("Nightfall Hero", Attribution())
+html = generator.generate_modern_hero(
+        headline="Treat Every Prompt Like a Spec",
+        subheadline="Manual tweaks become a system when you lock templates and story schema.",
+        eyebrow="Modern Graphics",
+        highlights=["Calm gradient canvas", "Orbit accents", "Story-first CTA"],
+        stats=[
+            {"label": "Design time", "value": "2h → 5m"},
+            {"label": "Consistency", "value": "Low → High"},
+        ],
+        background_variant="dark",
+    )
+    generator.export_to_png(html, Path("examples/output/modern-hero-night.png"),
+                           viewport_width=1700, viewport_height=1100, padding=30)
+    ```
+
+#### 3. Modern Hero Triptych
+
+- **Prompt**
+
+    ```
+    Create a white-card hero with a light purple gradient halo and three panels labeled Manual design, Template library, Generated visuals. Each column should have an icon, three bullet points, and the bottom stat strip (Design time 2h → 5m, Consistency Low → High, Reusability One-off → Regenerate).
+    ```
+
+- **CLI**
+
+    ```bash
+    python -m modern_graphics.cli modern-hero-triptych \
+      --title "Build Presentation Graphics" \
+      --headline "From prompts to polished slides" \
+      --subheadline "Manual decks become a reusable pipeline when every beat flows through templates." \
+      --columns '[{"title":"Manual design","items":["Ad-hoc layouts","Inconsistent styling","Hours per slide"],"icon":"manual"},{"title":"Template library","items":["Story slide schema","Data cards","Prompt recipes"],"icon":"templates"},{"title":"Generated visuals","items":["Deterministic output","Repeatable quality","Deck-ready assets"],"icon":"generated"}]' \
+      --stats "Design time:2h → 5m,Consistency:Low → High,Reusability:One-off → Regenerate" \
+      --output examples/output/modern-hero-triptych.html --png
+    ```
+
+#### Prompt-Driven Hero Utility
+
+If you prefer to describe the hero via a prompt file, drop JSON like this into `hero_prompt.json`:
+
+```json
+{
+  "layout": "triptych",
+  "headline": "Build a Graphics System, Not Just Slides",
+  "subheadline": "Manual tweaks become a reusable pipeline when every beat flows through templates.",
+  "eyebrow": "Modern Graphics",
+  "highlights": ["Capture story beat", "Map to template", "Paste prompt + numbers", "Ship hero visuals"],
+  "stats": [
+    {"label": "Design time", "value": "2h → 5m"},
+    {"label": "Consistency", "value": "Low → High"},
+    {"label": "Reusability", "value": "One-off → Regenerate"}
+  ],
+  "columns": [
+    {"title": "Manual design", "items": ["Ad-hoc layouts", "Inconsistent styling", "Hours per slide"], "icon": "manual"},
+    {"title": "Template library", "items": ["Story slide schema", "Data cards", "Prompt recipes"], "icon": "templates"},
+    {"title": "Generated visuals", "items": ["Deterministic output", "Repeatable quality", "Deck-ready assets"], "icon": "generated"}
+  ]
+}
+```
+
+Then run:
+
+```bash
+python -m modern_graphics.cli modern-hero-prompt \
+  --prompt-file hero_prompt.json \
+  --output examples/output/modern-hero-from-prompt.png --png
+```
+
+Set `"layout": "open"` and omit `columns` to get the open-canvas variant.
+
+Tip: open layouts now support structured `highlight_tiles` (JSON array with `label` + optional `icon`). When provided, the hero renders a visual flow of icon tiles instead of a text pill list.
+You can also pass a `visual_description` string (e.g., “Render a curved arrow linking three icon tiles, glassmorphism background”) — the generator looks for keywords like “curved arrow” or “glassmorphism” and toggles extra flourishes (flow arrows, blurred backgrounds) automatically.
+
+##### Flow Nodes (Open Layout)
+
+When you need a freeform flowchart instead of evenly stacked tiles, describe the hero’s visual in terms of nodes and arcs:
+
+```json
+{
+  "layout": "open",
+  "headline": "Diagnose the knowledge base like a DAG",
+  "flow_nodes": [
+    {"id": "bot", "label": "Bot answer feels off", "icon": "warning", "position": {"x": 0.08, "y": 0.58}, "size": "small"},
+    {"id": "context", "label": "Context", "icon": "manual", "orbit": "top"},
+    {"id": "atomic", "label": "Atomic content", "icon": "templates", "orbit": "bottom"},
+    {"id": "breadcrumbs", "label": "Breadcrumbs", "icon": "generated", "orbit": "top"},
+    {"id": "trust", "label": "Trustworthy output", "icon": "generated", "position": {"x": 0.9, "y": 0.55}}
+  ],
+  "flow_connections": [
+    {"from": "bot", "to": "context"},
+    {"from": "bot", "to": "atomic"},
+    {"from": "bot", "to": "breadcrumbs"},
+    {"from": "context", "to": "trust"},
+    {"from": "atomic", "to": "trust"},
+    {"from": "breadcrumbs", "to": "trust"}
+  ],
+  "visual_description": "Floating constellation DAG with translucent arcs, directed acrylic graph energy."
+}
+```
+
+Each node may provide normalized `x` / `y` coordinates (0→1) or use `orbit` hints (`top`, `center`, `bottom`). Connections default to sequential links, but you can declare explicit `{ "from": "node-id", "to": "node-id" }` edges for branching DAGs. The CLI exposes the same fields via `--flow-nodes` / `--flow-connections` (pass JSON).
+
+##### Freeform Canvas
+
+Need total control? Pass raw HTML/SVG through the new `freeform_canvas` field (or `--freeform-canvas` CLI flag) and it will be injected ahead of the highlight area:
+
+```json
+{
+  "headline": "Probabilistic PM",
+  "freeform_canvas": "<div style='position:relative;height:280px;'><svg ...>...</svg><div class='canvas-chip' style='left:25%;top:40%;position:absolute;'>Orchestration</div></div>",
+  "stats": [
+    {"label": "Escalations", "value": "-30%"}
+  ]
+}
+```
+
+The injected block inherits hero themes (`hero-dark`, `hero-warm`) and ships with helper styles (`.canvas-chip`). Combine it with the ribbon keywords (e.g., “Bezier ribbon collage”) for fully custom hero art without editing CSS by hand.
+
+Each prompt focuses on the story (“what changed, when, why it matters”) so the hero conveys more than decoration. You can also run `python3 tests/test_modern_hero.py` to regenerate both PNGs programmatically.
+
 ### Quick Graphics
 
 Use convenience functions for fast generation without creating a generator instance:

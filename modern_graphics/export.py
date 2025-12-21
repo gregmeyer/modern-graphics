@@ -13,7 +13,8 @@ def export_html_to_png(
     viewport_height: int = 1600,
     device_scale_factor: int = 2,
     padding: int = 20,
-    temp_html_path: Optional[Path] = None
+    temp_html_path: Optional[Path] = None,
+    omit_background: bool = False
 ) -> Path:
     """
     Export HTML to PNG with high-resolution settings and tight cropping
@@ -102,7 +103,11 @@ def export_html_to_png(
             page.wait_for_timeout(500)
             
             # Take full page screenshot first
-            page.screenshot(path=str(temp_png_path), full_page=True)
+            page.screenshot(
+                path=str(temp_png_path),
+                full_page=True,
+                omit_background=omit_background
+            )
             
             # Get bounding box of the main content using JavaScript
             try:

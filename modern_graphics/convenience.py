@@ -1,10 +1,11 @@
 """Convenience functions for Modern Graphics Generator"""
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from pathlib import Path
 
 from .models import Attribution
 from .generator import ModernGraphicsGenerator
+from .diagrams.modern_hero import generate_modern_hero as _modern_hero, generate_modern_hero_triptych as _modern_hero_triptych
 
 def generate_flywheel_diagram(
     title: str,
@@ -180,6 +181,70 @@ def generate_story_slide(
         what_it_means=what_it_means,
         insight=insight,
         evolution_data=evolution_data
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_modern_hero(
+    title: str,
+    headline: str,
+    subheadline: Optional[str] = None,
+    eyebrow: Optional[str] = None,
+    highlights: Optional[List[str]] = None,
+    highlight_tiles: Optional[List[Dict[str, str]]] = None,
+    flow_nodes: Optional[List[Dict[str, Any]]] = None,
+    flow_connections: Optional[List[Dict[str, str]]] = None,
+    freeform_canvas: Optional[str] = None,
+    stats: Optional[List[Dict[str, str]]] = None,
+    cta: Optional[str] = None,
+    background_variant: str = "light",
+    visual_description: Optional[str] = None,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function for the open modern hero layout."""
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _modern_hero(
+        generator,
+        headline=headline,
+        subheadline=subheadline,
+        eyebrow=eyebrow,
+        highlights=highlights,
+        highlight_tiles=highlight_tiles,
+        flow_nodes=flow_nodes,
+        flow_connections=flow_connections,
+        freeform_canvas=freeform_canvas,
+        stats=stats,
+        cta=cta,
+        background_variant=background_variant,
+        visual_description=visual_description,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_modern_hero_triptych(
+    title: str,
+    headline: str,
+    subheadline: Optional[str],
+    columns: List[Dict[str, any]],
+    stats: Optional[List[Dict[str, str]]] = None,
+    eyebrow: Optional[str] = None,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function for the triptych hero layout."""
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _modern_hero_triptych(
+        generator,
+        headline=headline,
+        subheadline=subheadline,
+        columns=columns,
+        stats=stats,
+        eyebrow=eyebrow,
     )
     if output_path:
         generator.save(html, output_path)

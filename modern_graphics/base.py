@@ -118,7 +118,8 @@ class BaseGenerator:
         viewport_height: int = 1600,
         device_scale_factor: int = 2,
         padding: int = 20,
-        temp_html_path: Optional[Path] = None
+        temp_html_path: Optional[Path] = None,
+        transparent_background: bool = False
     ) -> Path:
         """Export HTML to PNG - delegates to export module"""
         from .export import export_html_to_png
@@ -130,5 +131,6 @@ class BaseGenerator:
             viewport_height,
             device_scale_factor,
             padding,
-            temp_html_path
+            temp_html_path,
+            omit_background=transparent_background
         )
