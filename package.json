@@ -1,0 +1,12 @@
+{
+  "name": "modern-graphics-generator",
+  "version": "0.1.0",
+  "description": "JavaScript dependencies for Modern Graphics Generator",
+  "private": true,
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.5"
+  },
+  "scripts": {
+    "install-deps": "npm install"
+  }
+}

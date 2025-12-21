@@ -14,7 +14,7 @@ All scripts should be run from the project root:
 
 ```bash
 # Example: Generate showcase
-python scripts/generate_showcase.py
+python scripts/run_showcase.py
 
 # Example: Run all diagram types
 python scripts/all_diagram_types.py
@@ -58,7 +58,7 @@ All scripts automatically create output directories as needed.
 - `run_all_use_cases.py` - Run all use cases
 
 ### Utility Scripts
-- `generate_showcase.py` - Generate showcase examples for README
+- `run_showcase.py` - Generate showcase examples for README
 - `aggregate_prompts.py` - Aggregate prompts for evaluation
 - `model_comparison_test.py` - Compare model outputs
 - `prompt_storage.py` - Prompt storage utility (imported by other scripts)
@@ -67,7 +67,7 @@ All scripts automatically create output directories as needed.
 - `prompt_builder.py` - Build prompts programmatically
 - `prompt_library.py` - Library of prompts
 - `test_prompts.py` - Test prompts
-- `generate_showcase.py` - Generate showcase with prompts
+- `run_showcase.py` - Generate showcase with prompts
 
 ## Dependencies
 

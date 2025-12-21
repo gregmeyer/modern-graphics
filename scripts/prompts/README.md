@@ -36,11 +36,11 @@ Tests prompts from different categories:
 - Creative
 - Style references
 
-### generate_showcase.py
+### run_showcase.py
 Generates high-quality showcase graphics for the README demonstrating different templates and styles.
 
 ```bash
-python scripts/prompts/generate_showcase.py
+python scripts/prompts/run_showcase.py
 ```
 
 Creates:

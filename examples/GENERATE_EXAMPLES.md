@@ -90,7 +90,7 @@ python3 scripts/run_all_use_cases.py
 Generate README showcase graphics:
 
 ```bash
-python3 scripts/prompts/generate_showcase.py
+python3 scripts/prompts/run_showcase.py
 ```
 
 **Output:** `examples/output/showcase/[template_name]/*.png` (15 files total)

@@ -99,8 +99,19 @@ def export_html_to_png(
             page = context.new_page()
             page.goto(f"file://{temp_html_path.resolve()}", wait_until="networkidle")
             
-            # Wait for content to load
-            page.wait_for_timeout(500)
+            # Wait for content to load, including SVG.js rendering
+            page.wait_for_timeout(1000)
+            
+            # Wait for SVG elements if SVG.js is being used
+            try:
+                page.wait_for_function("""
+                    () => {
+                        const svg = document.querySelector('#board-game-container svg');
+                        return svg && svg.children.length > 0;
+                    }
+                """, timeout=3000).catch(lambda: None)
+            except:
+                pass  # Continue even if SVG elements aren't found
             
             # Take full page screenshot first
             page.screenshot(
