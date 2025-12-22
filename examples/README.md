@@ -2,6 +2,16 @@
 
 This directory contains example scripts organized by category to help you learn and explore the Modern Graphics library.
 
+## Theme Demo
+
+The theme demo showcases how a single color scheme can skin all diagrams.
+
+- **PNG previews:** Already checked in under `examples/output/theme-demo/*.png`.
+- **Generate full gallery:** `python examples/generate_complete_theme_demo.py` (requires OpenAI for theme creation).
+- **View locally:** Open `examples/output/theme-demo/index.html` after the script finishes.
+- **Customize:** Edit `examples/generate_complete_theme_demo.py` or the scheme JSON to change content/colors.
+
+
 ## Quick Start
 
 ### No AI Required (Start Here)
