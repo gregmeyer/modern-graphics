@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Theme Demo - Cyan Coral Tech</title>
+    <link href='https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap' rel='stylesheet'>
+    <style>
+        :root {
+            --mg-font: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --mg-bg: #e0e0e0;
+            --mg-surface: #f5f5f5;
+            --mg-muted-surface: #bdbdbd;
+            --mg-text: #212121;
+            --mg-muted: #757575;
+            --mg-border: #e0e0e0;
+            --mg-accent: #00bcd4;
+            --mg-accent-strong: #ff4081;
+            --mg-shadow: rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--mg-font);
+            background: var(--mg-bg);
+            color: var(--mg-text);
+            margin: 0;
+            padding: 48px 24px 72px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-size: 0.8rem;
+            color: var(--mg-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            margin: 0;
+            color: var(--mg-text);
+        }
+
+        .subtitle {
+            color: var(--mg-muted);
+            margin-top: 0.4rem;
+            font-size: 1.1rem;
+        }
+
+        .theme-info {
+            background: var(--mg-surface);
+            border: 1px solid var(--mg-border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-top: 28px;
+            margin-bottom: 48px;
+            box-shadow: 0 20px 45px var(--mg-shadow);
+        }
+
+        .theme-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .theme-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .theme-header p {
+            color: var(--mg-muted);
+            margin-top: 0.35rem;
+            max-width: 60ch;
+        }
+
+        .theme-download {
+            background: var(--mg-accent);
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .theme-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.18);
+        }
+
+        .theme-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .meta-card {
+            border: 1px solid var(--mg-border);
+            border-radius: 14px;
+            padding: 16px;
+            background: var(--mg-muted-surface);
+        }
+
+        .meta-card span {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--mg-muted);
+        }
+
+        .meta-card p {
+            margin: 8px 0 0;
+            font-size: 0.95rem;
+        }
+
+        .color-swatch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .color-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--mg-border);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 28px;
+        }
+
+        .gallery-item {
+            display: block;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--mg-border);
+            background: var(--mg-surface);
+            box-shadow: 0 15px 35px var(--mg-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px var(--mg-shadow);
+        }
+
+        .gallery-item:focus-visible {
+            outline: 3px solid var(--mg-accent);
+            outline-offset: 4px;
+        }
+
+        .gallery-frame {
+            background: var(--mg-muted-surface);
+            padding: 10px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
+        .caption {
+            padding: 20px 22px 24px;
+        }
+
+        .caption h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            color: var(--mg-text);
+        }
+
+        .caption p {
+            margin-top: 6px;
+            color: var(--mg-muted);
+            font-size: 0.95rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--mg-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="eyebrow">Single theme · Multiple graphics</p>
+        <h1>Cyan Coral Tech Theme Demo</h1>
+        <p class="subtitle">Each asset below was generated with the same palette, typography, and SVG overrides.</p>
+
+        <section class="theme-info">
+            <div class="theme-header">
+                <div>
+                    <h2>Cyan Coral Tech</h2>
+                    <p>A vibrant color scheme for a modern tech startup, featuring a bright cyan primary color and coral accents, complemented by bold Poppins font.</p>
+                </div>
+                <a class="theme-download" href="../../schemes/startup_theme.json" download>
+                    Download theme JSON
+                </a>
+            </div>
+            <div class="theme-meta">
+                <div class="meta-card">
+                    <span>Font family</span>
+                    <p>'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif</p>
+                </div>
+                <div class="meta-card">
+                    <span>Primary color</span>
+                    <div class="color-swatch">
+                        <span class="color-dot" style="background: #00bcd4;"></span>
+                        <p>#00bcd4</p>
+                    </div>
+                </div>
+                <div class="meta-card">
+                    <span>Secondary color</span>
+                    <div class="color-swatch">
+                        <span class="color-dot" style="background: #ff6f61;"></span>
+                        <p>#ff6f61</p>
+                    </div>
+                </div>
+                <div class="meta-card">
+                    <span>Accent color</span>
+                    <div class="color-swatch">
+                        <span class="color-dot" style="background: #ff4081;"></span>
+                        <p>#ff4081</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="gallery">
+            <a class="gallery-item" href="01-hero-open.png" target="_blank" rel="noopener noreferrer" aria-label="Hero Slide · Open Canvas (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="01-hero-open.png" alt="Hero Slide · Open Canvas">
+                </div>
+                <div class="caption">
+                    <h3>Hero Slide · Open Canvas</h3>
+                    <p>Modern hero layout with highlight tiles and stats</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="02-hero-dark.png" target="_blank" rel="noopener noreferrer" aria-label="Hero Slide · Dark Variant (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="02-hero-dark.png" alt="Hero Slide · Dark Variant">
+                </div>
+                <div class="caption">
+                    <h3>Hero Slide · Dark Variant</h3>
+                    <p>Nightfall variant with enterprise messaging</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="03-hero-triptych.png" target="_blank" rel="noopener noreferrer" aria-label="Hero Slide · Triptych (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="03-hero-triptych.png" alt="Hero Slide · Triptych">
+                </div>
+                <div class="caption">
+                    <h3>Hero Slide · Triptych</h3>
+                    <p>Three-column hero covering pillars of growth</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="04-slide-cards-two.png" target="_blank" rel="noopener noreferrer" aria-label="Slide Cards · Dual (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="04-slide-cards-two.png" alt="Slide Cards · Dual">
+                </div>
+                <div class="caption">
+                    <h3>Slide Cards · Dual</h3>
+                    <p>Two-card layout featuring SVG.js mockups</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="05-slide-card-single.png" target="_blank" rel="noopener noreferrer" aria-label="Slide Card · Spotlight (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="05-slide-card-single.png" alt="Slide Card · Spotlight">
+                </div>
+                <div class="caption">
+                    <h3>Slide Card · Spotlight</h3>
+                    <p>Single card with custom network mockup</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="06-cycle.png" target="_blank" rel="noopener noreferrer" aria-label="Cycle Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="06-cycle.png" alt="Cycle Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Cycle Diagram</h3>
+                    <p>Plan → Build → Deploy → Measure flow</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="07-comparison.png" target="_blank" rel="noopener noreferrer" aria-label="Comparison Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="07-comparison.png" alt="Comparison Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Comparison Diagram</h3>
+                    <p>Before vs After transformation</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="08-timeline.png" target="_blank" rel="noopener noreferrer" aria-label="Timeline Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="08-timeline.png" alt="Timeline Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Timeline Diagram</h3>
+                    <p>Product journey from launch to maturity</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="09-grid.png" target="_blank" rel="noopener noreferrer" aria-label="Grid Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="09-grid.png" alt="Grid Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Grid Diagram</h3>
+                    <p>Matrix of platform attributes</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="10-flywheel.png" target="_blank" rel="noopener noreferrer" aria-label="Flywheel Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="10-flywheel.png" alt="Flywheel Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Flywheel Diagram</h3>
+                    <p>Growth loop: Acquire → Activate → Retain → Refer</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="11-story-slide.png" target="_blank" rel="noopener noreferrer" aria-label="Story Slide (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="11-story-slide.png" alt="Story Slide">
+                </div>
+                <div class="caption">
+                    <h3>Story Slide</h3>
+                    <p>Narrative slide mixing hero canvas + cards</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="12-funnel.png" target="_blank" rel="noopener noreferrer" aria-label="Funnel Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="12-funnel.png" alt="Funnel Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Funnel Diagram</h3>
+                    <p>Awareness through purchase conversion funnel</p>
+                </div>
+            </a>
+            <a class="gallery-item" href="13-pyramid.png" target="_blank" rel="noopener noreferrer" aria-label="Pyramid Diagram (opens high-res graphic)">
+                <div class="gallery-frame">
+                    <img src="13-pyramid.png" alt="Pyramid Diagram">
+                </div>
+                <div class="caption">
+                    <h3>Pyramid Diagram</h3>
+                    <p>Layered vision → impact hierarchy</p>
+                </div>
+            </a>
+        </section>
+
+        <div class="footer">
+            <p>Graphics generated by Modern Graphics Generator · Theme file located at examples/schemes/startup_theme.json</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -176,9 +176,39 @@ html = generator.generate_slide_card_comparison(
 
 **Use cases**: Before/after comparisons, feature comparisons, transformation visualizations
 
-## More Diagram Types
+### Funnel Diagrams
+Stacked funnels highlighting drop-off across stages (tracked PNG lives in the theme demo assets).
 
-See the [full documentation](../README.md#diagram-types) for:
-- Pyramid Diagrams
-- Before/After Diagrams
-- Funnel Diagrams
+![Funnel Diagram](../examples/output/theme-demo/12-funnel.png)
+
+```python
+funnel = [
+    {"text": "Awareness", "value": 1500, "color": "blue"},
+    {"text": "Consideration", "value": 800, "color": "green"},
+    {"text": "Evaluation", "value": 400, "color": "orange"},
+    {"text": "Purchase", "value": 200, "color": "purple"}
+]
+html = generator.generate_funnel_diagram(funnel)
+```
+
+**Use cases**: Marketing funnels, hiring pipelines, conversion drop-off, lead qualification
+
+### Pyramid Diagrams
+Layered hierarchies for priorities or org structures.
+
+![Pyramid Diagram](../examples/output/theme-demo/13-pyramid.png)
+
+```python
+layers = [
+    {"text": "Vision"},
+    {"text": "Strategy"},
+    {"text": "Execution"},
+    {"text": "Impact"}
+]
+html = generator.generate_pyramid_diagram(layers)
+```
+
+**Use cases**: Priority stacks, org hierarchies, Maslow-style pyramids, GTM tiers
+
+### Timeline (Compact) & Variants
+Want variations beyond the default PNGs? Run `python examples/generate_complete_theme_demo.py` to regenerate the latest themed outputs (timeline, funnel, pyramid, hero canvas cards, and more) under `examples/output/theme-demo/`.

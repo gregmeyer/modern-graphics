@@ -4,6 +4,14 @@ This directory contains generated outputs from example scripts.
 
 ## Directory Structure
 
+### `theme-demo/` - Themed Gallery (PNG tracked, HTML generated)
+
+- PNG previews for hero slides, cards, and diagrams are checked in (`examples/output/theme-demo/01-hero-open.png` … `13-pyramid.png`).
+- Run `python examples/generate_complete_theme_demo.py` to regenerate both the PNG set and `examples/output/theme-demo/index.html`.
+- Open `examples/output/theme-demo/index.html` locally after running the script to view the gallery.
+- The script requires OpenAI for theme creation; you can also edit `examples/schemes/*.json` if you want to reuse an existing palette.
+
+
 ### `showcase/` - Curated Examples (Tracked in Git)
 
 High-quality showcase examples suitable for README display and documentation:
@@ -17,21 +25,18 @@ High-quality showcase examples suitable for README display and documentation:
   - `06-flywheel.png` - Flywheel diagram example
   - `07-slide-cards.png` - Slide cards example
   - `08-slide-comparison.png` - Slide card comparison example
+  - _Note:_ This folder intentionally covers the original 8 layouts. Newer diagrams (funnel, pyramid, hero canvas cards, etc.) live in `theme-demo/`—run `python examples/generate_complete_theme_demo.py` to regenerate that gallery.
 
-- **`templates/`** - Template style examples (3 files)
-  - `default.png` - Default template style
-  - `corporate.png` - Corporate template style
-  - `tech-startup.png` - Tech startup template style
+- **`templates/`** - _Removed_ (theme overrides now live in `theme-demo/`)
 
 - **`attribution/`** - Attribution configuration examples (3 files)
   - `default.png` - Default attribution
   - `custom-styled.png` - Custom styled attribution
   - `with-context.png` - Attribution with context
 
-- **`use-cases/`** - Real-world use case examples (3 files)
-  - `corporate-report.png` - Corporate quarterly report example
-  - `tech-pitch.png` - Tech startup pitch deck example
-  - `educational-course.png` - Educational course materials example
+- **`use-cases/`** - Legacy real-world examples (kept for reference)
+  - Contains the original three PNGs: `corporate-report.png`, `tech-pitch.png`, `educational-course.png`
+  - These are no longer updated. Use modern replacements under `theme-demo/` or regenerate fresh assets via `python scripts/run_showcase.py`.
 
 - **`hero-slides/`** - Modern hero slide layouts (5 files)
   - `01-open-canvas-tiles.png` - Open canvas with visual icon tiles

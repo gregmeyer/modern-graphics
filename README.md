@@ -2,7 +2,9 @@
 
 > Build hero slides, story cards, and diagrams from prompts or structured data—one theme across every output. Designed for storytellers, marketing teams, and analysts who need branded visuals in minutes.
 
-[**Jump to the live theme demo →**](examples/output/theme-demo/index.html)
+> **Theme demo note:** PNG thumbnails in `examples/output/theme-demo/*.png` are checked in, but the gallery `index.html` is generated locally. Run `python examples/generate_complete_theme_demo.py` before opening `examples/output/theme-demo/index.html`.
+
+[**Jump to the theme demo →**](examples/output/theme-demo/index.html) *(PNG previews are versioned; run `python examples/generate_complete_theme_demo.py` to regenerate HTML locally.)*
 
 ## Why teams use it
 - 🎨 **One theme across everything** – set colors + fonts once, reuse across heroes, cards, and diagrams
@@ -48,7 +50,8 @@ html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
 - **Comparison & grids:** comparison cards, matrices, KPI or insight grids
 - **Before/after stories:** transformation cards, makeover grids, KPI deltas
 
-[Browse every diagram type →](examples/output/showcase/diagram-types/) |
+**Preview them:** PNG thumbnails live in `examples/output/showcase/diagram-types/` (tracked). For themed variants (funnel, pyramid, hero canvas cards, etc.), run `python examples/generate_complete_theme_demo.py` and open `examples/output/theme-demo/index.html`.
+
 [Diagram reference →](docs/DIAGRAM_TYPES.md)
 
 ### Hero Slides
@@ -57,7 +60,9 @@ html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
 |-------|-----------|----------|
 | ![Hero Tiles](examples/output/showcase/hero-slides/01-open-canvas-tiles.png) | ![Hero Flowchart](examples/output/showcase/hero-slides/02-open-canvas-flowchart.png) | ![Hero Triptych](examples/output/showcase/hero-slides/05-triptych.png) |
 
-[View all hero slides →](examples/output/showcase/hero-slides/) | [Hero Slides Guide →](docs/HERO_SLIDES.md)
+The thumbnails above are tracked in git for quick reference (`examples/output/showcase/hero-slides/`). To see the latest themed renderings, run `python examples/generate_complete_theme_demo.py` and open `examples/output/theme-demo/index.html`.
+
+[Hero Slides Guide →](docs/HERO_SLIDES.md)
 
 ## How Do I Get Started?
 
@@ -125,11 +130,11 @@ Now your graphic uses consistent branding that you can apply to all future graph
 - **Story slides:** Combine hero canvas, modular cards, and timelines for narratives ([story slide gallery](examples/output/showcase/diagram-types/04-story-slide.png)).  
   ![Story Slide](examples/output/theme-demo/11-story-slide.png)
 - **Apply one theme everywhere:** Theme demo shows thirteen graphics sharing the same palette/fonts ([see the live set](examples/output/theme-demo/index.html)).  
-  ![Theme Demo](examples/output/theme-demo/04-slide-cards-two.png)
+  ![Theme Demo](examples/output/theme-demo/04-slide-cards-two.png) *(PNG checked in; run `python examples/generate_complete_theme_demo.py` to rebuild `index.html` locally)*
 - **Illustrate long-form content:** Feed an article outline and let the system storyboard it ([use cases](examples/output/showcase/use-cases/)).  
   ![Use Case](examples/output/showcase/use-cases/corporate-report.png)
 
-Want more? Browse [all diagram types](examples/output/showcase/diagram-types/), [hero layouts](examples/output/showcase/hero-slides/), or dive into the [examples directory](examples/) for runnable scripts (`python scripts/run_showcase.py`).
+Want more? Browse diagram thumbnails in repo (e.g., `examples/output/showcase/hero-slides/01-*.png`), or run `python scripts/run_showcase.py` to regenerate the curated PNGs.
 
 ## How Do I Prompt Creatively?
 
@@ -373,7 +378,7 @@ html = scheme.apply_to_html(html)
 generator.export_to_png(html, Path('output.png'))
 ```
 
-**See complete example:** [Theme Demo Script](examples/generate_complete_theme_demo.py) | [Theme Demo Gallery](examples/output/theme-demo/index.html)
+**See complete example:** [Theme Demo Script](examples/generate_complete_theme_demo.py) | [Theme Demo Gallery (run locally)](examples/output/theme-demo/index.html)
 
 ### Advanced Customization
 
@@ -430,8 +435,9 @@ The library includes 10+ diagram types, each optimized for different use cases.
 - **Speed**: Apply styles instantly with one line of code
 - **Team Alignment**: Share theme JSON files for consistent branding
 - **Flexibility**: Switch themes or create variations easily
+- **Template = Theme**: We no longer ship a separate “template gallery.” The active color scheme drives typography, card chrome, and hero styling across every diagram (see [theme demo](examples/output/theme-demo/index.html)).
 
-**See it in action:** [Complete Theme Demo](examples/output/theme-demo/index.html) - 7 graphics, one theme
+**See it in action:** [Complete Theme Demo (generate locally)](examples/output/theme-demo/index.html) - 7 graphics, one theme
 
 **Learn more:** [Color Scheme Generator Guide](docs/ADVANCED.md#color-scheme-generator)
 
@@ -556,7 +562,7 @@ OPENAI_API_KEY=your_openai_key_here
 
 **Want to customize?**
 1. **Create [Custom Themes](docs/ADVANCED.md#color-scheme-generator)** - Define colors and fonts once, apply everywhere
-   - See [Complete Theme Demo](examples/output/theme-demo/index.html) for inspiration
+   - See [Complete Theme Demo](examples/output/theme-demo/index.html) (generate locally) for inspiration
    - Try [Theme Demo Script](examples/generate_complete_theme_demo.py)
 2. Learn about [Templates](docs/ADVANCED.md#custom-templates)
 3. Check out [Advanced Topics](docs/ADVANCED.md)
