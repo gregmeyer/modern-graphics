@@ -138,10 +138,17 @@ class ModernGraphicsGenerator(BaseGenerator):
     def generate_slide_card_diagram(
         self,
         cards: List[Dict[str, any]],
-        arrow_text: str = "→"
+        arrow_text: str = "→",
+        style: str = "default"
     ) -> str:
-        """Generate a horizontal slide card diagram"""
-        return generate_slide_card_diagram(self, cards, arrow_text)
+        """Generate a horizontal slide card diagram
+        
+        Args:
+            cards: List of card dictionaries
+            arrow_text: Text to display between cards
+            style: Layout style - 'default' (vertical cards) or 'lower_third' (horizontal bar style)
+        """
+        return generate_slide_card_diagram(self, cards, arrow_text, style)
     
     def generate_slide_card_comparison(
         self,
@@ -166,6 +173,9 @@ class ModernGraphicsGenerator(BaseGenerator):
         cta: Optional[str] = None,
         background_variant: str = "light",
         visual_description: Optional[str] = None,
+        headline_align: str = "left",
+        subheadline_align: Optional[str] = None,
+        graphic_position: str = "center",
     ) -> str:
         """Generate the open modern hero layout."""
         return generate_modern_hero(
@@ -182,6 +192,9 @@ class ModernGraphicsGenerator(BaseGenerator):
             cta=cta,
             background_variant=background_variant,
             visual_description=visual_description,
+            headline_align=headline_align,
+            subheadline_align=subheadline_align,
+            graphic_position=graphic_position,
         )
 
     def generate_modern_hero_triptych(
@@ -191,6 +204,8 @@ class ModernGraphicsGenerator(BaseGenerator):
         columns: List[Dict[str, any]],
         stats: Optional[List[Dict[str, str]]] = None,
         eyebrow: Optional[str] = None,
+        headline_align: str = "left",
+        subheadline_align: Optional[str] = None,
     ) -> str:
         """Generate the triptych hero layout (manual → templates → outputs)."""
         return generate_modern_hero_triptych(
@@ -200,6 +215,8 @@ class ModernGraphicsGenerator(BaseGenerator):
             columns=columns,
             stats=stats,
             eyebrow=eyebrow,
+            headline_align=headline_align,
+            subheadline_align=subheadline_align,
         )
     
     def generate_story_slide(
@@ -215,7 +232,10 @@ class ModernGraphicsGenerator(BaseGenerator):
         hero_subheadline: Optional[str] = None,
         hero_prompt: Optional[str] = None,
         use_ai_hero: bool = True,
-        use_unified: bool = True
+        use_unified: bool = True,
+        top_tile_only: bool = False,
+        hero_use_svg_js: bool = False,
+        hero_variant: str = "auto"
     ) -> str:
         """Generate a story-driven slide
         
@@ -235,6 +255,9 @@ class ModernGraphicsGenerator(BaseGenerator):
             hero_prompt: Optional custom prompt for AI hero generation
             use_ai_hero: If True, use AI to generate hero content (default: True)
             use_unified: If True and prompt provided, use unified generator (default: True)
+            top_tile_only: If True, render only the top hero tile
+            hero_use_svg_js: Retained for backward compatibility (static tile by default)
+            hero_variant: "auto", "light", or "dark" to control hero styling
         """
         from .diagrams.story_slide import generate_story_slide as _generate
         return _generate(
@@ -250,7 +273,10 @@ class ModernGraphicsGenerator(BaseGenerator):
             hero_subheadline=hero_subheadline,
             hero_prompt=hero_prompt,
             use_ai_hero=use_ai_hero,
-            use_unified=use_unified
+            use_unified=use_unified,
+            top_tile_only=top_tile_only,
+            hero_use_svg_js=hero_use_svg_js,
+            hero_variant=hero_variant
         )
     
     def generate_creative_story_slide(

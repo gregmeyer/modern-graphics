@@ -12,35 +12,27 @@ def generate_flywheel_diagram(
     center_label: Optional[str] = None,
     radius: int = 220
 ) -> str:
-    """Generate a flywheel diagram (circular flow with elements arranged in a circle)"""
+    """Generate a flywheel diagram (circular flow with elements arranged in a circle) using SVG.js
+    
+    Requires generator.use_svg_js = True for proper rendering.
+    """
+    if not generator.use_svg_js:
+        # Fallback: enable SVG.js for flywheel diagrams
+        generator.use_svg_js = True
     num_elements = len(elements)
     angle_step = 360 / num_elements
-    center_radius = 80 if center_label else 0
-    viewbox_size = radius * 2 + 400
+    center_radius = 70 if center_label else 0
+    viewbox_size = radius * 2 + 450  # More padding for elegant spacing
     center_x = viewbox_size // 2
     center_y = viewbox_size // 2
     element_radius = radius
-    element_size = 140  # Size of each element box
+    element_size = 150  # Optimal size for readability and elegance
     
-    svg_elements = []
-    
-    # Use template colors instead of hardcoded colors
-    def get_color_from_template(color_key: str) -> str:
-        """Get color from template or fallback to default"""
-        color_def = generator.template.get_color(color_key)
-        # Extract a solid color from gradient (use first gradient color)
-        gradient = color_def.get("gradient", ("#8E8E93", "#8E8E93"))
-        if isinstance(gradient, tuple) and len(gradient) > 0:
-            return gradient[0]
-        return '#8E8E93'
-    
-    # Center circle if label provided
-    if center_label:
-        svg_elements.append(f'''
-                <circle cx="{center_x}" cy="{center_y}" r="{center_radius}" fill="#1D1D1F" opacity="0.95"/>
-                <circle cx="{center_x}" cy="{center_y}" r="{center_radius}" fill="none" stroke="#E5E5EA" stroke-width="2" opacity="0.5"/>
-                <text x="{center_x}" y="{center_y + 7}" font-family="Inter, -apple-system, sans-serif" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle" letter-spacing="-0.01em">{center_label}</text>
-            ''')
+    # Get template colors for elements
+    def get_color_from_template(color_key: str) -> tuple:
+        """Get gradient colors from template"""
+        grad_start, grad_end = generator.template.get_gradient(color_key)
+        return grad_start, grad_end
     
     # Calculate element positions in circle
     element_positions = []
@@ -59,101 +51,201 @@ def generate_flywheel_diagram(
             'element': element
         })
     
-    # Draw arrows between elements (circular flow - clockwise)
-    # For clockwise flow: arrow exits from right side of source node, enters left side of target node
-    arrow_offset = 8  # Small offset to ensure arrow is just outside the box edge
+    # Calculate arrow positions for all connections - elegant curved arrows
+    arrow_offset = 12  # Increased offset for cleaner look
+    arrows_data = []
     for i, pos in enumerate(element_positions):
         next_i = (i + 1) % len(element_positions)
         next_pos = element_positions[next_i]
         
-        # Calculate angles for arrow connection points
         start_angle_rad = math.radians(pos['angle'])
         end_angle_rad = math.radians(next_pos['angle'])
-        
-        # For clockwise flow, we need to find the right side of source and left side of target
-        # Right side of source: angle + 90 degrees (clockwise from outward direction)
-        # Left side of target: angle - 90 degrees (counter-clockwise from outward direction)
         half_box = element_size // 2
         
-        # Arrow starts from RIGHT side of current element (clockwise direction)
-        # Right side angle = element_angle + 90 degrees
+        # Arrow start (right side of current element, slightly outward)
         right_side_angle_rad = start_angle_rad + math.radians(90)
         arrow_start_x = pos['x'] + (half_box + arrow_offset) * math.cos(right_side_angle_rad)
         arrow_start_y = pos['y'] + (half_box + arrow_offset) * math.sin(right_side_angle_rad)
         
-        # Arrow ends at LEFT side of next element (clockwise direction)
-        # Left side angle = element_angle - 90 degrees
+        # Arrow end (left side of next element, slightly outward)
         left_side_angle_rad = end_angle_rad - math.radians(90)
         arrow_end_x = next_pos['x'] + (half_box + arrow_offset) * math.cos(left_side_angle_rad)
         arrow_end_y = next_pos['y'] + (half_box + arrow_offset) * math.sin(left_side_angle_rad)
         
-        # Calculate control points for clockwise arc (45° arc)
-        # The arc should curve outward (away from center) in a clockwise direction
-        # Use a 45-degree offset from the midpoint for smooth clockwise arc
+        # Calculate smooth arc using cubic bezier for more elegant curves
+        # Use two control points for smoother flow
         angle_diff = next_pos['angle'] - pos['angle']
-        # Normalize angle difference to [-180, 180]
         if angle_diff < -180:
             angle_diff += 360
         elif angle_diff > 180:
             angle_diff -= 360
         
-        # Mid angle for the arc (between the two element angles)
-        mid_angle_deg = pos['angle'] + angle_diff / 2
-        # Add 45 degrees for clockwise arc (curving outward)
-        arc_angle_deg = mid_angle_deg + 45
-        arc_angle_rad = math.radians(arc_angle_deg)
+        # First control point - curves outward smoothly
+        mid_angle_deg = pos['angle'] + angle_diff / 3
+        arc_angle_deg_1 = mid_angle_deg + 50  # Outward curve
+        arc_angle_rad_1 = math.radians(arc_angle_deg_1)
+        control_radius_1 = element_radius + 90  # Smooth outward curve
         
-        # Control point should be further out from center to create clockwise arc
-        # For clockwise, the control point should be at a larger radius
-        control_radius = element_radius + 80
+        # Second control point - continues the smooth curve
+        mid_angle_deg_2 = pos['angle'] + (angle_diff * 2 / 3)
+        arc_angle_deg_2 = mid_angle_deg_2 + 50
+        arc_angle_rad_2 = math.radians(arc_angle_deg_2)
+        control_radius_2 = element_radius + 90
         
-        cp1_x = center_x + control_radius * math.cos(arc_angle_rad)
-        cp1_y = center_y + control_radius * math.sin(arc_angle_rad)
+        cp1_x = center_x + control_radius_1 * math.cos(arc_angle_rad_1)
+        cp1_y = center_y + control_radius_1 * math.sin(arc_angle_rad_1)
+        cp2_x = center_x + control_radius_2 * math.cos(arc_angle_rad_2)
+        cp2_y = center_y + control_radius_2 * math.sin(arc_angle_rad_2)
         
-        # Use quadratic Bezier for smooth clockwise arc
-        svg_elements.append(f'''
-                <path d="M {arrow_start_x} {arrow_start_y} Q {cp1_x} {cp1_y}, {arrow_end_x} {arrow_end_y}" 
-                      fill="none" stroke="#C7C7CC" stroke-width="4" stroke-linecap="round" 
-                      marker-end="url(#arrowhead)" opacity="0.8"/>
-            ''')
+        # Calculate arrowhead direction (tangent to curve at end point)
+        # Use the direction from cp2 to end point
+        dx = arrow_end_x - cp2_x
+        dy = arrow_end_y - cp2_y
+        arrow_length = math.sqrt(dx*dx + dy*dy)
+        if arrow_length > 0:
+            arrow_dir_x = dx / arrow_length
+            arrow_dir_y = dy / arrow_length
+        else:
+            arrow_dir_x = 1
+            arrow_dir_y = 0
+        
+        # Arrowhead size
+        arrowhead_size = 12
+        arrowhead_width = 8
+        
+        # Calculate arrowhead triangle points
+        # Perpendicular to arrow direction
+        perp_x = -arrow_dir_y
+        perp_y = arrow_dir_x
+        
+        arrowhead_tip_x = arrow_end_x
+        arrowhead_tip_y = arrow_end_y
+        arrowhead_left_x = arrow_end_x - arrowhead_size * arrow_dir_x + arrowhead_width * perp_x
+        arrowhead_left_y = arrow_end_y - arrowhead_size * arrow_dir_y + arrowhead_width * perp_y
+        arrowhead_right_x = arrow_end_x - arrowhead_size * arrow_dir_x - arrowhead_width * perp_x
+        arrowhead_right_y = arrow_end_y - arrowhead_size * arrow_dir_y - arrowhead_width * perp_y
+        
+        arrows_data.append({
+            'start_x': arrow_start_x,
+            'start_y': arrow_start_y,
+            'end_x': arrow_end_x,
+            'end_y': arrow_end_y,
+            'cp1_x': cp1_x,
+            'cp1_y': cp1_y,
+            'cp2_x': cp2_x,
+            'cp2_y': cp2_y,
+            'arrowhead_tip_x': arrowhead_tip_x,
+            'arrowhead_tip_y': arrowhead_tip_y,
+            'arrowhead_left_x': arrowhead_left_x,
+            'arrowhead_left_y': arrowhead_left_y,
+            'arrowhead_right_x': arrowhead_right_x,
+            'arrowhead_right_y': arrowhead_right_y
+        })
     
-    # Create gradients for all colors used (using template colors)
-    gradient_defs = []
-    used_colors = set()
-    for pos in element_positions:
-        color_key = pos['element'].get('color', 'gray')
-        if color_key not in used_colors:
-            used_colors.add(color_key)
-            # Get gradient colors from template
-            grad_start, grad_end = generator.template.get_gradient(color_key)
-            gradient_id = f"gradient-{color_key}"
-            gradient_defs.append(f'''
-                    <linearGradient id="{gradient_id}" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:{grad_start};stop-opacity:0.25" />
-                        <stop offset="100%" style="stop-color:{grad_end};stop-opacity:0.1" />
-                    </linearGradient>
-                ''')
+    # Get colors for arrows (use primary color from template)
+    arrow_color = "#C7C7CC"  # Default, will be overridden by CSS if theme applied
     
-    # Draw element boxes with improved styling (using template colors)
-    for pos in element_positions:
+    # Generate SVG.js code
+    svg_js_parts = []
+    
+    # Draw arrows with arrowheads directly drawn at the end
+    svg_js_parts.append("""
+        // Draw all arrows with smooth cubic bezier curves and visible arrowheads
+        arrows.forEach(function(arrow, i) {
+            // Draw the curved path
+            const path = draw.path(`M ${arrow.start_x} ${arrow.start_y} C ${arrow.cp1_x} ${arrow.cp1_y}, ${arrow.cp2_x} ${arrow.cp2_y}, ${arrow.end_x} ${arrow.end_y}`)
+                .stroke({color: arrowColor, width: 3})
+                .fill('none')
+                .opacity(0.6);
+            
+            // Draw arrowhead triangle directly at the end
+            const arrowhead = draw.path(`M ${arrow.arrowhead_tip_x} ${arrow.arrowhead_tip_y} L ${arrow.arrowhead_left_x} ${arrow.arrowhead_left_y} L ${arrow.arrowhead_right_x} ${arrow.arrowhead_right_y} Z`)
+                .fill(arrowColor)
+                .opacity(0.8);
+        });
+    """)
+    
+    # Draw center circle if label provided
+    if center_label:
+        svg_js_parts.append(f"""
+            // Center circle
+            const centerCircle = draw.circle({center_radius * 2})
+                .move({center_x - center_radius}, {center_y - center_radius})
+                .fill('#1D1D1F')
+                .opacity(0.95);
+            
+            const centerCircleBorder = draw.circle({center_radius * 2})
+                .move({center_x - center_radius}, {center_y - center_radius})
+                .fill('none')
+                .stroke({{color: '#E5E5EA', width: 2}})
+                .opacity(0.5);
+            
+            const centerText = draw.text('{center_label}')
+                .move({center_x}, {center_y})
+                .font({{family: 'Inter, -apple-system, sans-serif', size: 20, weight: 'bold'}})
+                .fill('#FFFFFF')
+                .attr({{'text-anchor': 'middle', 'dominant-baseline': 'middle'}})
+                .attr('letter-spacing', '-0.01em');
+        """)
+    
+    # Draw element boxes with gradients
+    for i, pos in enumerate(element_positions):
         element = pos['element']
         color_key = element.get('color', 'gray')
-        # Get color from template gradient
-        grad_start, grad_end = generator.template.get_gradient(color_key)
-        color = grad_start  # Use first gradient color for stroke
-        gradient_id = f"gradient-{color_key}"
+        grad_start, grad_end = get_color_from_template(color_key)
         
-        # Element box with better styling
         box_x = pos['x'] - element_size // 2
         box_y = pos['y'] - element_size // 2
         
-        svg_elements.append(f'''
-                <rect x="{box_x}" y="{box_y}" width="{element_size}" height="{element_size}" 
-                      rx="16" fill="url(#{gradient_id})" stroke="{color}" stroke-width="3"/>
-                <text x="{pos['x']}" y="{pos['y'] + 6}" font-family="Inter, -apple-system, sans-serif" 
-                      font-size="18" font-weight="700" fill="#1D1D1F" 
-                      text-anchor="middle" dominant-baseline="middle" letter-spacing="-0.01em">{element['text']}</text>
-            ''')
+        # Escape text for JavaScript
+        element_text = element['text'].replace("'", "\\'").replace('"', '\\"')
+        
+        svg_js_parts.append(f"""
+            // Gradient for element {i}
+            const grad{i} = draw.gradient('linear', function(add) {{
+                add.stop(0, '{grad_start}').opacity(0.3);
+                add.stop(1, '{grad_end}').opacity(0.15);
+            }});
+            
+            // Element box {i} - elegant rounded rectangle
+            const box{i} = draw.rect({element_size}, {element_size})
+                .move({box_x}, {box_y})
+                .radius(18)
+                .fill(grad{i})
+                .stroke({{color: '{grad_start}', width: 2}})
+                .opacity(0.98);
+            
+            // Element text {i} - refined typography
+            const text{i} = draw.text('{element_text}')
+                .move({pos['x']}, {pos['y']})
+                .font({{family: 'Inter, -apple-system, sans-serif', size: 19, weight: 'bold'}})
+                .fill('#1D1D1F')
+                .attr({{'text-anchor': 'middle', 'dominant-baseline': 'middle'}})
+                .attr('letter-spacing', '-0.02em');
+        """)
+    
+    svg_js_code = '\n'.join(svg_js_parts)
+    
+    # Generate container and script
+    container_id = "flywheel-svg-container"
+    container_html = f'<div id="{container_id}" style="width: {viewbox_size}px; height: {viewbox_size}px; margin: 0 auto;"></div>'
+    
+    # Create the SVG.js initialization script with arrow data
+    arrows_json = str(arrows_data).replace("'", '"')
+    
+    script_html = f"""
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {{
+        const draw = SVG().addTo('#{container_id}').size({viewbox_size}, {viewbox_size});
+        
+        // Arrow data
+        const arrows = {arrows_json};
+        const arrowColor = '{arrow_color}';
+        
+        {svg_js_code}
+    }});
+    </script>
+    """
     
     css_content = f"""
         .flywheel-container {{
@@ -163,10 +255,9 @@ def generate_flywheel_diagram(
             margin: 60px auto;
         }}
         
-        .flywheel-svg {{
+        #{container_id} {{
             width: 100%;
             height: 100%;
-            pointer-events: none;
         }}
         
         .title {{
@@ -204,15 +295,8 @@ def generate_flywheel_diagram(
     <div class="wrapper">
         <div class="title">{generator.title}</div>
         <div class="flywheel-container">
-            <svg class="flywheel-svg" viewBox="0 0 {viewbox_size} {viewbox_size}" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
-                        <path d="M0 0 L12 6 L0 12 Z" fill="#8E8E93" opacity="0.8"/>
-                    </marker>
-                    {''.join(gradient_defs)}
-                </defs>
-                {''.join(svg_elements)}
-            </svg>
+            {container_html}
+            {script_html}
         </div>
         {generator._generate_attribution_html()}
     </div>

@@ -258,8 +258,18 @@ def generate_modern_hero(
     cta: Optional[str] = None,
     background_variant: str = "light",
     visual_description: Optional[str] = None,
+    headline_align: str = "left",
+    subheadline_align: Optional[str] = None,
+    graphic_position: str = "center",
 ) -> str:
-    """Produce an open hero layout with generous whitespace."""
+    """Produce an open hero layout with generous whitespace.
+    
+    Args:
+        headline_align: Text alignment for headline ('left', 'center', 'right'). Default: 'left'
+        subheadline_align: Text alignment for subheadline ('left', 'center', 'right'). 
+                          If None, uses headline_align. Default: None
+        graphic_position: Position of hero graphic ('left', 'center', 'right'). Default: 'center'
+    """
     background_class = "hero-light" if background_variant == "light" else "hero-dark"
     visual_desc = (visual_description or "").lower()
     curved_flow = "hero-flow-curved" if "curved arrow" in visual_desc or "curved flow" in visual_desc else ""
@@ -275,8 +285,29 @@ def generate_modern_hero(
         else ""
     )
     ribbon_collage = any(keyword in visual_desc for keyword in ["ribbon", "collage", "bezier"])
+    
+    # Normalize alignment values
+    headline_align = headline_align.lower() if headline_align else "left"
+    if headline_align not in ["left", "center", "right"]:
+        headline_align = "left"
+    
+    subheadline_align = (subheadline_align or headline_align).lower()
+    if subheadline_align not in ["left", "center", "right"]:
+        subheadline_align = headline_align
+    
+    # Normalize graphic position
+    graphic_position = graphic_position.lower() if graphic_position else "center"
+    if graphic_position not in ["left", "center", "right"]:
+        graphic_position = "center"
+    
+    # Add alignment classes
+    headline_align_class = f"headline-align-{headline_align}"
+    subheadline_align_class = f"subheadline-align-{subheadline_align}"
+    graphic_position_class = f"graphic-position-{graphic_position}"
+    
     hero_classes = " ".join(
-        cls for cls in [background_class, curved_flow, constellation_flow, glass_mode, warm_palette] if cls
+        cls for cls in [background_class, curved_flow, constellation_flow, glass_mode, warm_palette, 
+                       headline_align_class, subheadline_align_class, graphic_position_class] if cls
     )
     collage_html = ""
     flowchart_html = ""
@@ -331,10 +362,19 @@ def generate_modern_hero(
         .hero-dark .eyebrow { color: #c5c1ff; }
         .hero-warm .eyebrow { color: #c4530e; }
         .headline { font-size: 64px; font-weight: 600; letter-spacing: -0.025em; max-width: 900px; }
+        .headline-align-left { text-align: left; }
+        .headline-align-center { text-align: center; margin-left: auto; margin-right: auto; }
+        .headline-align-right { text-align: right; margin-left: auto; }
         .subhead { margin-top: 16px; max-width: 720px; font-size: 24px; color: #414555; }
+        .subheadline-align-left { text-align: left; }
+        .subheadline-align-center { text-align: center; margin-left: auto; margin-right: auto; }
+        .subheadline-align-right { text-align: right; margin-left: auto; }
         .hero-dark .subhead { color: #d4d0ff; }
         .hero-warm .subhead { color: #6e3510; }
         .hero-body { position: relative; z-index: 2; margin-top: 36px; }
+        .graphic-position-left .hero-body { display: flex; flex-direction: column; align-items: flex-start; }
+        .graphic-position-center .hero-body { display: flex; flex-direction: column; align-items: center; }
+        .graphic-position-right .hero-body { display: flex; flex-direction: column; align-items: flex-end; }
         .freeform-canvas { position: relative; width: 100%; margin-bottom: 32px; }
         .hero-dark .freeform-canvas { color: inherit; }
         .freeform-canvas .canvas-chip { background: rgba(255,255,255,0.9); border-radius: 28px; padding: 18px 32px; min-height: 72px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 18px 50px rgba(15,15,40,0.12); font-weight: 600; letter-spacing: -0.01em; color: #1F1F29; border: 1px solid rgba(0,0,0,0.04); text-align: center; }
@@ -419,10 +459,31 @@ def generate_modern_hero_triptych(
     columns: List[Dict[str, Any]],
     stats: Optional[List[Dict[str, str]]] = None,
     eyebrow: Optional[str] = None,
+    headline_align: str = "left",
+    subheadline_align: Optional[str] = None,
 ) -> str:
-    """Render the triptych hero layout (manual → templates → generated)."""
+    """Render the triptych hero layout (manual → templates → generated).
+    
+    Args:
+        headline_align: Text alignment for headline ('left', 'center', 'right'). Default: 'left'
+        subheadline_align: Text alignment for subheadline ('left', 'center', 'right'). 
+                          If None, uses headline_align. Default: None
+    """
     if len(columns) < 3:
         raise ValueError("modern hero triptych requires at least 3 columns")
+    
+    # Normalize alignment values
+    headline_align = headline_align.lower() if headline_align else "left"
+    if headline_align not in ["left", "center", "right"]:
+        headline_align = "left"
+    
+    subheadline_align = (subheadline_align or headline_align).lower()
+    if subheadline_align not in ["left", "center", "right"]:
+        subheadline_align = headline_align
+    
+    # Add alignment classes
+    headline_align_class = f"headline-align-{headline_align}"
+    subheadline_align_class = f"subheadline-align-{subheadline_align}"
 
     column_html = "".join(
         f"""
@@ -436,7 +497,7 @@ def generate_modern_hero_triptych(
     )
     stats_html = _render_stats(stats)
     html = f"""
-    <div class='hero hero-triptych'>
+    <div class='hero hero-triptych {headline_align_class} {subheadline_align_class}'>
         <svg class='soft-orbit' viewBox='0 0 900 900' aria-hidden='true'>
             <circle cx='450' cy='450' r='360' fill='url(#orbitGrad)' />
             <circle cx='450' cy='450' r='310' fill='none' stroke='rgba(120,118,141,0.12)' stroke-width='1.2' />
@@ -464,7 +525,13 @@ def generate_modern_hero_triptych(
         .hero-header { position: relative; z-index: 2; margin-bottom: 48px; }
         .eyebrow { text-transform: uppercase; letter-spacing: 0.2em; font-size: 13px; color: #8A8FA2; margin-bottom: 14px; }
         .headline { font-size: 60px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 18px; }
+        .hero-triptych .headline-align-left { text-align: left; }
+        .hero-triptych .headline-align-center { text-align: center; margin-left: auto; margin-right: auto; }
+        .hero-triptych .headline-align-right { text-align: right; margin-left: auto; }
         .subhead { max-width: 780px; font-size: 22px; color: #4B4E5F; }
+        .hero-triptych .subheadline-align-left { text-align: left; }
+        .hero-triptych .subheadline-align-center { text-align: center; margin-left: auto; margin-right: auto; }
+        .hero-triptych .subheadline-align-right { text-align: right; margin-left: auto; }
         .panels { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; position: relative; z-index: 2; }
         .panel { border-radius: 32px; padding: 32px; background: linear-gradient(180deg, #fcfcff, #f5f2fb); border: 1px solid rgba(21,24,36,0.06); box-shadow: 0 20px 60px rgba(44,44,76,0.08); min-height: 320px; display: flex; flex-direction: column; gap: 18px; }
         .panel:nth-child(2) { background: linear-gradient(180deg, #f7f2ff, #ece6ff); border-color: rgba(134,114,175,0.18); }

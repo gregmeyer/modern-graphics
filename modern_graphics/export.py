@@ -104,10 +104,24 @@ def export_html_to_png(
             
             # Wait for SVG elements if SVG.js is being used
             try:
+                # Wait for board game SVG (if present)
                 page.wait_for_function("""
                     () => {
                         const svg = document.querySelector('#board-game-container svg');
                         return svg && svg.children.length > 0;
+                    }
+                """, timeout=3000).catch(lambda: None)
+                
+                # Wait for slide card SVG elements (if present)
+                page.wait_for_function("""
+                    () => {
+                        const mockupDivs = document.querySelectorAll('[id^="mockup-"]');
+                        if (mockupDivs.length === 0) return true; // No slide cards, continue
+                        for (const div of mockupDivs) {
+                            const svg = div.querySelector('svg');
+                            if (!svg || svg.children.length === 0) return false;
+                        }
+                        return true;
                     }
                 """, timeout=3000).catch(lambda: None)
             except:
@@ -147,7 +161,54 @@ def export_html_to_png(
                     return document.querySelector('.story-driven-container') !== null;
                 }""")
                 
-                if is_story_slide:
+                # Check if this is a slide card diagram
+                is_slide_cards = page.evaluate("""() => {
+                    return document.querySelector('.slide-cards-container') !== null || 
+                           document.querySelector('.slide-comparison-container') !== null;
+                }""")
+                
+                # Check if this is a cycle diagram
+                is_cycle = page.evaluate("""() => {
+                    return document.querySelector('.cycle-container') !== null;
+                }""")
+                
+                # Check if this is a comparison diagram
+                is_comparison = page.evaluate("""() => {
+                    return document.querySelector('.comparison') !== null;
+                }""")
+                
+                # Check if this is a timeline diagram
+                is_timeline = page.evaluate("""() => {
+                    return document.querySelector('.timeline-container') !== null || 
+                           document.querySelector('.timeline') !== null;
+                }""")
+                
+                # Check if this is a grid diagram
+                is_grid = page.evaluate("""() => {
+                    return document.querySelector('.tests-grid') !== null || 
+                           document.querySelector('.container') !== null;
+                }""")
+                
+                # Check if this is a flywheel diagram
+                is_flywheel = page.evaluate("""() => {
+                    return document.querySelector('.flywheel-container') !== null;
+                }""")
+                
+                if is_slide_cards:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.slide-cards-container') || 
+                                         document.querySelector('.slide-comparison-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_story_slide:
                     content_bbox = page.evaluate("""() => {
                         const container = document.querySelector('.story-slide-container');
                         if (!container) return null;
@@ -212,6 +273,88 @@ def export_html_to_png(
                             height: containerRect.height
                         };
                     }""")
+                elif is_cycle:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.cycle-container');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_comparison:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.comparison');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_timeline:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.timeline-container') || 
+                                         document.querySelector('.wrapper');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_grid:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.container') || 
+                                         document.querySelector('.wrapper');
+                        if (!container) return null;
+                        
+                        const containerRect = container.getBoundingClientRect();
+                        return {
+                            x: containerRect.left,
+                            y: containerRect.top,
+                            width: containerRect.width,
+                            height: containerRect.height
+                        };
+                    }""")
+                elif is_flywheel:
+                    content_bbox = page.evaluate("""() => {
+                        const flywheel = document.querySelector('.flywheel-container');
+                        const wrapper = document.querySelector('.wrapper');
+                        const title = wrapper ? wrapper.querySelector('.title') : null;
+                        const attribution = wrapper ? wrapper.querySelector('.attribution') : null;
+                        
+                        const elements = [flywheel, title, attribution].filter(Boolean);
+                        if (elements.length === 0) return null;
+                        
+                        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                        elements.forEach(el => {
+                            const rect = el.getBoundingClientRect();
+                            minX = Math.min(minX, rect.left);
+                            minY = Math.min(minY, rect.top);
+                            maxX = Math.max(maxX, rect.right);
+                            maxY = Math.max(maxY, rect.bottom);
+                        });
+                        
+                        if (minX === Infinity) return null;
+                        
+                        return {
+                            x: minX,
+                            y: minY,
+                            width: maxX - minX,
+                            height: maxY - minY
+                        };
+                    }""")
                 else:
                     content_bbox = None
                 
@@ -234,7 +377,7 @@ def export_html_to_png(
                     temp_png_path.unlink()
                 else:
                     # Fallback: try to find bounding box from elements
-                    if not is_story_slide and not is_hero_card and not is_data_card and not is_infographic and not is_story_driven:
+                    if not is_story_slide and not is_hero_card and not is_data_card and not is_infographic and not is_story_driven and not is_slide_cards and not is_cycle and not is_comparison and not is_timeline and not is_grid and not is_flywheel:
                         bbox = page.evaluate("""() => {
                     const elements = [
                         ...document.querySelectorAll('.step'),

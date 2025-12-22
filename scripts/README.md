@@ -1,11 +1,11 @@
 # Scripts Directory
 
-This directory contains all example and utility scripts for the Modern Graphics library.
+This directory contains utility scripts and advanced examples for the Modern Graphics library.
 
 ## Structure
 
-- **Example Scripts** - Demonstrate library features and usage
-- **Utility Scripts** - Maintenance and helper scripts
+- **Utility Scripts** - Maintenance, testing, and helper scripts
+- **Example Scripts** - Advanced examples (see [Examples Directory](../examples/) for organized examples)
 - **`prompts/`** - Prompt management utilities
 
 ## Running Scripts
@@ -32,36 +32,35 @@ All scripts automatically create output directories as needed.
 
 ## Script Categories
 
-### Example Scripts (No AI Required)
-- `all_diagram_types.py` - Generate all diagram types
-- `attribution_examples.py` - Attribution examples
-- `attribution_customization.py` - Attribution customization
-- `batch_generation.py` - Batch generation examples
-- `combo_chart_example.py` - Combo chart examples
-- `custom_diagram.py` - Custom diagram examples
-- `custom_template.py` - Custom template examples
-- `export_options.py` - Export options examples
-
-### AI-Assisted Examples (Require OpenAI API Key)
-- `ai_assisted_template.py` - AI template creation
-- `interactive_template_creation.py` - Interactive template creation
-- `interview_with_prompt_example.py` - Interview with prompts
-- `story_slide_with_prompt.py` - Story slides with prompts
-- `temperature_effects_demo.py` - Temperature effects demo
-
-### Use Case Examples (Require OpenAI API Key)
-- `use_case_corporate.py` - Corporate use case
-- `use_case_creative.py` - Creative use case
-- `use_case_education.py` - Education use case
-- `use_case_healthcare.py` - Healthcare use case
-- `use_case_tech_startup.py` - Tech startup use case
-- `run_all_use_cases.py` - Run all use cases
-
 ### Utility Scripts
-- `run_showcase.py` - Generate showcase examples for README
-- `aggregate_prompts.py` - Aggregate prompts for evaluation
-- `model_comparison_test.py` - Compare model outputs
-- `prompt_storage.py` - Prompt storage utility (imported by other scripts)
+
+**Maintenance and helper scripts:**
+
+- **`run_showcase.py`** - Generate showcase examples for README
+  - Regenerates all showcase graphics in `examples/output/showcase/`
+  - Used for documentation and examples gallery
+
+- **`aggregate_prompts.py`** - Aggregate prompts for evaluation
+  - Collects prompts from all use case scripts
+  - Utility for prompt analysis and evaluation
+
+- **`model_comparison_test.py`** - Compare model outputs
+  - Tests different OpenAI models side-by-side
+  - Useful for model selection and quality comparison
+
+- **`prompt_storage.py`** - Prompt storage utility
+  - Shared utility class for prompt storage
+  - Imported by example scripts
+
+### Example Scripts
+
+**Note:** For organized examples by category, see **[Examples Directory](../examples/)**.
+
+These scripts demonstrate library features:
+
+- **Basic Examples** (No AI): `all_diagram_types.py`, `attribution_examples.py`, `export_options.py`, etc.
+- **AI Examples** (Require OpenAI): `ai_assisted_template.py`, `story_slide_with_prompt.py`, etc.
+- **Use Cases** (Require OpenAI): `use_case_*.py`, `run_all_use_cases.py`
 
 ### Prompt Utilities (`prompts/` subdirectory)
 - `prompt_builder.py` - Build prompts programmatically

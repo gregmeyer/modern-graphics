@@ -41,9 +41,36 @@ ACCENT_MAP = {
 def generate_slide_card_diagram(
     generator: BaseGenerator,
     cards: List[Dict[str, any]],
-    arrow_text: str = "→"
+    arrow_text: str = "→",
+    style: str = "default"
 ) -> str:
-    """Generate a horizontal slide card diagram showing transformation/evolution"""
+    """Generate a horizontal slide card diagram showing transformation/evolution
+    
+    Args:
+        generator: BaseGenerator instance
+        cards: List of card dictionaries. Each card can have:
+            - title: Card title
+            - tagline: Card tagline
+            - subtext: Card subtext
+            - color: Color key ('blue', 'green', 'purple', 'gray')
+            - features: List of feature strings
+            - badge: Badge text
+            - custom_mockup: Optional custom SVG or SVG.js code for mockup
+        arrow_text: Text to display between cards
+        style: Layout style - 'default' (vertical cards) or 'lower_third' (horizontal bar style)
+    
+    Args:
+        generator: BaseGenerator instance
+        cards: List of card dictionaries. Each card can have:
+            - title: Card title
+            - tagline: Card tagline
+            - subtext: Card subtext
+            - color: Color key ('blue', 'green', 'purple', 'gray')
+            - features: List of feature strings
+            - badge: Badge text
+            - custom_mockup: Optional custom SVG or SVG.js code for mockup
+        arrow_text: Text to display between cards
+    """
     cards_html = []
     cards_css = []
     
@@ -55,6 +82,7 @@ def generate_slide_card_diagram(
         color_key = card.get('color', 'gray')
         features = card.get('features', [])
         badge = card.get('badge', '')
+        custom_mockup = card.get('custom_mockup', None)
         
         palette = ACCENT_MAP.get(color_key, ACCENT_MAP['gray'])
         
@@ -74,8 +102,22 @@ def generate_slide_card_diagram(
             color: {palette['accent']};
         }}""")
         
-        # Generate SVG mockup based on card type
-        svg_mockup = generate_slide_mockup(title, color_key)
+        # Generate SVG mockup - use custom if provided, otherwise default
+        if custom_mockup:
+            if generator.use_svg_js and not custom_mockup.strip().startswith('<'):
+                # SVG.js code - wrap in script tag
+                mockup_id = f'mockup-{card_id}'
+                # Adjust SVG size based on style: landscape for lower_third, portrait for default
+                if style == "lower_third":
+                    svg_width, svg_height = 400, 200  # Landscape for lower third
+                else:
+                    svg_width, svg_height = 240, 140  # Portrait for default
+                svg_mockup = f'<div id="{mockup_id}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div><script>(function(){{const draw = SVG().addTo("#{mockup_id}").size({svg_width}, {svg_height});{custom_mockup}}})();</script>'
+            else:
+                # Raw SVG string
+                svg_mockup = custom_mockup
+        else:
+            svg_mockup = generate_slide_mockup(title, color_key)
         
         # Generate HTML for this card
         badge_html = f'<div class="card-badge">{badge}</div>' if badge else ''
@@ -87,7 +129,22 @@ def generate_slide_card_diagram(
                 features_html += f'<div class="card-feature">{feature}</div>'
             features_html += '</div>'
         
-        cards_html.append(f"""
+        # Lower third style: graphic on top 2/3, text on bottom 1/3
+        if style == "lower_third":
+            cards_html.append(f"""
+            <div class="slide-card slide-card-lower-third {card_id}">
+                {badge_html}
+                <div class="card-mockup">{svg_mockup}</div>
+                <div class="card-text-content">
+                    <div class="card-title">{title}</div>
+                    <div class="card-tagline">{tagline}</div>
+                    <div class="card-subtext">{subtext}</div>
+                    {features_html}
+                </div>
+            </div>""")
+        else:
+            # Default style: vertical layout
+            cards_html.append(f"""
             <div class="slide-card {card_id}">
                 {badge_html}
                 <div class="card-title">{title}</div>
@@ -198,11 +255,25 @@ def generate_slide_card_diagram(
             background: rgba(255, 255, 255, 0.6);
             border-radius: 8px;
             overflow: hidden;
+            position: relative;
+        }}
+        
+        .card-mockup > div {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
         }}
         
         .card-mockup svg {{
             width: 100%;
             height: 100%;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            max-height: 100%;
         }}
         
         .card-subtext {{
@@ -235,6 +306,81 @@ def generate_slide_card_diagram(
             flex-shrink: 0;
         }}
         
+        /* Lower third style: graphic top 2/3, text bottom 1/3 */
+        .slide-card-lower-third {{
+            padding: 0 !important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 320px;
+            max-width: 400px;
+        }}
+        
+        .slide-card-lower-third .card-mockup {{
+            width: 100%;
+            height: 0;
+            padding-bottom: 66.67%; /* 2/3 aspect ratio */
+            margin-bottom: 0;
+            flex-shrink: 0;
+            border-radius: 16px 16px 0 0;
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .slide-card-lower-third .card-mockup > div {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        
+        .slide-card-lower-third .card-mockup svg {{
+            width: 100%;
+            height: 100%;
+            display: block;
+        }}
+        
+        .slide-card-lower-third .card-text-content {{
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-height: 33.33%; /* Bottom 1/3 */
+        }}
+        
+        .slide-card-lower-third .card-title {{
+            font-size: 20px;
+            margin-bottom: 4px;
+        }}
+        
+        .slide-card-lower-third .card-tagline {{
+            font-size: 16px;
+            margin-bottom: 6px;
+        }}
+        
+        .slide-card-lower-third .card-subtext {{
+            font-size: 13px;
+            margin-bottom: 10px;
+        }}
+        
+        .slide-card-lower-third .card-features {{
+            gap: 4px;
+        }}
+        
+        .slide-card-lower-third .card-feature {{
+            font-size: 12px;
+        }}
+        
+        .slide-card-lower-third .card-badge {{
+            top: 12px;
+            right: 12px;
+        }}
+        
         {''.join(cards_css)}
         
         {ATTRIBUTION_STYLES}
@@ -261,7 +407,14 @@ def generate_slide_card_comparison(
     right_card: Dict[str, any],
     vs_text: str = "→"
 ) -> str:
-    """Generate a side-by-side slide card comparison"""
+    """Generate a side-by-side slide card comparison
+    
+    Args:
+        generator: BaseGenerator instance
+        left_card: Left card dictionary (same structure as cards in generate_slide_card_diagram)
+        right_card: Right card dictionary (same structure as cards in generate_slide_card_diagram)
+        vs_text: Text to display between cards
+    """
     
     def generate_card_html(card: Dict[str, any], card_class: str) -> str:
         title = card.get('title', '')
@@ -269,11 +422,21 @@ def generate_slide_card_comparison(
         color_key = card.get('color', 'gray')
         features = card.get('features', [])
         badge = card.get('badge', '')
+        custom_mockup = card.get('custom_mockup', None)
         
         palette = ACCENT_MAP.get(color_key, ACCENT_MAP['gray'])
         
-        # Generate SVG mockup
-        svg_mockup = generate_slide_mockup(title, color_key)
+        # Generate SVG mockup - use custom if provided, otherwise default
+        if custom_mockup:
+            if generator.use_svg_js and not custom_mockup.strip().startswith('<'):
+                # SVG.js code - wrap in script tag
+                mockup_id = f'mockup-{card_class}'
+                svg_mockup = f'<div id="{mockup_id}" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"></div><script>(function(){{const draw = SVG().addTo("#{mockup_id}").size(240, 140);{custom_mockup}}})();</script>'
+            else:
+                # Raw SVG string
+                svg_mockup = custom_mockup
+        else:
+            svg_mockup = generate_slide_mockup(title, color_key)
         
         badge_html = f'<div class="card-badge">{badge}</div>' if badge else ''
         
@@ -393,9 +556,19 @@ def generate_slide_card_comparison(
             overflow: hidden;
         }}
         
+        .slide-card .card-mockup > div {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }}
+        
         .slide-card .card-mockup svg {{
             width: 100%;
             height: 100%;
+            display: block;
+            margin: 0 auto;
         }}
         
         .card-features {{
