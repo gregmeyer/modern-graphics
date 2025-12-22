@@ -416,7 +416,7 @@ def generate_story_slide(
         <text x="700" y="310" font-family="-apple-system" font-size="20" font-weight="600" fill="rgba(255,255,255,0.85)" text-anchor="middle">Dynamic Output</text>
         <text x="700" y="330" font-family="-apple-system" font-size="15" font-weight="500" fill="rgba(255,255,255,0.65)" text-anchor="middle">Slides that evolve with your story</text>
     </svg>"""
-    
+
     # Generate evolution timeline HTML
     evolution_html = ''
     for i, stage in enumerate(evolution_data):
@@ -429,8 +429,6 @@ def generate_story_slide(
             </div>"""
         if not is_last:
             evolution_html += '<div class="evolution-arrow">→</div>'
-    
-
     
     # Generate SVG icons for story elements - avoiding clichés, forward-looking
     what_changed_icon = """<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
@@ -455,7 +453,7 @@ def generate_story_slide(
         <text x="60" y="65" font-family="-apple-system" font-size="13" font-weight="700" fill="#8243B5" text-anchor="middle">2024</text>
     </svg>"""
     
-what_it_means_icon = """<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    what_it_means_icon = """<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
         <!-- Forward-looking: Focus shift visualization -->
         <rect x="20" y="25" width="25" height="18" rx="3" fill="#8E8E93" opacity="0.2" stroke="#8E8E93" stroke-width="2"/>
         <path d="M 50 34 L 60 34" stroke="#8243B5" stroke-width="3" stroke-linecap="round"/>
@@ -466,134 +464,6 @@ what_it_means_icon = """<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/s
         <path d="M 65 45 L 70 50 L 65 55" stroke="#1B7A4E" stroke-width="3" fill="none" stroke-linecap="round"/>
     </svg>"""
 
-
-def _default_story_cards(
-    what_changed: str,
-    time_period: str,
-    what_it_means: str,
-    what_changed_icon: str,
-    time_period_icon: str,
-    what_it_means_icon: str
-) -> List[Dict[str, Any]]:
-    return [
-        {
-            "type": "insight",
-            "label": "What Changed",
-            "value": what_changed,
-            "icon": what_changed_icon,
-            "background": "linear-gradient(135deg, #EBF5FF 0%, #E3F2FD 100%)",
-            "border_color": "rgba(11, 100, 208, 0.2)"
-        },
-        {
-            "type": "insight",
-            "label": "Time Period",
-            "value": time_period,
-            "icon": time_period_icon,
-            "background": "linear-gradient(135deg, #F5F5F7 0%, #F5F5F7 100%)",
-            "border_color": "rgba(58, 58, 60, 0.15)"
-        },
-        {
-            "type": "insight",
-            "label": "What It Means",
-            "value": what_it_means,
-            "icon": what_it_means_icon,
-            "background": "linear-gradient(135deg, #F0F9F4 0%, #E8F5E9 100%)",
-            "border_color": "rgba(27, 122, 78, 0.2)"
-        }
-    ]
-
-
-def _render_story_card_module(
-    module: Dict[str, Any],
-    variant: str = "default"
-) -> str:
-    module_type = module.get("type", "insight")
-    if module_type == "funnel":
-        return _render_funnel_card(module, variant)
-    if module_type == "pyramid":
-        return _render_pyramid_card(module, variant)
-    return _render_insight_card(module, variant)
-
-
-def _render_insight_card(module: Dict[str, Any], variant: str) -> str:
-    background = module.get("background", "#FFFFFF")
-    border_color = module.get("border_color", "rgba(0, 0, 0, 0.06)")
-    icon_html = f'<div class="story-card-icon">{module.get("icon", "")}</div>' if module.get("icon") else ""
-    value = module.get("value", "")
-    label = module.get("label", "")
-    return f"""
-        <div class="story-card story-card--insight story-card--{variant}" style="background:{background}; border: 2px solid {border_color};">
-            {icon_html}
-            <div class="story-card-label">{label}</div>
-            <div class="story-card-value">{value}</div>
-        </div>
-    """
-
-
-def _render_funnel_card(module: Dict[str, Any], variant: str) -> str:
-    stages = module.get("stages") or [
-        {"label": "Awareness", "value": 1500},
-        {"label": "Consideration", "value": 780},
-        {"label": "Decision", "value": 340},
-        {"label": "Won", "value": 180}
-    ]
-    max_value = max(stage.get("value", 0) for stage in stages) or 1
-    min_width = 40
-    max_width = 92
-    step = (max_width - min_width) / max(len(stages) - 1, 1)
-    stage_rows = []
-    for idx, stage in enumerate(stages):
-        width_pct = max_width - idx * step
-        pct = (stage.get("value", 0) / max_value) * 100
-        stage_rows.append(f"""
-            <div class="story-card-funnel-stage" style="width:{width_pct}%">
-                <span>{stage.get("label")}</span>
-                <strong>{pct:.0f}%</strong>
-            </div>
-        """)
-    title = module.get("title", "Conversion Funnel")
-    subtitle = module.get("subtitle", "Drop-off per stage")
-    return f"""
-        <div class="story-card story-card--funnel story-card--{variant}">
-            <div class="story-card-title">{title}</div>
-            <div class="story-card-subtitle">{subtitle}</div>
-            <div class="story-card-funnel">
-                {''.join(stage_rows)}
-            </div>
-        </div>
-    """
-
-
-def _render_pyramid_card(module: Dict[str, Any], variant: str) -> str:
-    layers = module.get("layers") or [
-        {"label": "Vision"},
-        {"label": "Strategy"},
-        {"label": "Execution"},
-        {"label": "Impact"}
-    ]
-    max_width = 95
-    min_width = 55
-    step = (max_width - min_width) / max(len(layers) - 1, 1)
-    rows = []
-    for idx, layer in enumerate(layers):
-        width_pct = max_width - idx * step
-        rows.append(f"""
-            <div class="story-card-pyramid-layer" style="width:{width_pct}%">
-                <span>{layer.get("label")}</span>
-            </div>
-        """)
-    title = module.get("title", "Priority Stack")
-    subtitle = module.get("subtitle", "Top initiatives")
-    return f"""
-        <div class="story-card story-card--pyramid story-card--{variant}">
-            <div class="story-card-title">{title}</div>
-            <div class="story-card-subtitle">{subtitle}</div>
-            <div class="story-card-pyramid">
-                {''.join(rows)}
-            </div>
-        </div>
-    """
-    
     template = getattr(generator, 'template', generator.template)
     resolved_hero_variant = _determine_hero_variant(hero_variant, template)
     hero_grad_start, hero_grad_end = template.get_gradient('purple')
@@ -759,116 +629,89 @@ def _render_pyramid_card(module: Dict[str, Any], variant: str) -> str:
             width: 100%;
             display: flex;
             justify-content: center;
-            padding-top: 16px;
-            z-index: 1;
+            position: relative;
         }}
         
         .hero-slide-mockup {{
             width: 100%;
             max-width: 720px;
-            margin: 0 auto;
-            padding: 18px 28px 12px;
-            background: {tile_wrapper_tint};
+            padding: 24px;
             border-radius: 28px;
+            background: {tile_wrapper_tint};
+            box-shadow: {tile_card_shadow};
+            position: relative;
+        }}
+        
+        .hero-mockup-wrapper {{
+            position: relative;
         }}
         
         .hero-mini-tile-svg {{
             width: 100%;
-            height: auto;
-            display: block;
-        }}
-        
-        .hero-slide-mockup .hero-mockup-wrapper {{
-            width: 100%;
             max-width: 640px;
+            display: block;
             margin: 0 auto;
-            background: {tile_card_bg};
-            border-radius: 28px;
-            padding: 18px;
-            border: 1px solid {tile_card_border};
-            box-shadow: {tile_card_shadow};
+            filter: drop-shadow(0 35px 50px rgba(0,0,0,0.15));
         }}
         
         .hero-mockup-cards {{
-            margin-top: 18px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-top: 28px;
         }}
         
-        .hero-mockup-cards .story-card {{
-            margin: 0;
-            color: {hero_text_primary};
-            border: 1px solid {tile_card_border};
+        .story-card {{
+            border-radius: 24px;
+            padding: 24px;
             background: {tile_card_bg};
+            border: 1px solid {tile_card_border};
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
         }}
         
-        .hero-mockup-cards .story-card-subtitle {{
-            color: {hero_text_secondary};
+        .story-card--compact {{
+            padding: 18px;
+            border-radius: 20px;
+        }}
+        
+        .story-card-label {{
+            font-size: 14px;
+            font-weight: 600;
+            color: {tile_text_secondary};
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }}
+        
+        .story-card-value {{
+            font-size: 20px;
+            font-weight: 700;
+            color: {tile_text_primary};
+            line-height: 1.4;
         }}
         
         .story-framework-section {{
-            padding: 80px 100px;
-            background: #FFFFFF;
+            background: {body_background};
+            padding: 80px 80px 0;
         }}
         
         .story-framework {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 32px;
-            margin-bottom: 60px;
-        }}
-        
-        .story-card {{
-            background: #FFFFFF;
-            border-radius: 24px;
-            padding: 32px 28px;
-            border: 1px solid rgba(15, 23, 42, 0.08);
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.12);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            min-height: 220px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }}
-        
-        .story-card:hover {{
-            transform: translateY(-6px);
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-        }}
-        
-        .story-card--compact {{
-            min-height: auto;
-            padding: 20px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
         }}
         
         .story-card-icon {{
-            width: 72px;
-            height: 72px;
-            margin: 0 auto 12px;
-        }}
-        
-        .story-card-icon svg {{
-            width: 100%;
-            height: 100%;
-        }}
-        
-        .story-card-label {{
-            font-size: 12px;
-            font-weight: 600;
-            color: #8E8E93;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            text-align: center;
-        }}
-        
-        .story-card-value {{
-            font-size: 28px;
-            font-weight: 700;
-            color: #1D1D1F;
-            letter-spacing: -0.02em;
-            text-align: center;
+            font-size: 18px;
+            width: 44px;
+            height: 44px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
         }}
         
         .story-card-title {{
@@ -1058,7 +901,6 @@ def _render_pyramid_card(module: Dict[str, Any], variant: str) -> str:
             <div class="insight-label">The Core Insight</div>
             <div class="insight-text">{insight}</div>
         </div>"""
-    
     html_content = f"""
     <div class="{container_classes}">
 {hero_section_html}
@@ -1069,3 +911,132 @@ def _render_pyramid_card(module: Dict[str, Any], variant: str) -> str:
         """
     
     return generator._wrap_html(html_content, css_content)
+
+
+    
+def _default_story_cards(
+    what_changed: str,
+    time_period: str,
+    what_it_means: str,
+    what_changed_icon: str,
+    time_period_icon: str,
+    what_it_means_icon: str
+) -> List[Dict[str, Any]]:
+    return [
+        {
+            "type": "insight",
+            "label": "What Changed",
+            "value": what_changed,
+            "icon": what_changed_icon,
+            "background": "linear-gradient(135deg, #EBF5FF 0%, #E3F2FD 100%)",
+            "border_color": "rgba(11, 100, 208, 0.2)"
+        },
+        {
+            "type": "insight",
+            "label": "Time Period",
+            "value": time_period,
+            "icon": time_period_icon,
+            "background": "linear-gradient(135deg, #F5F5F7 0%, #F5F5F7 100%)",
+            "border_color": "rgba(58, 58, 60, 0.15)"
+        },
+        {
+            "type": "insight",
+            "label": "What It Means",
+            "value": what_it_means,
+            "icon": what_it_means_icon,
+            "background": "linear-gradient(135deg, #F0F9F4 0%, #E8F5E9 100%)",
+            "border_color": "rgba(27, 122, 78, 0.2)"
+        }
+    ]
+
+
+def _render_story_card_module(
+    module: Dict[str, Any],
+    variant: str = "default"
+) -> str:
+    module_type = module.get("type", "insight")
+    if module_type == "funnel":
+        return _render_funnel_card(module, variant)
+    if module_type == "pyramid":
+        return _render_pyramid_card(module, variant)
+    return _render_insight_card(module, variant)
+
+
+def _render_insight_card(module: Dict[str, Any], variant: str) -> str:
+    background = module.get("background", "#FFFFFF")
+    border_color = module.get("border_color", "rgba(0, 0, 0, 0.06)")
+    icon_html = f'<div class="story-card-icon">{module.get("icon", "")}</div>' if module.get("icon") else ""
+    value = module.get("value", "")
+    label = module.get("label", "")
+    return f"""
+        <div class="story-card story-card--insight story-card--{variant}" style="background:{background}; border: 2px solid {border_color};">
+            {icon_html}
+            <div class="story-card-label">{label}</div>
+            <div class="story-card-value">{value}</div>
+        </div>
+    """
+
+
+def _render_funnel_card(module: Dict[str, Any], variant: str) -> str:
+    stages = module.get("stages") or [
+        {"label": "Awareness", "value": 1500},
+        {"label": "Consideration", "value": 780},
+        {"label": "Decision", "value": 340},
+        {"label": "Won", "value": 180}
+    ]
+    max_value = max(stage.get("value", 0) for stage in stages) or 1
+    min_width = 40
+    max_width = 92
+    step = (max_width - min_width) / max(len(stages) - 1, 1)
+    stage_rows = []
+    for idx, stage in enumerate(stages):
+        width_pct = max_width - idx * step
+        pct = (stage.get("value", 0) / max_value) * 100
+        stage_rows.append(f"""
+            <div class="story-card-funnel-stage" style="width:{width_pct}%">
+                <span>{stage.get("label")}</span>
+                <strong>{pct:.0f}%</strong>
+            </div>
+        """)
+    title = module.get("title", "Conversion Funnel")
+    subtitle = module.get("subtitle", "Drop-off per stage")
+    return f"""
+        <div class="story-card story-card--funnel story-card--{variant}">
+            <div class="story-card-title">{title}</div>
+            <div class="story-card-subtitle">{subtitle}</div>
+            <div class="story-card-funnel">
+                {''.join(stage_rows)}
+            </div>
+        </div>
+    """
+
+
+def _render_pyramid_card(module: Dict[str, Any], variant: str) -> str:
+    layers = module.get("layers") or [
+        {"label": "Vision"},
+        {"label": "Strategy"},
+        {"label": "Execution"},
+        {"label": "Impact"}
+    ]
+    max_width = 95
+    min_width = 55
+    step = (max_width - min_width) / max(len(layers) - 1, 1)
+    rows = []
+    for idx, layer in enumerate(layers):
+        width_pct = max_width - idx * step
+        rows.append(f"""
+            <div class="story-card-pyramid-layer" style="width:{width_pct}%">
+                <span>{layer.get("label")}</span>
+            </div>
+        """)
+    title = module.get("title", "Priority Stack")
+    subtitle = module.get("subtitle", "Top initiatives")
+    return f"""
+        <div class="story-card story-card--pyramid story-card--{variant}">
+            <div class="story-card-title">{title}</div>
+            <div class="story-card-subtitle">{subtitle}</div>
+            <div class="story-card-pyramid">
+                {''.join(rows)}
+            </div>
+        </div>
+    """
