@@ -49,14 +49,22 @@ class BaseGenerator:
     def _wrap_html(self, content: str, styles: str) -> str:
         """Wrap content in full HTML document using template styles"""
         # Extract font family name for Google Fonts link (simplified)
-        font_name = self.template.font_family.split("'")[1] if "'" in self.template.font_family else "Inter"
+        if hasattr(self.template, 'font_family') and self.template.font_family:
+            font_name = self.template.font_family.split("'")[1] if "'" in self.template.font_family else "Inter"
+        else:
+            font_name = "Inter"
         
         # Inject template's background_color and font_family into base_styles
         # Always apply template styles, overriding any existing values
-        base_styles = self.template.base_styles
+        if hasattr(self.template, 'base_styles'):
+            base_styles = self.template.base_styles
+        else:
+            base_styles = ""
         
         # Apply template styles more robustly - handle both cases where body selector exists and doesn't
-        if self.template.background_color or self.template.font_family:
+        template_bg = getattr(self.template, 'background_color', None)
+        template_font = getattr(self.template, 'font_family', None)
+        if template_bg or template_font:
             # Try to find and replace body selector
             body_match = re.search(r'body\s*\{([^}]*)\}', base_styles, flags=re.IGNORECASE | re.DOTALL)
             
@@ -65,24 +73,24 @@ class BaseGenerator:
                 body_content = body_match.group(1)
                 
                 # Remove existing background declarations
-                if self.template.background_color:
+                if template_bg:
                     body_content = re.sub(r'background(-color)?\s*:\s*[^;]+;', '', body_content, flags=re.IGNORECASE)
-                    body_content += f'\n            background: {self.template.background_color};'
+                    body_content += f'\n            background: {template_bg};'
                 
                 # Remove existing font-family declarations
-                if self.template.font_family:
+                if template_font:
                     body_content = re.sub(r'font-family\s*:\s*[^;]+;', '', body_content, flags=re.IGNORECASE)
-                    body_content += f'\n            font-family: {self.template.font_family};'
+                    body_content += f'\n            font-family: {template_font};'
                 
                 # Replace the body selector with updated content
                 base_styles = base_styles[:body_match.start()] + f'body {{{body_content}\n        }}' + base_styles[body_match.end():]
             else:
                 # Body selector doesn't exist - append it
                 template_overrides = []
-                if self.template.background_color:
-                    template_overrides.append(f'            background: {self.template.background_color};')
-                if self.template.font_family:
-                    template_overrides.append(f'            font-family: {self.template.font_family};')
+                if template_bg:
+                    template_overrides.append(f'            background: {template_bg};')
+                if template_font:
+                    template_overrides.append(f'            font-family: {template_font};')
                 
                 if template_overrides:
                     overrides_text = "\n".join(template_overrides)

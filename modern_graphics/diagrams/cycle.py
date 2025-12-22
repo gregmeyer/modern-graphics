@@ -25,7 +25,9 @@ def generate_cycle_diagram(
         
         # Generate CSS for this step
         step_style = step.get('style')
-        css = generate_step_style(step_style, step_color, template=generator.template)
+        # Use template if available, otherwise None (will use defaults)
+        template = generator.template if hasattr(generator.template, 'get_gradient') else None
+        css = generate_step_style(step_style, step_color, template=template)
         css_steps.append(f"""
         .step.{step_class} {{ 
             {css}

@@ -1,32 +1,65 @@
 # Modern Graphics Generator
 
-Generate modern, professional graphics programmatically for articles, presentations, and documentation. Create diagrams, charts, and visualizations with clean Python code.
+> Build hero slides, story cards, and diagrams from prompts or structured data—one theme across every output. Designed for storytellers, marketing teams, and analysts who need branded visuals in minutes.
+
+[**Jump to the live theme demo →**](examples/output/theme-demo/index.html)
+
+## Why teams use it
+- 🎨 **One theme across everything** – set colors + fonts once, reuse across heroes, cards, and diagrams
+- 📊 **10+ built-in layouts** – story slides, cycles, timelines, funnels, pyramids, grids, and editorial cards
+- ⚡ **Simple Python API** – instantiate a generator and export PNGs in a few lines
+- 🤖 **Prompt-ready workflows** – optional AI helpers for themes, decks, or article summaries
+- 🧩 **Extensible** – write your own diagram modules or SVG.js mockups
+- 🖼️ **Production exports** – high-res PNGs with automatic cropping
 
 ## Quick Navigation
 
-- **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes
-- **[Core Concepts](docs/CONCEPTS.md)** - Learn the four essential concepts  
-- **[Diagram Types](docs/DIAGRAM_TYPES.md)** - Choose the right diagram type
-- **[Common Use Cases](docs/USE_CASES.md)** - Real-world examples and patterns
+- **[How Do I Get Started?](#how-do-i-get-started)** - Get your first graphic in 5 minutes
+- **[How Do I Prompt Creatively?](#how-do-i-prompt-creatively)** - AI-powered generation techniques
+- **[What Can You Create?](#what-can-you-create)** - See all diagram types and examples
+- **[Customization Guide](#customization-guide)** - Create custom themes and styles
+- **[Examples & Showcase](#examples--showcase)** - Browse real examples
+- **[Documentation](#documentation)** - Complete guides and API reference
 
-## What is This?
+## What Can You Create?
 
-Modern Graphics Generator lets you create professional graphics programmatically. Instead of designing slides manually, write Python code to generate diagrams, timelines, comparisons, and more. Perfect for:
+**Quick example:**
+```python
+from modern_graphics import generate_scheme_from_prompt
 
-- **Articles & Blog Posts**: Generate graphics that match your writing
-- **Presentations**: Create consistent, data-driven slides
-- **Documentation**: Visualize processes, architectures, and concepts
-- **Reports**: Automate quarterly reports, dashboards, and summaries
+# Create theme from description
+scheme = generate_scheme_from_prompt(
+    "modern tech startup with bright cyan and coral colors"
+)
 
-**Key Features:**
-- 🎨 **10+ Diagram Types**: Cycle, comparison, timeline, story slides, grid, flywheel, and more
-- 🎯 **Simple API**: Generate graphics with just a few lines of Python
-- 🤖 **AI-Powered**: Generate diagrams from natural language prompts (optional)
-- 🖼️ **High-Quality Export**: PNG export with automatic cropping
-- 🎨 **Customizable**: Templates for consistent branding
-- 🔌 **Extensible**: Add your own diagram types
+# Apply to any graphic
+html = generator.generate_modern_hero(...)
+html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
+```
 
-## Quick Start
+[View complete theme demo →](examples/output/theme-demo/index.html) | [Create Your Theme →](docs/ADVANCED.md#color-scheme-generator)
+
+### Diagram Types
+
+10+ built-in layouts cover everything from narrative story slides to comparison grids. Highlights:
+
+- **Narrative slides:** story slides, editorial hero panels
+- **Flow & journeys:** cycles, flywheels, funnels, pyramids, milestone timelines, roadmaps
+- **Comparison & grids:** comparison cards, matrices, KPI or insight grids
+- **Before/after stories:** transformation cards, makeover grids, KPI deltas
+
+[Browse every diagram type →](examples/output/showcase/diagram-types/) |
+[Diagram reference →](docs/DIAGRAM_TYPES.md)
+
+### Hero Slides
+
+| Tiles | Flowchart | Triptych |
+|-------|-----------|----------|
+| ![Hero Tiles](examples/output/showcase/hero-slides/01-open-canvas-tiles.png) | ![Hero Flowchart](examples/output/showcase/hero-slides/02-open-canvas-flowchart.png) | ![Hero Triptych](examples/output/showcase/hero-slides/05-triptych.png) |
+
+[View all hero slides →](examples/output/showcase/hero-slides/) | [Hero Slides Guide →](docs/HERO_SLIDES.md)
+
+## How Do I Get Started?
 
 Get your first graphic in 5 minutes.
 
@@ -66,18 +99,292 @@ print("✓ Generated output.png")
 
 Run it and you'll have your first graphic!
 
-### What You Just Learned
+### Your First Theme (Optional but Recommended)
 
-In those few lines, you:
-1. **Created a generator** - The main class that creates graphics
-2. **Generated a diagram** - Used `generate_cycle_diagram()` to create a flow diagram
-3. **Exported to PNG** - Saved a high-quality image file
+Create a custom theme and apply it to your graphic:
 
-**Next:** Learn about [Core Concepts](#core-concepts) to understand how the library works.
+```python
+from modern_graphics import generate_scheme_from_prompt
+
+# Create theme from description
+scheme = generate_scheme_from_prompt(
+    "modern tech startup with bright cyan and coral colors, bold sans-serif font"
+)
+
+# Apply to your graphic
+html = scheme.apply_to_html(html)
+generator.export_to_png(html, Path('output-themed.png'))
+```
+
+Now your graphic uses consistent branding that you can apply to all future graphics!
+
+**Next:** Learn about [Core Concepts](docs/CONCEPTS.md) or try [How Do I Prompt Creatively?](#how-do-i-prompt-creatively)
+
+## Examples & Showcase
+
+- **Story slides:** Combine hero canvas, modular cards, and timelines for narratives ([story slide gallery](examples/output/showcase/diagram-types/04-story-slide.png)).  
+  ![Story Slide](examples/output/theme-demo/11-story-slide.png)
+- **Apply one theme everywhere:** Theme demo shows thirteen graphics sharing the same palette/fonts ([see the live set](examples/output/theme-demo/index.html)).  
+  ![Theme Demo](examples/output/theme-demo/04-slide-cards-two.png)
+- **Illustrate long-form content:** Feed an article outline and let the system storyboard it ([use cases](examples/output/showcase/use-cases/)).  
+  ![Use Case](examples/output/showcase/use-cases/corporate-report.png)
+
+Want more? Browse [all diagram types](examples/output/showcase/diagram-types/), [hero layouts](examples/output/showcase/hero-slides/), or dive into the [examples directory](examples/) for runnable scripts (`python scripts/run_showcase.py`).
+
+## How Do I Prompt Creatively?
+
+Generate themes and diagrams from natural language prompts using AI. This is an **optional** feature that requires an OpenAI API key.
+
+### Overview
+
+**What it is:** Describe what you want in natural language, AI generates the graphic.
+
+**When to use:**
+- You want AI to interpret your description
+- You're exploring creative ideas
+- You want to generate themes from brand descriptions
+
+**When to use structured data instead:**
+- You have exact data structures
+- You want precise control
+- You don't have an OpenAI API key
+
+### Creative Prompting Techniques
+
+#### Theme Prompts
+
+Generate complete color schemes and fonts from brand descriptions:
+
+```python
+from modern_graphics import generate_scheme_from_prompt
+
+# Be specific about colors and style
+scheme = generate_scheme_from_prompt(
+    "modern tech startup with bright cyan primary color, coral accents, bold Poppins font"
+)
+
+# Include industry context
+scheme = generate_scheme_from_prompt(
+    "professional corporate theme with navy blue accents and serif font for financial services"
+)
+
+# Describe mood and aesthetic
+scheme = generate_scheme_from_prompt(
+    "playful startup theme with vibrant colors and rounded sans-serif font"
+)
+```
+
+#### Diagram Prompts
+
+Generate diagrams from natural language descriptions:
+
+```python
+from modern_graphics import generate_cycle_diagram_from_prompt
+
+# Simple workflow
+html = generate_cycle_diagram_from_prompt(
+    generator,
+    prompt="Show a customer journey: Discover, Try, Buy, Love"
+)
+
+# With colors
+html = generate_cycle_diagram_from_prompt(
+    generator,
+    prompt="Show software development: Plan (blue), Build (green), Test (orange), Deploy (purple)"
+)
+
+# Comparison diagrams
+from modern_graphics import generate_comparison_diagram_from_prompt
+
+html = generate_comparison_diagram_from_prompt(
+    generator,
+    prompt="Compare manual design (slow, inconsistent) vs template-based (fast, consistent)"
+)
+```
+
+#### Story Slide Prompts
+
+Generate story-driven slides:
+
+```python
+from modern_graphics.prompt_to_diagram import generate_story_slide_from_prompt
+
+html = generate_story_slide_from_prompt(
+    generator,
+    prompt="""What changed: Revenue model shifted from upfront licenses to subscriptions
+Time period: Q2-Q4 2025
+What it means: Predictable revenue and 20% higher retention"""
+)
+```
+
+### Prompt Examples by Type
+
+**Theme Generation:**
+- `"modern tech startup with bright cyan and coral colors"`
+- `"professional corporate theme with navy blue accents and serif font"`
+- `"minimalist design with monochrome palette and clean sans-serif"`
+
+**Cycle Diagrams:**
+- `"Show a customer journey: Discover, Try, Buy, Love"`
+- `"Marketing funnel: Awareness, Interest, Consideration, Purchase"`
+- `"Product development: Research, Design, Build, Launch"`
+
+**Comparison Diagrams:**
+- `"Compare manual design vs template-based approach"`
+- `"Before: Slow and inconsistent. After: Fast and consistent"`
+- `"Traditional vs modern workflow comparison"`
+
+**Timeline Diagrams:**
+- `"Product milestones: Q1 Launch, Q2 Growth, Q3 Scale, Q4 Mature"`
+- `"Company history: Founded 2020, Series A 2022, IPO 2025"`
+
+### Best Practices
+
+1. **Be Specific** - Include colors, style, mood, and context
+   - ✅ `"modern tech startup with bright cyan primary color, coral accents"`
+   - ❌ `"tech startup theme"`
+
+2. **Include Context** - Mention industry, audience, or use case
+   - ✅ `"professional corporate theme for financial services"`
+   - ❌ `"corporate theme"`
+
+3. **Iterate and Refine** - Start broad, then refine based on results
+   - First: `"tech startup theme"`
+   - Refined: `"modern tech startup with bright cyan and coral, bold sans-serif"`
+
+4. **Combine Approaches** - Use prompts for exploration, structured data for precision
+   ```python
+   # Generate theme from prompt
+   scheme = generate_scheme_from_prompt("...")
+   
+   # Use structured data for precise diagram
+   html = generator.generate_cycle_diagram([
+       {'text': 'Step 1', 'color': 'blue'},
+       {'text': 'Step 2', 'color': 'green'}
+   ])
+   
+   # Apply theme to structured diagram
+   html = scheme.apply_to_html(html)
+   ```
+
+### Code Examples
+
+**Generate Theme from Prompt:**
+```python
+from modern_graphics import generate_scheme_from_prompt
+
+scheme = generate_scheme_from_prompt(
+    "modern tech startup with bright cyan and coral colors, bold sans-serif font"
+)
+
+# Save for reuse
+scheme.save_to_json("my_theme.json")
+```
+
+**Generate Diagram from Prompt:**
+```python
+from modern_graphics import generate_cycle_diagram_from_prompt
+
+html = generate_cycle_diagram_from_prompt(
+    generator,
+    prompt="Show a customer journey: Discover, Try, Buy, Love"
+)
+
+generator.export_to_png(html, Path('customer-journey.png'))
+```
+
+**Combine Prompt + Structured Data:**
+```python
+# Generate theme from prompt
+scheme = generate_scheme_from_prompt("corporate professional theme")
+
+# Create diagram with structured data
+html = generator.generate_cycle_diagram([
+    {'text': 'Plan', 'color': 'blue'},
+    {'text': 'Build', 'color': 'green'},
+    {'text': 'Deploy', 'color': 'orange'}
+])
+
+# Apply theme
+html = scheme.apply_to_html(html)
+```
+
+### Learn More
+
+- **[Prompts Guide](docs/PROMPTS.md)** - Complete prompt-based generation guide
+- **[Use Cases](docs/USE_CASES.md)** - Real-world prompt examples and patterns
+- **[Prompt Examples](docs/PROMPT_EXAMPLES.md)** - More creative prompt examples
+
+## Customization Guide
+
+Create custom themes and apply consistent branding across all your graphics.
+
+### Create Custom Themes
+
+#### From Prompt (AI-powered) - Recommended
+
+```python
+from modern_graphics import generate_scheme_from_prompt
+
+# Describe your brand - get complete color scheme + font
+scheme = generate_scheme_from_prompt(
+    "modern tech startup with bright cyan and coral colors, bold sans-serif font"
+)
+
+# Apply to any graphic
+html = generator.generate_modern_hero(...)
+html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
+```
+
+#### Manual Creation
+
+```python
+from modern_graphics import create_custom_scheme
+
+scheme = create_custom_scheme(
+    name="My Brand",
+    primary="#8B5CF6",  # Your brand color
+    google_font_name="Roboto",  # Google Font
+    font_style="sans-serif"
+)
+
+# Save and share
+scheme.save_to_json("my_theme.json")
+```
+
+#### Use Predefined Schemes
+
+```python
+from modern_graphics import CORPORATE_SCHEME, DARK_SCHEME, WARM_SCHEME
+
+html = CORPORATE_SCHEME.apply_to_html(generated_html)
+```
+
+### Apply Themes
+
+```python
+# Generate a graphic
+html = generator.generate_modern_hero(...)
+
+# Apply theme
+html = scheme.apply_to_html(html)
+
+# Export
+generator.export_to_png(html, Path('output.png'))
+```
+
+**See complete example:** [Theme Demo Script](examples/generate_complete_theme_demo.py) | [Theme Demo Gallery](examples/output/theme-demo/index.html)
+
+### Advanced Customization
+
+- **[Color Scheme Generator Guide](docs/ADVANCED.md#color-scheme-generator)** - Complete theme creation guide
+- **[Custom Templates](docs/ADVANCED.md#custom-templates)** - Create custom templates
+- **[SVG.js Integration](docs/ADVANCED.md#svgjs-integration)** - Custom SVG graphics
+- **[Advanced Topics](docs/ADVANCED.md)** - All advanced features
 
 ## Core Concepts
 
-Understanding these four concepts will help you use the library effectively.
+Understanding these concepts will help you use the library effectively.
 
 ### 1. The Generator
 
@@ -86,368 +393,63 @@ The `ModernGraphicsGenerator` is the main class that creates graphics. You creat
 ```python
 from modern_graphics import ModernGraphicsGenerator, Attribution
 
-# Create a generator
 generator = ModernGraphicsGenerator(
-    title="My Diagram",           # Title for the graphic
-    attribution=Attribution()     # Copyright/context info (optional)
+    title="My Diagram",
+    attribution=Attribution()
 )
 
 # Generate different diagram types
 html = generator.generate_cycle_diagram([...])
 html = generator.generate_comparison_diagram(...)
 html = generator.generate_timeline_diagram(...)
-# ... and more
 ```
 
-**Key Points:**
-- One generator can create multiple graphics
-- All graphics share the same title and attribution settings
-- Generator methods return HTML that you can export to PNG
+**Learn more:** [Core Concepts Guide](docs/CONCEPTS.md)
 
 ### 2. Diagram Types
 
 The library includes 10+ diagram types, each optimized for different use cases.
 
-**Visual Gallery:**
+**Choose the right type:**
+- **Process/Flow** → Cycle Diagram
+- **Comparison** → Comparison Diagram
+- **Timeline** → Timeline Diagram
+- **Story/Narrative** → Story Slide
+- **List/Grid** → Grid Diagram
+- **Hierarchy** → Pyramid Diagram
+- **Growth Loop** → Flywheel Diagram
 
-![Cycle Diagram](examples/output/showcase/diagram-types/01-cycle.png)
-![Comparison Diagram](examples/output/showcase/diagram-types/02-comparison.png)
-![Timeline Diagram](examples/output/showcase/diagram-types/03-timeline.png)
-![Story Slide](examples/output/showcase/diagram-types/04-story-slide.png)
-![Grid Diagram](examples/output/showcase/diagram-types/05-grid.png)
-![Flywheel Diagram](examples/output/showcase/diagram-types/06-flywheel.png)
-![Slide Cards](examples/output/showcase/diagram-types/07-slide-cards.png)
-![Slide Card Comparison](examples/output/showcase/diagram-types/08-slide-comparison.png)
+**Learn more:** [Diagram Types Guide](docs/DIAGRAM_TYPES.md)
 
-**Choosing the Right Type:** See [Diagram Types Guide](#diagram-types-guide) for a decision tree and detailed examples.
+### 3. Custom Themes
 
-### 3. Templates
+**One theme, all graphics.** Define colors and fonts once, apply consistently across hero slides, slide cards, and diagrams.
 
-Templates control the visual style of your graphics: colors, fonts, backgrounds, and overall aesthetic.
+**Why Use Themes?**
+- **Consistency**: All graphics match your brand automatically
+- **Speed**: Apply styles instantly with one line of code
+- **Team Alignment**: Share theme JSON files for consistent branding
+- **Flexibility**: Switch themes or create variations easily
 
-**Why Use Templates?**
-- **Consistency**: All graphics match your brand
-- **Speed**: Apply styles instantly
-- **Flexibility**: Switch between styles easily
+**See it in action:** [Complete Theme Demo](examples/output/theme-demo/index.html) - 7 graphics, one theme
 
-**Default Template:**
-Every generator uses a default template (clean, modern style). You can use it as-is or customize it.
-
-**Template Examples:**
-
-| Default | Corporate | Tech Startup |
-|---------|-----------|--------------|
-| ![Default Template](examples/output/showcase/templates/default.png) | ![Corporate Template](examples/output/showcase/templates/corporate.png) | ![Tech Startup Template](examples/output/showcase/templates/tech-startup.png) |
-
-**Learn More:** See [Custom Templates](#custom-templates) in Advanced Topics.
+**Learn more:** [Color Scheme Generator Guide](docs/ADVANCED.md#color-scheme-generator)
 
 ### 4. Attribution
 
 Attribution adds copyright and context information to your graphics. It appears at the bottom of generated images.
 
-**Default Behavior:**
-- Attribution is included automatically
-- Shows copyright: "© Greg Meyer 2025 • gregmeyer.com"
-- Positioned at bottom-right
-
-**Customize It:**
 ```python
 from modern_graphics import Attribution
 
-# Custom attribution
 attribution = Attribution(
     copyright="© My Company 2025",
     context="Q4 Report",
-    position="bottom-center"
+    position="bottom-right"
 )
-
-generator = ModernGraphicsGenerator("My Diagram", attribution=attribution)
 ```
 
-**Attribution Examples:**
-
-| Default | Custom Styled | With Context |
-|---------|---------------|--------------|
-| ![Default Attribution](examples/output/showcase/attribution/default.png) | ![Custom Styled Attribution](examples/output/showcase/attribution/custom-styled.png) | ![Attribution with Context](examples/output/showcase/attribution/with-context.png) |
-
-**Learn More:** See [Attribution System](#attribution-system) for all options.
-
-## Common Use Cases
-
-Practical patterns for real-world usage.
-
-### Hero Layouts (New)
-
-Need a hero image for an article or landing page? The new `modern-hero` family renders Apple-style slides with calm gradients, orbit accents, and structured triptychs. Each layout was designed around a narrative prompt so you can quickly “describe the slide” before rendering.
-
-#### 1. Modern Hero (Open Canvas)
-
-- **Prompt**
-
-    ```
-    You are the Modern Graphics Generator. Render a calm, open hero slide with a white card, light purple halo, and rounded pills that explain how we route every story beat through a template-driven graphics agent. Keep it editorial: headline, subhead, highlight pills (“Capture story beat,” “Map to template,” “Paste prompt + numbers,” “Ship hero visuals”), CTA ribbon (“Templates are visual infrastructure”), and a stat strip showing Design time (2h → 5m), Consistency (Low → High), Reusability (One-off → Regenerate).
-    ```
-
-- **CLI**
-
-    ```bash
-    python -m modern_graphics.cli modern-hero \
-      --title "Build Presentation Graphics" \
-      --headline "Build a Graphics System, Not Just Slides" \
-      --subheadline "Route every story beat through templates so each visual ships with intent." \
-      --highlights "Capture story beat,Map to template,Paste prompt + numbers,Ship hero visuals" \
-      --stats "Design time:2h → 5m,Consistency:Low → High,Reusability:One-off → Regenerate" \
-      --cta "Templates are visual infrastructure" \
-      --output examples/output/modern-hero-open.html --png
-    ```
-
-#### 2. Modern Hero (Nightfall)
-
-- **Prompt**
-
-    ```
-    Render a cinematic nightfall hero slide: deep purple gradient background inside a neutral frame, soft orbit lines, and glowing stats. Show the same story beat flow as the open hero, but switch `--background dark` so typography inverts and the CTA glows.
-    ```
-
-- **Python**
-
-```python
-from pathlib import Path
-from modern_graphics import ModernGraphicsGenerator, Attribution
-
-generator = ModernGraphicsGenerator("Nightfall Hero", Attribution())
-html = generator.generate_modern_hero(
-        headline="Treat Every Prompt Like a Spec",
-        subheadline="Manual tweaks become a system when you lock templates and story schema.",
-        eyebrow="Modern Graphics",
-        highlights=["Calm gradient canvas", "Orbit accents", "Story-first CTA"],
-        stats=[
-            {"label": "Design time", "value": "2h → 5m"},
-            {"label": "Consistency", "value": "Low → High"},
-        ],
-        background_variant="dark",
-    )
-    generator.export_to_png(html, Path("examples/output/modern-hero-night.png"),
-                           viewport_width=1700, viewport_height=1100, padding=30)
-    ```
-
-#### 3. Modern Hero Triptych
-
-- **Prompt**
-
-    ```
-    Create a white-card hero with a light purple gradient halo and three panels labeled Manual design, Template library, Generated visuals. Each column should have an icon, three bullet points, and the bottom stat strip (Design time 2h → 5m, Consistency Low → High, Reusability One-off → Regenerate).
-    ```
-
-- **CLI**
-
-    ```bash
-    python -m modern_graphics.cli modern-hero-triptych \
-      --title "Build Presentation Graphics" \
-      --headline "From prompts to polished slides" \
-      --subheadline "Manual decks become a reusable pipeline when every beat flows through templates." \
-      --columns '[{"title":"Manual design","items":["Ad-hoc layouts","Inconsistent styling","Hours per slide"],"icon":"manual"},{"title":"Template library","items":["Story slide schema","Data cards","Prompt recipes"],"icon":"templates"},{"title":"Generated visuals","items":["Deterministic output","Repeatable quality","Deck-ready assets"],"icon":"generated"}]' \
-      --stats "Design time:2h → 5m,Consistency:Low → High,Reusability:One-off → Regenerate" \
-      --output examples/output/modern-hero-triptych.html --png
-    ```
-
-#### Prompt-Driven Hero Utility
-
-If you prefer to describe the hero via a prompt file, drop JSON like this into `hero_prompt.json`:
-
-```json
-{
-  "layout": "triptych",
-  "headline": "Build a Graphics System, Not Just Slides",
-  "subheadline": "Manual tweaks become a reusable pipeline when every beat flows through templates.",
-  "eyebrow": "Modern Graphics",
-  "highlights": ["Capture story beat", "Map to template", "Paste prompt + numbers", "Ship hero visuals"],
-  "stats": [
-    {"label": "Design time", "value": "2h → 5m"},
-    {"label": "Consistency", "value": "Low → High"},
-    {"label": "Reusability", "value": "One-off → Regenerate"}
-  ],
-  "columns": [
-    {"title": "Manual design", "items": ["Ad-hoc layouts", "Inconsistent styling", "Hours per slide"], "icon": "manual"},
-    {"title": "Template library", "items": ["Story slide schema", "Data cards", "Prompt recipes"], "icon": "templates"},
-    {"title": "Generated visuals", "items": ["Deterministic output", "Repeatable quality", "Deck-ready assets"], "icon": "generated"}
-  ]
-}
-```
-
-Then run:
-
-```bash
-python -m modern_graphics.cli modern-hero-prompt \
-  --prompt-file hero_prompt.json \
-  --output examples/output/modern-hero-from-prompt.png --png
-```
-
-Set `"layout": "open"` and omit `columns` to get the open-canvas variant.
-
-Tip: open layouts now support structured `highlight_tiles` (JSON array with `label` + optional `icon`). When provided, the hero renders a visual flow of icon tiles instead of a text pill list.
-You can also pass a `visual_description` string (e.g., “Render a curved arrow linking three icon tiles, glassmorphism background”) — the generator looks for keywords like “curved arrow” or “glassmorphism” and toggles extra flourishes (flow arrows, blurred backgrounds) automatically.
-
-##### Flow Nodes (Open Layout)
-
-When you need a freeform flowchart instead of evenly stacked tiles, describe the hero’s visual in terms of nodes and arcs:
-
-```json
-{
-  "layout": "open",
-  "headline": "Diagnose the knowledge base like a DAG",
-  "flow_nodes": [
-    {"id": "bot", "label": "Bot answer feels off", "icon": "warning", "position": {"x": 0.08, "y": 0.58}, "size": "small"},
-    {"id": "context", "label": "Context", "icon": "manual", "orbit": "top"},
-    {"id": "atomic", "label": "Atomic content", "icon": "templates", "orbit": "bottom"},
-    {"id": "breadcrumbs", "label": "Breadcrumbs", "icon": "generated", "orbit": "top"},
-    {"id": "trust", "label": "Trustworthy output", "icon": "generated", "position": {"x": 0.9, "y": 0.55}}
-  ],
-  "flow_connections": [
-    {"from": "bot", "to": "context"},
-    {"from": "bot", "to": "atomic"},
-    {"from": "bot", "to": "breadcrumbs"},
-    {"from": "context", "to": "trust"},
-    {"from": "atomic", "to": "trust"},
-    {"from": "breadcrumbs", "to": "trust"}
-  ],
-  "visual_description": "Floating constellation DAG with translucent arcs, directed acrylic graph energy."
-}
-```
-
-Each node may provide normalized `x` / `y` coordinates (0→1) or use `orbit` hints (`top`, `center`, `bottom`). Connections default to sequential links, but you can declare explicit `{ "from": "node-id", "to": "node-id" }` edges for branching DAGs. The CLI exposes the same fields via `--flow-nodes` / `--flow-connections` (pass JSON).
-
-##### Freeform Canvas
-
-Need total control? Pass raw HTML/SVG through the new `freeform_canvas` field (or `--freeform-canvas` CLI flag) and it will be injected ahead of the highlight area:
-
-```json
-{
-  "headline": "Probabilistic PM",
-  "freeform_canvas": "<div style='position:relative;height:280px;'><svg ...>...</svg><div class='canvas-chip' style='left:25%;top:40%;position:absolute;'>Orchestration</div></div>",
-  "stats": [
-    {"label": "Escalations", "value": "-30%"}
-  ]
-}
-```
-
-The injected block inherits hero themes (`hero-dark`, `hero-warm`) and ships with helper styles (`.canvas-chip`). Combine it with the ribbon keywords (e.g., “Bezier ribbon collage”) for fully custom hero art without editing CSS by hand.
-
-Each prompt focuses on the story (“what changed, when, why it matters”) so the hero conveys more than decoration. You can also run `python3 tests/test_modern_hero.py` to regenerate both PNGs programmatically.
-
-### Quick Graphics
-
-Use convenience functions for fast generation without creating a generator instance:
-
-```python
-from modern_graphics import generate_cycle_diagram
-
-# Generate HTML directly
-html = generate_cycle_diagram([
-    {'text': 'Step 1', 'color': 'blue'},
-    {'text': 'Step 2', 'color': 'green'}
-])
-```
-
-### Custom Styling
-
-Apply templates for consistent branding:
-
-```python
-from modern_graphics import quick_template_from_description, register_template, ModernGraphicsGenerator
-
-# Generate a template from a description
-template = quick_template_from_description(
-    "corporate blue and gray, professional, traditional fonts"
-)
-
-# Use it
-generator = ModernGraphicsGenerator("My Diagram", template=template)
-```
-
-### Batch Generation
-
-Generate multiple graphics efficiently:
-
-```python
-from modern_graphics import ModernGraphicsGenerator, Attribution
-from pathlib import Path
-
-generator = ModernGraphicsGenerator("Batch Graphics", Attribution())
-
-data = [
-    {'title': 'Q1 Results', 'steps': [...]},
-    {'title': 'Q2 Results', 'steps': [...]},
-    {'title': 'Q3 Results', 'steps': [...]},
-]
-
-for item in data:
-    html = generator.generate_cycle_diagram(item['steps'])
-    generator.export_to_png(html, Path(f"{item['title']}.png"))
-```
-
-### Prompt-Based Generation
-
-Generate diagrams from natural language prompts using AI. All diagram types support prompt-based generation with default prompts that work out of the box.
-
-**Basic Usage:**
-
-```python
-from modern_graphics import ModernGraphicsGenerator, Attribution
-from modern_graphics import generate_cycle_diagram_from_prompt
-from pathlib import Path
-
-generator = ModernGraphicsGenerator("My Diagram", Attribution())
-
-# Use default prompt (works automatically)
-html = generate_cycle_diagram_from_prompt(generator)
-
-# Or provide a custom prompt
-html = generate_cycle_diagram_from_prompt(
-    generator,
-    prompt="Show a marketing funnel: Awareness (red), Interest (blue), Consideration (green), Purchase (purple)"
-)
-
-generator.export_to_png(html, Path('output.png'))
-```
-
-**Available Prompt Functions:**
-
-All diagram types have prompt-based generators:
-
-```python
-from modern_graphics import (
-    generate_cycle_diagram_from_prompt,
-    generate_comparison_diagram_from_prompt,
-    generate_timeline_diagram_from_prompt,
-    generate_grid_diagram_from_prompt,
-    generate_flywheel_diagram_from_prompt,
-    generate_slide_cards_from_prompt,
-    generate_slide_card_comparison_from_prompt,
-    DEFAULT_DIAGRAM_PROMPTS
-)
-
-# Use defaults
-html = generate_cycle_diagram_from_prompt(generator)
-
-# Custom prompt
-html = generate_timeline_diagram_from_prompt(
-    generator,
-    prompt="Show product milestones: Q1 Launch, Q2 Growth, Q3 Scale, Q4 Mature"
-)
-
-# View default prompts
-print(DEFAULT_DIAGRAM_PROMPTS['cycle'])
-```
-
-**When to Use Prompts vs Hardcoded Data:**
-
-- **Use Prompts**: When you want AI to interpret natural language and extract structure
-- **Use Hardcoded Data**: When you have exact data structures and want precise control
-
-Both approaches work - choose based on your needs!
-
-**Requirements:** Prompt-based generation requires `OPENAI_API_KEY` in your `.env` file.
+**Learn more:** [Core Concepts Guide](docs/CONCEPTS.md#attribution)
 
 ## Working Without OpenAI
 
@@ -460,13 +462,8 @@ All structured data generation works without OpenAI:
 - ✅ **Cycle diagrams** - `generate_cycle_diagram(steps)`
 - ✅ **Comparison diagrams** - `generate_comparison_diagram(left, right)`
 - ✅ **Timeline diagrams** - `generate_timeline_diagram(events)`
-- ✅ **Grid diagrams** - `generate_grid_diagram(items)`
-- ✅ **Flywheel diagrams** - `generate_flywheel_diagram(elements)`
-- ✅ **Slide cards** - `generate_slide_card_diagram(cards)`
-- ✅ **Story slides** - `generate_story_slide(title, what_changed, time_period, what_it_means)`
-- ✅ **Before/After diagrams** - `generate_before_after_diagram(before, after)`
-- ✅ **Funnel diagrams** - `generate_funnel_diagram(stages, values)`
-- ✅ **Pyramid diagrams** - `generate_pyramid_diagram(layers)`
+- ✅ **Story slides** - `generate_story_slide(...)`
+- ✅ **Hero slides** - `generate_modern_hero(...)`
 - ✅ **CLI commands** - All CLI commands work without OpenAI
 - ✅ **PNG export** - Export works without OpenAI
 - ✅ **Templates** - Using existing templates works without OpenAI
@@ -476,11 +473,11 @@ All structured data generation works without OpenAI:
 Only these **optional** prompt-based features require OpenAI:
 
 - ⚠️ **Prompt-based generation** - `generate_*_from_prompt()` functions
-- ⚠️ **AI template creation** - `quick_template_from_description()`
-- ⚠️ **Story slides from prompts** - `create_story_slide_from_prompt()`
+- ⚠️ **AI theme creation** - `generate_scheme_from_prompt()`
 
-### Example: No OpenAI Needed
+**Bottom line:** Use structured data (dictionaries, lists) and you don't need OpenAI. Use prompts (natural language) and you'll need an OpenAI API key.
 
+**Example without OpenAI:**
 ```python
 from modern_graphics import ModernGraphicsGenerator, Attribution
 from pathlib import Path
@@ -494,639 +491,85 @@ cards = [{
     "tagline": "Q2-Q4 2025",
     "subtext": "Revenue model shifted from licenses to subscriptions",
     "color": "blue",
-    "badge": "+24% QoQ",
-    "features": ["Predictable revenue", "20% higher retention"]
+    "badge": "+24% QoQ"
 }]
 
 html = generator.generate_slide_card_diagram(cards)
 generator.export_to_png(html, Path('output.png'))
-# ✓ Generated without OpenAI!
 ```
 
-**Bottom line:** Use structured data (dictionaries, lists) and you don't need OpenAI. Use prompts (natural language) and you'll need an OpenAI API key.
-
-### Export Options
-
-Control PNG export quality and resolution:
-
-```python
-# Standard quality (default)
-generator.export_to_png(html, Path('output.png'))
-
-# High quality for print
-generator.export_to_png(
-    html, 
-    Path('output.png'),
-    viewport_width=3200,
-    device_scale_factor=3
-)
-
-# Fast/low quality for previews
-generator.export_to_png(
-    html,
-    Path('output.png'),
-    viewport_width=1200,
-    device_scale_factor=1
-)
-```
-
-See [Export Options](#export-options) for complete details.
-
-## Diagram Types Guide
-
-Choose the right diagram type for your use case:
-
-**Decision Tree:**
-- **Process/Flow** → Cycle Diagram
-- **Comparison** → Comparison Diagram
-- **Timeline** → Timeline Diagram
-- **Story/Narrative** → Story Slide
-- **List/Grid** → Grid Diagram
-- **Hierarchy** → Pyramid Diagram
-- **Growth Loop** → Flywheel Diagram
-- **Transformation** → Before/After Diagram
-- **Conversion** → Funnel Diagram
-- **Cards** → Slide Cards
-
-For detailed examples and code for each type, see **[Diagram Types Guide](docs/DIAGRAM_TYPES.md)**.
-
-## Advanced Topics
-
-Learn these features when you need them.
-
-### Attribution System
-
-All graphics can include attribution information (copyright, context) that appears at the bottom of generated images. Fully customizable styling and positioning.
-
-**Attribution Examples:**
-
-| Default | Custom Styled | With Context |
-|---------|---------------|--------------|
-| ![Default Attribution](examples/output/showcase/attribution/default.png) | ![Custom Styled Attribution](examples/output/showcase/attribution/custom-styled.png) | ![Attribution with Context](examples/output/showcase/attribution/with-context.png) |
-
-**Default Attribution:**
-
-```python
-Attribution(
-    copyright="© Greg Meyer 2025 • gregmeyer.com",
-    position="bottom-right",
-    margin_top=20
-)
-```
-
-**Custom Attribution:**
-
-```python
-from modern_graphics import Attribution
-
-attribution = Attribution(
-    copyright="© My Company 2025",
-    context="Generated for Q4 Report",
-    position="bottom-center",
-    font_size="14px",
-    font_color="#007AFF",
-    font_weight="600",
-    background_color="rgba(0, 0, 0, 0.7)",
-    opacity=0.9,
-    padding="10px 16px",
-    border_radius="8px"
-)
-
-generator = ModernGraphicsGenerator("My Diagram", attribution=attribution)
-```
-
-**Disable Attribution:**
-
-```python
-# Method 1: Set show=False
-attribution = Attribution(show=False)
-
-# Method 2: Empty copyright
-attribution = Attribution(copyright="")
-```
-
-### Custom Templates
-
-Create your own visual style with the template system:
-
-**Template Examples:**
-
-| Default | Corporate | Tech Startup |
-|---------|-----------|--------------|
-| ![Default Template](examples/output/showcase/templates/default.png) | ![Corporate Template](examples/output/showcase/templates/corporate.png) | ![Tech Startup Template](examples/output/showcase/templates/tech-startup.png) |
-
-**Using TemplateBuilder:**
-
-```python
-from modern_graphics import TemplateBuilder, register_template, ModernGraphicsGenerator
-
-# Create a custom template
-dark_template = (TemplateBuilder("dark")
-    .add_color("blue", ("#1a1a2e", "#16213e"), "rgba(0, 122, 255, 0.3)")
-    .add_color("green", ("#0f5132", "#0d4228"), "rgba(52, 199, 89, 0.3)")
-    .set_font_family("'Roboto', sans-serif")
-    .set_background_color("#0a0a0a")
-    .set_base_styles("""
-        body {
-            background: #0a0a0a;
-            color: #ffffff;
-        }
-    """)
-    .build())
-
-# Register and use
-register_template(dark_template)
-generator = ModernGraphicsGenerator("My Diagram", template=dark_template)
-```
-
-**Template Builder Methods:**
-- `.add_color(name, gradient, shadow)` - Add color to palette
-- `.set_base_styles(css)` - Set base CSS styles
-- `.set_attribution_styles(css)` - Set attribution CSS
-- `.set_font_family(font_stack)` - Set font family
-- `.set_background_color(color)` - Set default background
-- `.copy_from(template)` - Copy from existing template
-
-### SVG.js Integration
-
-Create dynamic, programmatic SVG graphics using the SVG.js library. Perfect for complex diagrams, animations, and interactive elements.
-
-**Enable SVG.js:**
-
-```python
-from modern_graphics import ModernGraphicsGenerator, Attribution
-from modern_graphics.svg_utils import (
-    generate_svg_container,
-    generate_svg_init_script,
-    create_svg_circle,
-    create_svg_line,
-    create_svg_text,
-)
-
-# Enable SVG.js support
-generator = ModernGraphicsGenerator("My Diagram", Attribution(), use_svg_js=True)
-
-# Create SVG container
-container = generate_svg_container("my-svg", 800, 600)
-
-# Generate SVG elements
-svg_elements = [
-    create_svg_circle(400, 300, 100, "#4A90E2", stroke="#2E5C8A", stroke_width=3),
-    create_svg_line(200, 300, 300, 300, "#666", stroke_width=2),
-    create_svg_text(400, 320, "Center", font_size=20, fill="#333"),
-]
-
-# Generate initialization script
-elements_code = '\n        '.join(svg_elements)
-script = generate_svg_init_script("my-svg", 800, 600, elements_code)
-
-# Wrap in HTML
-content = f"""
-<div style="padding: 40px;">
-    {container}
-    {script}
-</div>
-"""
-
-html = generator._wrap_html(content, "")
-generator.export_to_png(html, Path("output.png"))
-```
-
-**Available SVG.js Helpers:**
-
-- `generate_svg_container(id, width, height)` - Create HTML container
-- `generate_svg_init_script(id, width, height, custom_code)` - Generate initialization script
-- `create_svg_circle(x, y, radius, fill, stroke, stroke_width)` - Create circle
-- `create_svg_rect(x, y, width, height, fill, rx, stroke)` - Create rectangle
-- `create_svg_line(x1, y1, x2, y2, stroke, stroke_width)` - Create line
-- `create_svg_path(path_data, fill, stroke, stroke_width)` - Create path
-- `create_svg_text(x, y, text, font_size, fill, font_family)` - Create text
-- `create_svg_group(elements, transform)` - Create group of elements
-
-**Custom JavaScript:**
-
-You can also write custom JavaScript code that uses the SVG.js API:
-
-```python
-custom_script = """
-    // Create gradient
-    const gradient = draw.gradient('linear', function(stop) {
-        stop.at(0, '#4A90E2')
-        stop.at(1, '#8B5CF6')
-    })
-    
-    // Create shapes
-    draw.circle(100).move(350, 250).fill(gradient)
-    draw.text('SVG.js').move(360, 320).font({size: 32}).fill('#333')
-"""
-
-script = generate_svg_init_script("my-svg", 800, 600, custom_script)
-```
-
-**When to Use SVG.js:**
-
-- ✅ Complex diagrams with many elements
-- ✅ Dynamic or animated graphics
-- ✅ Programmatic shape generation
-- ✅ Custom visualizations
-
-**When to Use Static SVG:**
-
-- ✅ Simple shapes and icons
-- ✅ Static diagrams
-- ✅ Performance-critical graphics
-
-See `scripts/svg_js_example.py` for complete examples.
-
-### Custom Diagram Types
-
-Extend the system with your own diagram types:
-
-```python
-from modern_graphics.diagrams import DiagramGenerator, register_diagram
-from modern_graphics.base import BaseGenerator
-
-class MyDiagramGenerator(DiagramGenerator):
-    def generate(self, generator: BaseGenerator, title: str, items: list, **kwargs) -> str:
-        """Generate diagram HTML"""
-        items_html = "".join(f'<li>{item}</li>' for item in items)
-        css = """
-        .my-diagram { ... }
-        """
-        html = f"<div class='my-diagram'><h2>{title}</h2><ul>{items_html}</ul></div>"
-        return generator._wrap_html(html, css)
-    
-    def validate_input(self, title: str, items: list, **kwargs) -> bool:
-        """Validate input parameters"""
-        return bool(title and items)
-
-# Register and use
-register_diagram("my_diagram", MyDiagramGenerator)
-
-generator = ModernGraphicsGenerator("My Diagram")
-html = generator.generate_diagram("my_diagram", title="Items", items=["A", "B", "C"])
-```
-
-### AI-Assisted Template Creation
-
-Create templates automatically using OpenAI. Requires `OPENAI_API_KEY` in your `.env` file.
-
-**Quick Mode:**
-
-```python
-from modern_graphics import quick_template_from_description, register_template
-
-# Generate template from description
-template = quick_template_from_description(
-    "dark professional theme with blue accents, modern sans-serif font"
-)
-
-# Register for use
-register_template(template)
-
-# Use it
-from modern_graphics import ModernGraphicsGenerator
-generator = ModernGraphicsGenerator("My Diagram", template=template)
-```
-
-**Example descriptions:**
-- `"dark professional theme with blue accents, modern sans-serif font"`
-- `"light minimalist design with pastel colors, elegant serif typography"`
-- `"bold vibrant colors, tech startup style, clean sans-serif"`
-- `"corporate blue and gray, professional, traditional fonts"`
-
-**Interactive Interview:**
-
-```python
-from modern_graphics import interview_for_template, register_template
-
-# Start interactive interview
-template = interview_for_template()
-
-if template:
-    print(f"Created template: {template.name}")
-    register_template(template)
-    
-    # Use it immediately
-    from modern_graphics import ModernGraphicsGenerator
-    generator = ModernGraphicsGenerator("My Diagram", template=template)
-```
-
-**CLI Interview:**
+## Documentation
+
+### Getting Started
+- **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes
+- **[Core Concepts](docs/CONCEPTS.md)** - Learn the four essential concepts
+- **[Diagram Types Guide](docs/DIAGRAM_TYPES.md)** - Choose the right diagram type
+
+### Guides
+- **[Use Cases](docs/USE_CASES.md)** - Real-world examples and patterns
+- **[Hero Slides Guide](docs/HERO_SLIDES.md)** - Modern hero slide layouts
+- **[Prompts Guide](docs/PROMPTS.md)** - Prompt-based generation
+- **[Export Guide](docs/EXPORT.md)** - PNG export options and settings
+
+### Reference
+- **[API Reference](docs/API.md)** - Complete API documentation
+- **[Advanced Topics](docs/ADVANCED.md)** - SVG.js, custom diagrams, templates
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+
+### Examples
+- **[Examples Directory](examples/)** - All example scripts organized by category
+- **[Showcase Gallery](examples/output/showcase/)** - High-quality examples for documentation
+
+## Installation & Requirements
+
+### Basic Requirements
 
 ```bash
-# Interactive interview (conversational)
-python -m modern_graphics.cli_interview
-
-# Quick generation from description
-python -m modern_graphics.cli_interview --quick "dark theme with blue accents"
-
-# Save template to file and register
-python -m modern_graphics.cli_interview \
-  --quick "professional theme" \
-  --save my_template.json \
-  --register
+pip install playwright pillow python-dotenv
+playwright install chromium
 ```
 
-**Configuration:**
+- Python 3.8+
+- Playwright (for PNG export)
+- Pillow (for image processing)
 
-Set environment variables in `.env`:
+### Optional: OpenAI Support
+
+For prompt-based generation:
+
+```bash
+pip install openai
+```
+
+Set `OPENAI_API_KEY` in your `.env` file:
 
 ```bash
 OPENAI_API_KEY=your_openai_key_here
-BRAINTRUST_API_KEY=your_braintrust_key_here  # Optional
-BRAINTRUST_ENABLED=true  # Optional
 ```
 
-### Command Line Interface
-
-The CLI provides commands for all diagram types. Use `--png` flag to export as PNG instead of HTML.
-
-**Cycle Diagram:**
-```bash
-modern-graphics cycle \
-  --title "My Cycle" \
-  --steps "Step1,Step2,Step3" \
-  --output output.png --png
-```
-
-**Comparison Diagram:**
-```bash
-modern-graphics comparison \
-  --title "Comparison" \
-  --left "Left Title:Item1,Item2:Outcome" \
-  --right "Right Title:Item3,Item4:Outcome" \
-  --output comparison.png --png
-```
-
-**Timeline Diagram:**
-```bash
-modern-graphics timeline \
-  --title "Timeline" \
-  --events "2024 Q1|Event1,2024 Q2|Event2,2024 Q3|Event3" \
-  --orientation horizontal \
-  --output timeline.png --png
-```
-
-**Story Slide:**
-```bash
-modern-graphics story-slide \
-  --title "Revenue Shift" \
-  --what-changed "One-time → Recurring" \
-  --time-period "Q2-Q4 2025" \
-  --what-it-means "Predictable revenue" \
-  --output slide.png --png
-```
-
-**Common Options:**
-- `--copyright "Text"` - Custom copyright text
-- `--context "Text"` - Optional context line for attribution
-- `--png` - Export as PNG instead of HTML
-
-## Reference Sections
-
-Complete documentation for when you need it.
-
-### API Reference
-
-#### ModernGraphicsGenerator
-
-Main generator class for creating graphics.
-
-```python
-generator = ModernGraphicsGenerator(
-    title: str,
-    template: Optional[StyleTemplate] = None,
-    attribution: Optional[Attribution] = None
-)
-```
-
-**Diagram Generation Methods:**
-
-- `generate_cycle_diagram(steps, arrow='→', cycle_end=None)` - Generate cycle diagram
-- `generate_comparison_diagram(left_column, right_column, comparison_title='vs')` - Generate comparison
-- `generate_timeline_diagram(events, orientation='horizontal')` - Generate timeline
-- `generate_story_slide(title, what_changed, time_period, what_it_means, insight=None)` - Generate story slide
-- `generate_grid_diagram(items, columns=5)` - Generate grid layout
-- `generate_pyramid_diagram(levels)` - Generate pyramid
-- `generate_flywheel_diagram(elements, center_label=None, radius=220)` - Generate flywheel
-- `generate_before_after_diagram(before_items, after_items)` - Generate before/after
-- `generate_funnel_diagram(stages, values)` - Generate funnel
-- `generate_slide_card_diagram(cards)` - Generate slide cards
-- `generate_slide_card_comparison(left_card, right_card)` - Generate slide card comparison
-
-**Prompt-Based Generation Methods:**
-
-- `generate_cycle_diagram_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate cycle from prompt
-- `generate_comparison_diagram_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate comparison from prompt
-- `generate_timeline_diagram_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate timeline from prompt
-- `generate_grid_diagram_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate grid from prompt
-- `generate_flywheel_diagram_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate flywheel from prompt
-- `generate_slide_cards_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate slide cards from prompt
-- `generate_slide_card_comparison_from_prompt(generator, prompt=None, model='gpt-4-turbo-preview')` - Generate slide card comparison from prompt
-
-All prompt-based methods use default prompts if `prompt=None`. See `DEFAULT_DIAGRAM_PROMPTS` for available defaults.
-
-**Export Methods:**
-
-- `save(html_content, output_path)` - Save HTML to file
-- `export_to_png(html_content, output_path, viewport_width=2400, viewport_height=1600, device_scale_factor=2, padding=20, temp_html_path=None)` - Export to PNG
-
-#### Convenience Functions
-
-For quick generation without creating a generator instance:
-
-```python
-from modern_graphics import (
-    generate_cycle_diagram,
-    generate_comparison_diagram,
-    generate_timeline_diagram,
-    generate_story_slide,
-    # ... etc
-)
-
-# Generate HTML directly
-html = generate_cycle_diagram([
-    {'text': 'Step 1', 'color': 'blue'},
-    {'text': 'Step 2', 'color': 'green'}
-])
-```
-
-#### Prompt-Based Functions
-
-Generate diagrams from natural language prompts:
-
-```python
-from modern_graphics import (
-    generate_cycle_diagram_from_prompt,
-    generate_comparison_diagram_from_prompt,
-    generate_timeline_diagram_from_prompt,
-    generate_grid_diagram_from_prompt,
-    generate_flywheel_diagram_from_prompt,
-    generate_slide_cards_from_prompt,
-    generate_slide_card_comparison_from_prompt,
-    DEFAULT_DIAGRAM_PROMPTS,
-    ModernGraphicsGenerator,
-    Attribution
-)
-
-generator = ModernGraphicsGenerator("My Diagram", Attribution())
-
-# Use default prompt
-html = generate_cycle_diagram_from_prompt(generator)
-
-# Custom prompt
-html = generate_cycle_diagram_from_prompt(
-    generator,
-    prompt="Show a customer journey: Discover, Try, Buy, Love"
-)
-```
-
-### Examples & Showcase
-
-#### Showcase Examples
-
-High-quality showcase examples are available in `examples/output/showcase/`:
-
-- **Diagram Types** (`showcase/diagram-types/`) - One example of each diagram type (8 examples)
-- **Templates** (`showcase/templates/`) - Different template styles (default, corporate, tech startup)
-- **Attribution** (`showcase/attribution/`) - Different attribution configurations
-- **Use Cases** (`showcase/use-cases/`) - Real-world use case examples
-
-**Use Case Examples:**
-
-| Corporate Report | Tech Startup Pitch | Educational Course |
-|------------------|-------------------|-------------------|
-| ![Corporate Report](examples/output/showcase/use-cases/corporate-report.png) | ![Tech Startup Pitch](examples/output/showcase/use-cases/tech-pitch.png) | ![Educational Course](examples/output/showcase/use-cases/educational-course.png) |
-
-**Regenerate showcase:** Run `python scripts/run_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
-
-#### Example Scripts
-
-The `scripts/` directory contains comprehensive example and utility scripts:
-
-- **`all_diagram_types.py`** - Generate all diagram types
-- **`batch_generation.py`** - Batch generate multiple graphics
-- **`custom_template.py`** - Creating and using custom templates
-- **`attribution_examples.py`** - Customizing attribution
-- **`export_options.py`** - PNG export options and settings
-- **`use_case_*.py`** - Real-world use case examples
-- **`run_showcase.py`** - Generate showcase examples for README
-
-**Output Location:** All example scripts save outputs to `examples/output/generated/` (not tracked in git).
-
-**Note:** Showcase examples in `examples/output/showcase/` are tracked in git and can be viewed directly.
-
-PNG export provides high-quality output with automatic tight cropping to content.
-
-#### Export Parameters
-
-```python
-generator.export_to_png(
-    html_content,
-    output_path,
-    viewport_width=2400,        # Browser viewport width (CSS pixels)
-    viewport_height=1600,       # Browser viewport height (CSS pixels)
-    device_scale_factor=2,      # Scale factor for resolution (1-4 recommended)
-    padding=20,                  # Padding around content (CSS pixels)
-    temp_html_path=None          # Optional: custom temp HTML path
-)
-```
-
-#### Resolution Guidelines
-
-- **Standard Quality**: `viewport_width=2400, device_scale_factor=2` (default)
-  - Good for most use cases, fast generation
-  - Output: ~4800px wide at 2x scale
-  
-- **High Quality**: `viewport_width=3200, device_scale_factor=3`
-  - For print or large displays
-  - Output: ~9600px wide at 3x scale
-  
-- **Fast/Low Quality**: `viewport_width=1200, device_scale_factor=1`
-  - For quick previews or small displays
-  - Output: ~1200px wide
-
-#### Automatic Cropping
-
-All PNG exports automatically crop to the content bounding box, removing excess whitespace. Adjust `padding` if content is cut off:
-
-```python
-# More padding if content is too close to edges
-generator.export_to_png(html, path, padding=40)
-
-# Minimal padding for tight crop
-generator.export_to_png(html, path, padding=5)
-```
-
-### Troubleshooting
-
-#### Installation Issues
-
-**Playwright browser not found:**
-```bash
-playwright install chromium
-```
-
-**Python version error:**
-- Ensure Python 3.8+ is installed: `python3 --version`
-
-#### PNG Export Issues
-
-**"playwright not found" error:**
-```bash
-pip install playwright
-playwright install chromium
-```
-
-**Low quality exports:**
-- Increase `device_scale_factor` (default: 2, try 3 or 4)
-- Increase `viewport_width` and `viewport_height`
-
-**Cropping issues:**
-- Adjust `padding` parameter if content is cut off: `export_to_png(html, path, padding=40)`
-
-#### AI Features Issues
-
-**"OPENAI_API_KEY not found" error:**
-- **You only see this if using prompt-based features** (optional)
-- **Solution 1**: Use structured data instead (no OpenAI needed) - see [Working Without OpenAI](#working-without-openai)
-  ```python
-  # Instead of: generate_cycle_diagram_from_prompt(generator, prompt="...")
-  # Use: generator.generate_cycle_diagram([{'text': 'Step 1', 'color': 'blue'}])
-  ```
-- **Solution 2**: If you want prompt-based generation:
-  - Ensure `.env` file exists with `OPENAI_API_KEY=your_key`
-  - Or set environment variable: `export OPENAI_API_KEY=your_key`
-  - Verify API key is valid and has credits
-  - Check OpenAI model availability
-
-**Template generation fails:**
-- Only affects AI-assisted template creation (optional)
-- Use existing templates or create templates manually (no OpenAI needed)
-- If using AI template creation, verify API key is valid and has credits
-
-## Additional Resources
-
-### Documentation
-
-- **[Core Concepts](docs/CONCEPTS.md)** - Detailed explanation of the four concepts
-- **[Diagram Types Guide](docs/DIAGRAM_TYPES.md)** - Decision tree and all diagram types
-- **[Common Use Cases](docs/USE_CASES.md)** - Practical examples and patterns
-- **[Quick Start Guide](docs/QUICKSTART.md)** - Get started in 5 minutes
-
-### Development
-
-```bash
-# Install dev dependencies
-pip install -r requirements-dev.txt
-
-# Format code
-black modern_graphics/
-
-# Lint code
-ruff check modern_graphics/
-```
+## Next Steps
+
+**New to the library?**
+1. Start with [How Do I Get Started?](#how-do-i-get-started) - Installation + first graphic + first theme
+2. Try the [Examples Directory](examples/) - See working code
+3. Browse the [Showcase Gallery](examples/output/showcase/) - See what's possible
+
+**Want to customize?**
+1. **Create [Custom Themes](docs/ADVANCED.md#color-scheme-generator)** - Define colors and fonts once, apply everywhere
+   - See [Complete Theme Demo](examples/output/theme-demo/index.html) for inspiration
+   - Try [Theme Demo Script](examples/generate_complete_theme_demo.py)
+2. Learn about [Templates](docs/ADVANCED.md#custom-templates)
+3. Check out [Advanced Topics](docs/ADVANCED.md)
+
+**Want to use prompts?**
+1. Read [How Do I Prompt Creatively?](#how-do-i-prompt-creatively) - Techniques and examples
+2. See [Prompts Guide](docs/PROMPTS.md) - Complete guide
+3. Check [Use Cases](docs/USE_CASES.md) - Real-world patterns
+
+**Need help?**
+1. Check [Troubleshooting](docs/TROUBLESHOOTING.md)
+2. Review [Examples Directory](examples/)
+3. See [Use Cases](docs/USE_CASES.md) for patterns
 
 ## License
 
@@ -1139,4 +582,4 @@ Contributions welcome! The system is designed to be extensible:
 - Add new templates using `TemplateBuilder`
 - Submit PRs for improvements
 
-See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for more details.
+See [Contributing Guide](docs/CONTRIBUTING.md) for more details.

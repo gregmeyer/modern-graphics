@@ -45,6 +45,22 @@ from .convenience import (
     generate_modern_hero,
     generate_modern_hero_triptych,
 )
+from .color_scheme import (
+    ColorScheme,
+    CORPORATE_SCHEME,
+    DARK_SCHEME,
+    WARM_SCHEME,
+    GREEN_SCHEME,
+    create_custom_scheme,
+    get_scheme,
+    register_scheme,
+    list_schemes,
+    SCHEME_REGISTRY,
+)
+from .scheme_from_prompt import (
+    generate_scheme_from_prompt,
+    load_scheme_from_json,
+)
 from .svg_decision_helper import should_use_svg_js, get_recommendation_reason
 from .svg_utils import (
     generate_svg_container,
@@ -150,6 +166,20 @@ __all__ = [
     'IllustrationValidator',
     'DesignReviewAgent',
     'SVGElementParser',
+    # Color schemes
+    'ColorScheme',
+    'CORPORATE_SCHEME',
+    'DARK_SCHEME',
+    'WARM_SCHEME',
+    'GREEN_SCHEME',
+    'create_custom_scheme',
+    'get_scheme',
+    'register_scheme',
+    'list_schemes',
+    'SCHEME_REGISTRY',
+    # Scheme from prompt
+    'generate_scheme_from_prompt',
+    'load_scheme_from_json',
 ]
 
 # Version

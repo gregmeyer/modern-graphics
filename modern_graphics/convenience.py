@@ -168,7 +168,12 @@ def generate_story_slide(
     insight: Optional[str] = None,
     evolution_data: Optional[List[Dict[str, str]]] = None,
     output_path: Optional[Path] = None,
-    attribution: Optional[Attribution] = None
+    attribution: Optional[Attribution] = None,
+    top_tile_only: bool = False,
+    hero_use_svg_js: bool = False,
+    hero_variant: str = "auto",
+    story_cards: Optional[List[Dict[str, Any]]] = None,
+    hero_canvas_cards: Optional[List[Dict[str, Any]]] = None
 ) -> str:
     """Convenience function to generate story-driven slide"""
     from .diagrams.story_slide import generate_story_slide as _generate
@@ -180,7 +185,12 @@ def generate_story_slide(
         time_period=time_period,
         what_it_means=what_it_means,
         insight=insight,
-        evolution_data=evolution_data
+        evolution_data=evolution_data,
+        top_tile_only=top_tile_only,
+        hero_use_svg_js=hero_use_svg_js,
+        hero_variant=hero_variant,
+        story_cards=story_cards,
+        hero_canvas_cards=hero_canvas_cards
     )
     if output_path:
         generator.save(html, output_path)
@@ -201,6 +211,9 @@ def generate_modern_hero(
     cta: Optional[str] = None,
     background_variant: str = "light",
     visual_description: Optional[str] = None,
+    headline_align: str = "left",
+    subheadline_align: Optional[str] = None,
+    graphic_position: str = "center",
     output_path: Optional[Path] = None,
     attribution: Optional[Attribution] = None,
 ) -> str:
@@ -220,6 +233,9 @@ def generate_modern_hero(
         cta=cta,
         background_variant=background_variant,
         visual_description=visual_description,
+        headline_align=headline_align,
+        subheadline_align=subheadline_align,
+        graphic_position=graphic_position,
     )
     if output_path:
         generator.save(html, output_path)
@@ -233,6 +249,8 @@ def generate_modern_hero_triptych(
     columns: List[Dict[str, any]],
     stats: Optional[List[Dict[str, str]]] = None,
     eyebrow: Optional[str] = None,
+    headline_align: str = "left",
+    subheadline_align: Optional[str] = None,
     output_path: Optional[Path] = None,
     attribution: Optional[Attribution] = None,
 ) -> str:
@@ -245,6 +263,8 @@ def generate_modern_hero_triptych(
         columns=columns,
         stats=stats,
         eyebrow=eyebrow,
+        headline_align=headline_align,
+        subheadline_align=subheadline_align,
     )
     if output_path:
         generator.save(html, output_path)

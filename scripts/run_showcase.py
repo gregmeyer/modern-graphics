@@ -28,6 +28,7 @@ from modern_graphics.prompt_to_diagram import (
     generate_slide_card_comparison_from_prompt,
 )
 from modern_graphics.diagrams.unified_story_slide import generate_unified_story_slide
+from modern_graphics.diagrams.modern_hero import generate_modern_hero, generate_modern_hero_triptych
 from prompt_storage import PromptStorage
 
 # Output directories (relative to project root, not scripts/)
@@ -36,9 +37,10 @@ diagram_types_dir = showcase_dir / "diagram-types"
 templates_dir = showcase_dir / "templates"
 attribution_dir = showcase_dir / "attribution"
 use_cases_dir = showcase_dir / "use-cases"
+hero_slides_dir = showcase_dir / "hero-slides"
 
 # Create directories
-for dir_path in [diagram_types_dir, templates_dir, attribution_dir, use_cases_dir]:
+for dir_path in [diagram_types_dir, templates_dir, attribution_dir, use_cases_dir, hero_slides_dir]:
     dir_path.mkdir(parents=True, exist_ok=True)
 
 # Initialize prompt storage
@@ -440,6 +442,175 @@ html = edu_gen.generate_timeline_diagram(
 )
 edu_gen.export_to_png(html, use_cases_dir / "educational-course.png", **export_kwargs)
 print("     ✓ Saved: use-cases/educational-course.png")
+
+print()
+
+# ============================================================================
+# HERO SLIDES - Modern hero layouts
+# ============================================================================
+print("🎨 Generating Hero Slide Examples...")
+print()
+
+# Hero slides use larger viewport for better presentation
+hero_export_kwargs = {
+    "viewport_width": 1700,
+    "viewport_height": 1100,
+    "device_scale_factor": 2,
+    "padding": 30,
+}
+
+# 1. Modern Hero (Open Canvas with Tiles)
+print("  1. Modern Hero (Open Canvas with Tiles)...")
+hero_gen = ModernGraphicsGenerator(
+    "Hero Showcase",
+    attribution=Attribution(copyright="© Modern Graphics 2025", context="Hero Slide Example")
+)
+html = hero_gen.generate_modern_hero(
+    headline="Build a Graphics System, Not Just Slides",
+    subheadline="Route every story beat through templates so each visual ships with intent.",
+    eyebrow="Modern Graphics",
+    highlight_tiles=[
+        {"label": "Capture story beat", "icon": "manual"},
+        {"label": "Map to template", "icon": "templates"},
+        {"label": "Paste prompt + numbers", "icon": "generated"},
+        {"label": "Ship hero visuals", "icon": "generated"}
+    ],
+    stats=[
+        {"label": "Design time", "value": "2h → 5m"},
+        {"label": "Consistency", "value": "Low → High"},
+        {"label": "Reusability", "value": "One-off → Regenerate"}
+    ],
+    cta="Templates are visual infrastructure",
+    background_variant="light"
+)
+output_file = hero_slides_dir / "01-open-canvas-tiles.png"
+hero_gen.export_to_png(html, output_file, **hero_export_kwargs)
+print("     ✓ Saved: hero-slides/01-open-canvas-tiles.png")
+
+# 2. Modern Hero (Open Canvas with Flowchart)
+print("  2. Modern Hero (Open Canvas with Flowchart)...")
+html = hero_gen.generate_modern_hero(
+    headline="Turn Every Story Beat Into a Reusable Template",
+    subheadline="Creative briefs route through a template graph so decks feel cohesive and take minutes instead of days.",
+    eyebrow="Graphics System",
+    flow_nodes=[
+        {"id": "briefs", "label": "Story briefs", "icon": "manual", "position": {"x": 0.08, "y": 0.55}, "size": "small"},
+        {"id": "map", "label": "Map to schema", "icon": "templates", "orbit": "top"},
+        {"id": "numbers", "label": "Import numbers", "icon": "generated", "orbit": "bottom"},
+        {"id": "library", "label": "Template library", "icon": "templates", "position": {"x": 0.58, "y": 0.58}},
+        {"id": "deck", "label": "Deck-ready visuals", "icon": "generated", "position": {"x": 0.9, "y": 0.5}, "size": "large"}
+    ],
+    flow_connections=[
+        {"from": "briefs", "to": "map"},
+        {"from": "briefs", "to": "numbers"},
+        {"from": "map", "to": "library"},
+        {"from": "numbers", "to": "library"},
+        {"from": "library", "to": "deck"}
+    ],
+    stats=[
+        {"label": "Design time", "value": "2h → 6m"},
+        {"label": "Consistency", "value": "Inconsistent → Systemic"},
+        {"label": "Reusability", "value": "One-off → Regenerate"}
+    ],
+    background_variant="light",
+    visual_description="Floating constellation DAG with translucent arcs, directed acrylic graph energy"
+)
+output_file = hero_slides_dir / "02-open-canvas-flowchart.png"
+hero_gen.export_to_png(html, output_file, **hero_export_kwargs)
+print("     ✓ Saved: hero-slides/02-open-canvas-flowchart.png")
+
+# 3. Modern Hero (Open Canvas with Custom SVG)
+print("  3. Modern Hero (Open Canvas with Custom SVG)...")
+freeform_svg = """<div style="position:relative;height:320px;display:flex;justify-content:center;align-items:center;">
+  <svg viewBox="0 0 1000 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;">
+    <defs>
+      <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#C084FC" stop-opacity="0.8"/>
+        <stop offset="50%" stop-color="#8B5CF6" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="#7C3AED" stop-opacity="0.4"/>
+      </linearGradient>
+    </defs>
+    <path d="M-20 200 C 200 100, 400 240, 640 140 S 1000 60, 1020 180" 
+          stroke="url(#ribbonGrad)" stroke-width="120" fill="none" stroke-linecap="round" opacity="0.85"/>
+    <path d="M-20 170 C 180 70, 380 240, 640 150 S 1000 90, 1020 160" 
+          stroke="rgba(255,255,255,0.5)" stroke-dasharray="24 14" stroke-width="3" fill="none"/>
+    <circle cx="200" cy="180" r="8" fill="#E9D5FF" opacity="0.9"/>
+    <circle cx="500" cy="140" r="10" fill="#C084FC" opacity="0.8"/>
+    <circle cx="800" cy="100" r="8" fill="#A855F7" opacity="0.9"/>
+  </svg>
+  <div class="canvas-chip" style="position:absolute;left:20%;top:50%;transform:translate(-50%,-50%);">Capture</div>
+  <div class="canvas-chip" style="position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);">Transform</div>
+  <div class="canvas-chip" style="position:absolute;left:80%;top:35%;transform:translate(-50%,-50%);">Ship</div>
+</div>"""
+html = hero_gen.generate_modern_hero(
+    headline="From Prompts to Polished Graphics",
+    subheadline="A visual pipeline that turns story beats into consistent, reusable templates.",
+    eyebrow="Modern Graphics",
+    freeform_canvas=freeform_svg,
+    stats=[
+        {"label": "Speed", "value": "2h → 5m"},
+        {"label": "Quality", "value": "Consistent"},
+        {"label": "Reusability", "value": "Infinite"}
+    ],
+    background_variant="light"
+)
+output_file = hero_slides_dir / "03-open-canvas-svg.png"
+hero_gen.export_to_png(html, output_file, **hero_export_kwargs)
+print("     ✓ Saved: hero-slides/03-open-canvas-svg.png")
+
+# 4. Modern Hero (Dark/Nightfall)
+print("  4. Modern Hero (Dark Variant)...")
+html = hero_gen.generate_modern_hero(
+    headline="Treat Every Prompt Like a Spec",
+    subheadline="Manual tweaks become a system when you lock templates and story schema.",
+    eyebrow="Modern Graphics",
+    highlight_tiles=[
+        {"label": "Calm gradient canvas", "icon": "generated"},
+        {"label": "Orbit accents", "icon": "templates"},
+        {"label": "Story-first CTA", "icon": "manual"}
+    ],
+    stats=[
+        {"label": "Design time", "value": "2h → 5m"},
+        {"label": "Consistency", "value": "Low → High"}
+    ],
+    background_variant="dark"
+)
+output_file = hero_slides_dir / "04-dark-variant.png"
+hero_gen.export_to_png(html, output_file, **hero_export_kwargs)
+print("     ✓ Saved: hero-slides/04-dark-variant.png")
+
+# 5. Modern Hero Triptych
+print("  5. Modern Hero Triptych...")
+html = hero_gen.generate_modern_hero_triptych(
+    headline="From Prompts to Polished Slides",
+    subheadline="Manual decks become a reusable pipeline when every beat flows through templates.",
+    eyebrow="Modern Graphics",
+    columns=[
+        {
+            "title": "Manual design",
+            "items": ["Ad-hoc layouts", "Inconsistent styling", "Hours per slide"],
+            "icon": "manual"
+        },
+        {
+            "title": "Template library",
+            "items": ["Story slide schema", "Data cards", "Prompt recipes"],
+            "icon": "templates"
+        },
+        {
+            "title": "Generated visuals",
+            "items": ["Deterministic output", "Repeatable quality", "Deck-ready assets"],
+            "icon": "generated"
+        }
+    ],
+    stats=[
+        {"label": "Design time", "value": "2h → 5m"},
+        {"label": "Consistency", "value": "Low → High"},
+        {"label": "Reusability", "value": "One-off → Regenerate"}
+    ]
+)
+output_file = hero_slides_dir / "05-triptych.png"
+hero_gen.export_to_png(html, output_file, **hero_export_kwargs)
+print("     ✓ Saved: hero-slides/05-triptych.png")
 
 print()
 

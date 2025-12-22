@@ -302,6 +302,9 @@ def main():
     story_slide_parser.add_argument('--what-it-means', required=True, help='What it means (the meaning/implication)')
     story_slide_parser.add_argument('--insight', help='Optional key insight/takeaway')
     story_slide_parser.add_argument('--evolution-data', help='JSON array of evolution stages: [{"era":"2010s","label":"Manual Slides","icon":"📊"}]')
+    story_slide_parser.add_argument('--top-tile-only', action='store_true', help='Render only the hero/top tile')
+    story_slide_parser.add_argument('--hero-variant', choices=['auto', 'light', 'dark'], default='auto', help='Force hero panel variant (default: auto)')
+    story_slide_parser.add_argument('--hero-svg-js', action='store_true', help='Render hero mockup using SVG.js')
     story_slide_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
     story_slide_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
     story_slide_parser.add_argument('--context', help='Optional context line for attribution')
@@ -682,7 +685,10 @@ def main():
             what_it_means=args.what_it_means,
             insight=getattr(args, 'insight', None),
             evolution_data=evolution_data,
-            attribution=attribution
+            attribution=attribution,
+            top_tile_only=getattr(args, 'top_tile_only', False),
+            hero_use_svg_js=getattr(args, 'hero_svg_js', False),
+            hero_variant=getattr(args, 'hero_variant', 'auto')
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path, viewport_width=2400, viewport_height=1800, padding=40)

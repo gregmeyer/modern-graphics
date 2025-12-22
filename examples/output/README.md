@@ -33,6 +33,13 @@ High-quality showcase examples suitable for README display and documentation:
   - `tech-pitch.png` - Tech startup pitch deck example
   - `educational-course.png` - Educational course materials example
 
+- **`hero-slides/`** - Modern hero slide layouts (5 files)
+  - `01-open-canvas-tiles.png` - Open canvas with visual icon tiles
+  - `02-open-canvas-flowchart.png` - Open canvas with flowchart/DAG visualization
+  - `03-open-canvas-svg.png` - Open canvas with custom SVG illustration
+  - `04-dark-variant.png` - Dark/nightfall hero layout
+  - `05-triptych.png` - Three-column triptych layout
+
 **Regenerate showcase:** Run `python scripts/run_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
 
 ### `generated/` - Temporary Outputs (Gitignored)
