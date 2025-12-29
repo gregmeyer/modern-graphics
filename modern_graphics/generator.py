@@ -16,6 +16,7 @@ from .diagrams import (
     generate_funnel_diagram,
     generate_slide_card_diagram,
     generate_slide_card_comparison,
+    generate_radar_diagram,
     DIAGRAM_REGISTRY,
     get_diagram_generator,
 )
@@ -144,6 +145,45 @@ class ModernGraphicsGenerator(BaseGenerator):
         """Generate a funnel diagram"""
         from .diagrams.funnel import generate_funnel_diagram as _generate
         return _generate(self, stages, show_percentages, color_scheme)
+    
+    def generate_radar_diagram(
+        self,
+        signals: List[Dict[str, any]],
+        center_label: str = "Support Radar",
+        viewbox_width: int = 1200,
+        viewbox_height: int = 700,
+        radar_radius: int = 250,
+        show_sweep: bool = True,
+        show_circles: bool = True,
+    ) -> str:
+        """Generate a radar diagram with signals positioned around a center point.
+        
+        Args:
+            center_label: Label for the center radar dish
+            signals: List of signal dictionaries with:
+                - label: Signal text
+                - axiom: Axiom identifier or name
+                - detects: What signal it detects
+                - discovers: Type of failure discovered
+                - covers: What it covers (optional)
+                - position: Dict with 'angle' (degrees) or 'x', 'y' (0-1 normalized)
+                - color: Color key (blue, purple, green, orange, gray)
+            viewbox_width: SVG viewBox width
+            viewbox_height: SVG viewBox height
+            radar_radius: Radius of the outer radar circle
+            show_sweep: Whether to show animated radar sweep
+            show_circles: Whether to show concentric radar circles
+        """
+        return generate_radar_diagram(
+            self,
+            signals=signals,
+            center_label=center_label,
+            viewbox_width=viewbox_width,
+            viewbox_height=viewbox_height,
+            radar_radius=radar_radius,
+            show_sweep=show_sweep,
+            show_circles=show_circles,
+        )
     
     def generate_slide_card_diagram(
         self,

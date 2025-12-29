@@ -37,10 +37,12 @@ from .wireframe_scene import (
 )
 from .transaction_icons_svg import render_transaction_svg
 from .mermaid_svg import mermaid_to_svg
+from .radar import generate_radar_diagram, RadarDiagramGenerator
 
 # Registry of diagram types
 DIAGRAM_REGISTRY: Dict[str, Type[DiagramGenerator]] = {
     "cycle": CycleDiagramGenerator,
+    "radar": RadarDiagramGenerator,
     # TODO: Add other diagram generators as classes are created
 }
 
@@ -77,6 +79,8 @@ __all__ = [
     'generate_insight_story',
     'generate_key_insight',
     'generate_insight_card',
+    'generate_radar_diagram',
+    'RadarDiagramGenerator',
     # SVG wireframe generators
     'WireframeSVGConfig',
     'generate_chat_panel_svg',
