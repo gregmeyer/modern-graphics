@@ -208,31 +208,42 @@ def generate_radar_diagram(
     
     svg_content = "\n        ".join(svg_parts)
     
+    attribution_html = generator._generate_attribution_html()
+    
     html_content = f"""
     <div class="radar-wrapper">
         <div class="radar-container">
             {svg_content}
         </div>
+        {attribution_html}
     </div>
-    {generator._generate_attribution_html()}
     """
     
     css_content = """
         body {
             margin: 0;
-            padding: 60px 40px;
+            padding: 0;
             background: #FFFFFF;
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
         }
         .radar-wrapper {
-            max-width: 1600px;
-            margin: 0 auto;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 20px;
         }
         .radar-container {
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+        .radar-wrapper .attribution {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            margin: 0;
         }
     """
     

@@ -80,14 +80,14 @@ html_path = output_dir / "radar_example.html"
 generator.save(html, html_path)
 print(f"✓ Saved: {html_path}")
 
-# Export PNG
+# Export PNG with minimal padding for tight crop
 png_path = output_dir / "radar_example.png"
 generator.export_to_png(
     html,
     png_path,
-    viewport_width=2400,
-    viewport_height=1400,
+    viewport_width=1400,
+    viewport_height=900,
     device_scale_factor=2,
-    padding=40,
+    padding=10,
 )
 print(f"✓ Exported: {png_path}")
