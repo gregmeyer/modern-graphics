@@ -14,10 +14,12 @@ from .slide_cards import generate_slide_card_diagram, generate_slide_card_compar
 from .story_slide import generate_story_slide
 from .creative_story_slide import generate_combo_chart
 from .unified_story_slide import generate_unified_story_slide
+from .radar import generate_radar_diagram, RadarDiagramGenerator
 
 # Registry of diagram types
 DIAGRAM_REGISTRY: Dict[str, Type[DiagramGenerator]] = {
     "cycle": CycleDiagramGenerator,
+    "radar": RadarDiagramGenerator,
     # TODO: Add other diagram generators as classes are created
 }
 
@@ -48,4 +50,6 @@ __all__ = [
     'generate_story_slide',
     'generate_combo_chart',
     'generate_unified_story_slide',
+    'generate_radar_diagram',
+    'RadarDiagramGenerator',
 ]
