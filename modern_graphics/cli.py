@@ -34,6 +34,7 @@ from . import (
     generate_story_slide,
     generate_modern_hero,
     generate_modern_hero_triptych,
+    generate_premium_card,
 )
 
 
@@ -293,6 +294,18 @@ def main():
     slide_compare_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
     slide_compare_parser.add_argument('--context', help='Optional context line for attribution')
     slide_compare_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
+    
+    # Premium stacked card
+    premium_card_parser = subparsers.add_parser('premium-card', help='Generate stacked premium card (hero + detail panels)')
+    premium_card_parser.add_argument('--title', required=True, help='Document title / default card headline')
+    premium_card_parser.add_argument('--config', required=True, help='Path to JSON file or raw JSON describing the card payload')
+    premium_card_parser.add_argument('--size', type=int, default=1100, help='Square canvas size in pixels (default: 1100)')
+    premium_card_parser.add_argument('--top-only', action='store_true', help='Render only the top/hero panel')
+    premium_card_parser.add_argument('--bottom-only', action='store_true', help='Render only the bottom/detail panel')
+    premium_card_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    premium_card_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    premium_card_parser.add_argument('--context', help='Optional context line for attribution')
+    premium_card_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
     # Story-driven slide
     story_slide_parser = subparsers.add_parser('story-slide', help='Generate compelling story-driven slide (What changed, time period, what it means)')
@@ -555,6 +568,49 @@ def main():
         else:
             generator.save(html, output_path)
             print(f"Generated slide card comparison: {output_path}")
+    
+    elif args.command == 'premium-card':
+        config_source = args.config
+        config_path = Path(config_source)
+        if config_path.exists():
+            config_raw = config_path.read_text(encoding='utf-8')
+        else:
+            config_raw = config_source
+        try:
+            card_config = json.loads(config_raw)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid JSON for --config: {exc}")
+        if getattr(args, 'top_only', False) and getattr(args, 'bottom_only', False):
+            raise SystemExit("Cannot combine --top-only and --bottom-only. Choose a single panel or leave both enabled.")
+        show_top = not getattr(args, 'bottom_only', False)
+        show_bottom = not getattr(args, 'top_only', False)
+        title_text = card_config.get('title') or args.title
+        html = generate_premium_card(
+            title=title_text,
+            tagline=card_config.get('tagline', ''),
+            subtext=card_config.get('subtext', ''),
+            eyebrow=card_config.get('eyebrow', ''),
+            features=card_config.get('features', []),
+            hero=card_config.get('hero', {}),
+            palette=card_config.get('palette', {}),
+            canvas_size=getattr(args, 'size', 1100),
+            show_top_panel=show_top,
+            show_bottom_panel=show_bottom,
+            attribution=attribution
+        )
+        if getattr(args, 'png', False):
+            viewport = getattr(args, 'size', 1100)
+            generator.export_to_png(
+                html,
+                output_path,
+                viewport_width=viewport,
+                viewport_height=viewport,
+                padding=0
+            )
+            print(f"Generated premium card PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated premium card: {output_path}")
     
     elif args.command == 'modern-hero':
         highlights = parse_highlights_arg(getattr(args, 'highlights', None))
