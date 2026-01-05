@@ -44,6 +44,7 @@ from .convenience import (
     generate_story_slide,
     generate_modern_hero,
     generate_modern_hero_triptych,
+    generate_premium_card,
 )
 from .color_scheme import (
     ColorScheme,
@@ -147,6 +148,7 @@ __all__ = [
     'generate_story_slide',
     'generate_modern_hero',
     'generate_modern_hero_triptych',
+    'generate_premium_card',
     # SVG.js utilities
     'should_use_svg_js',
     'get_recommendation_reason',

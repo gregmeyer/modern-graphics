@@ -159,6 +159,37 @@ class ModernGraphicsGenerator(BaseGenerator):
         """Generate a side-by-side slide card comparison"""
         return generate_slide_card_comparison(self, left_card, right_card, vs_text)
 
+    def generate_premium_card(
+        self,
+        *,
+        title: str,
+        tagline: str,
+        subtext: str,
+        eyebrow: str,
+        features: List[str],
+        hero: Dict[str, Any],
+        palette: Dict[str, str],
+        canvas_size: int = 1100,
+        show_top_panel: bool = True,
+        show_bottom_panel: bool = True,
+    ) -> str:
+        """Generate a stacked premium card with hero + body panels."""
+        from .diagrams.premium_card import generate_premium_card as _generate
+
+        return _generate(
+            self,
+            title=title,
+            tagline=tagline,
+            subtext=subtext,
+            eyebrow=eyebrow,
+            features=features,
+            hero=hero,
+            palette=palette,
+            canvas_size=canvas_size,
+            show_top_panel=show_top_panel,
+            show_bottom_panel=show_bottom_panel,
+        )
+
     def generate_modern_hero(
         self,
         headline: str,

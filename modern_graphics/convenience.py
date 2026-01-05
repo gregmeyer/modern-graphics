@@ -160,6 +160,39 @@ def generate_slide_card_comparison(
     return html
 
 
+def generate_premium_card(
+    title: str,
+    tagline: str,
+    subtext: str,
+    eyebrow: str,
+    features: List[str],
+    hero: Dict[str, Any],
+    palette: Dict[str, str],
+    canvas_size: int = 1100,
+    show_top_panel: bool = True,
+    show_bottom_panel: bool = True,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience helper to render the stacked premium card layout."""
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = generator.generate_premium_card(
+        title=title,
+        tagline=tagline,
+        subtext=subtext,
+        eyebrow=eyebrow,
+        features=features,
+        hero=hero,
+        palette=palette,
+        canvas_size=canvas_size,
+        show_top_panel=show_top_panel,
+        show_bottom_panel=show_bottom_panel,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
 def generate_story_slide(
     title: str,
     what_changed: str,

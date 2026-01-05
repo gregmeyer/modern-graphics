@@ -133,6 +133,15 @@ Now your graphic uses consistent branding that you can apply to all future graph
   ![Theme Demo](examples/output/theme-demo/04-slide-cards-two.png) *(PNG checked in; run `python examples/generate_complete_theme_demo.py` to rebuild `index.html` locally)*
 - **Illustrate long-form content:** Feed an article outline and let the system storyboard it ([use cases](examples/output/showcase/use-cases/)).  
   ![Use Case](examples/output/showcase/use-cases/corporate-report.png)
+- **Ops guardrail premium cards:** The new `premium-card` CLI renders the stacked hero/detail layout we used for the Ops Leaders “questions for agents” article.  
+  ```bash
+  modern-graphics premium-card \
+    --title "Ops Guardrail Premium Card" \
+    --config examples/ops_guardrail_premium_card.json \
+    --output examples/output/generated/ops-guardrail-card.png \
+    --png
+  ```
+  Add `--top-only` (hero canvas) or `--bottom-only` (detail card) to mirror the article’s workflow. The command above drops PNGs into `examples/output/generated/` so you can compare your output to the guardrail showcase cards.
 
 Want more? Browse diagram thumbnails in repo (e.g., `examples/output/showcase/hero-slides/01-*.png`), or run `python scripts/run_showcase.py` to regenerate the curated PNGs.
 

@@ -1,0 +1,48 @@
+{
+  "title": "What is this agent's job?",
+  "tagline": "Mission story: trigger → action → shutdown",
+  "subtext": "If you can't explain the wake signal, bounded moves, and proof of done, the agent isn't ready for prod.",
+  "eyebrow": "Mission story checkpoint",
+  "features": [
+    "Trigger cadence & inputs",
+    "Bounded action list",
+    "Shutdown guardrail / safe-mode"
+  ],
+  "palette": {
+    "frame_bg": "linear-gradient(145deg, #040910, #0b1d33)",
+    "frame_border": "rgba(148,163,184,0.45)",
+    "panel_bg": "linear-gradient(135deg, rgba(2,9,22,0.95), rgba(7,19,37,0.9))",
+    "panel_border": "rgba(59,130,246,0.35)",
+    "accent": "#38bdf8",
+    "accent_soft": "rgba(56,189,248,0.32)",
+    "accent_glow": "rgba(56,189,248,0.65)",
+    "pill_bg": "rgba(8,18,36,0.75)",
+    "pill_border": "rgba(56,189,248,0.35)",
+    "grid_color": "rgba(56,189,248,0.08)",
+    "background": "#01050f"
+  },
+  "hero": {
+    "type": "timeline",
+    "badge": "Mission story guardrail",
+    "caption": "Wake → bounded actions → proof of done",
+    "steps": [
+      {
+        "label": "Trigger",
+        "lines": ["Owner + wake signal", "Cadence + inputs"]
+      },
+      {
+        "label": "Action burst",
+        "lines": ["Bounded verbs", "Single runway"]
+      },
+      {
+        "label": "Proof & shutdown",
+        "lines": ["Telemetry + screenshot", "Safe-mode fallback"]
+      }
+    ],
+    "pills": [
+      {"label": "Inputs", "detail": "Owner + data feed documented"},
+      {"label": "Actions", "detail": "Only the verbs you can explain"},
+      {"label": "Shutdown", "detail": "Proof of done + kill switch"}
+    ]
+  }
+}

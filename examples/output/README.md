@@ -47,6 +47,22 @@ High-quality showcase examples suitable for README display and documentation:
 
 **Regenerate showcase:** Run `python scripts/run_showcase.py` to regenerate all showcase examples. Showcase examples use prompt-based generation with default prompts (see `modern_graphics.prompt_to_diagram.DEFAULT_DIAGRAM_PROMPTS`).
 
+### Premium Card Workflow (New)
+
+Need the stacked hero + detail cards showcased in the Ops Leaders “questions for agents” article? Use the new `premium-card` CLI command—it ships with a ready-to-run config:
+
+```bash
+modern-graphics premium-card \
+  --title "Ops Guardrail Premium Card" \
+  --config examples/ops_guardrail_premium_card.json \
+  --output examples/output/generated/ops-guardrail-card.png \
+  --png
+```
+
+- Outputs land in `examples/output/generated/` so you can compare against curated assets.
+- Add `--top-only` or `--bottom-only` to export just the hero illustration or the text panel (mirroring the Ops article workflow).
+- Copy the JSON, tweak colors/headlines/pills, and rerun to create new showcase variants.
+
 ### `generated/` - Temporary Outputs (Gitignored)
 
 All example scripts output to `generated/` directory. These files are temporary and not tracked in git:

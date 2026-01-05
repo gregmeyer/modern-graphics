@@ -1,0 +1,31 @@
+{
+  "name": "ops_guardrail",
+  "description": "Dark ops guardrail theme with cyan glow and white frame",
+  "font_family": "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  "body": {
+    "background": "linear-gradient(180deg, #f8fafc, #ffffff)",
+    "color": "#0f172a"
+  },
+  "panel": {
+    "background": "linear-gradient(135deg, #0f172a, #020617)",
+    "border_color": "rgba(148,163,184,0.35)",
+    "border_radius": "36px",
+    "box_shadow": "0 45px 140px rgba(2,6,23,0.5)",
+    "inner_border": "1px dashed rgba(148,163,184,0.4)"
+  },
+  "tile": {
+    "background": "rgba(255,255,255,0.12)",
+    "border_color": "rgba(148,163,184,0.4)",
+    "color": "#e2e8f0"
+  },
+  "tag": {
+    "background": "rgba(56,189,248,0.12)",
+    "color": "#38bdf8"
+  },
+  "stat": {
+    "background": "rgba(255,255,255,0.08)",
+    "border_color": "rgba(148,163,184,0.35)",
+    "label_color": "rgba(226,232,240,0.8)",
+    "value_color": "#38bdf8"
+  }
+}
