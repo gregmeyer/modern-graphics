@@ -11,6 +11,16 @@ Usage:
     modern-graphics pyramid --title "Pyramid" --layers "Layer1,Layer2,Layer3" --output output.html
     modern-graphics before-after --title "Transformation" --before "Item1,Item2" --after "Item3,Item4" --output output.html
     modern-graphics funnel --title "Funnel" --stages "Stage1,Stage2,Stage3" --values "100,80,50" --output output.html
+    
+    # Insight graphics
+    modern-graphics key-insight --text "The key insight text" --label "Key Insight" --output insight.png --png
+    modern-graphics insight-card --text "Insight text" --svg-file wireframe.svg --output card.png --png
+    modern-graphics insight-story --headline "Main Headline" --before-svg before.svg --after-svg after.svg --output story.png --png
+    
+    # SVG wireframe generation
+    modern-graphics wireframe-svg --type before --output before.svg
+    modern-graphics wireframe-svg --type after --output after.svg
+    modern-graphics wireframe-svg --type chat-panel --output chat.svg
 """
 
 import argparse
@@ -34,7 +44,22 @@ from . import (
     generate_story_slide,
     generate_modern_hero,
     generate_modern_hero_triptych,
+    generate_premium_card,
 )
+from .diagrams.insight import (
+    generate_key_insight,
+    generate_insight_card,
+    generate_insight_story,
+)
+from .diagrams.wireframe_svg import (
+    WireframeSVGConfig,
+    generate_chat_panel_svg,
+    generate_modal_form_svg,
+    generate_ticket_flow_svg,
+    generate_before_wireframe_svg,
+    generate_after_wireframe_svg,
+)
+from .color_scheme import get_scheme, list_schemes, ColorScheme
 
 
 def parse_steps(steps_str: str) -> list:
@@ -160,6 +185,95 @@ def parse_highlights_arg(highlights_str: Optional[str]) -> Optional[list]:
     if not highlights_str:
         return None
     return [item.strip() for item in highlights_str.split(',') if item.strip()]
+
+
+def get_wireframe_config_from_theme(theme_name: Optional[str], width: int = 400, height: int = 300, accent_color: str = "#0071e3") -> WireframeSVGConfig:
+    """Create WireframeSVGConfig from theme name or defaults."""
+    if theme_name:
+        scheme = get_scheme(theme_name)
+        if scheme:
+            # Detect dark theme
+            bg = scheme.bg_primary.lstrip('#')
+            is_dark = sum(int(bg[i:i+2], 16) for i in (0, 2, 4)) < 384
+            
+            return WireframeSVGConfig(
+                width=width,
+                height=height,
+                accent_color=scheme.primary,
+                success_color=scheme.success or "#34c759",
+                error_color=scheme.error or "#ff3b30",
+                text_primary=scheme.text_primary,
+                text_secondary=scheme.text_secondary,
+                text_tertiary=scheme.text_tertiary,
+                surface_1=scheme.bg_primary,
+                surface_2=scheme.bg_secondary,
+                surface_3=scheme.bg_tertiary,
+                border_color=scheme.border_medium if is_dark else scheme.border_light,
+                font_family=scheme.font_family_body or scheme.font_family,
+                chrome_dot_red=scheme.error if is_dark else None,
+                chrome_dot_yellow=scheme.warning if is_dark else None,
+                chrome_dot_green=scheme.success if is_dark else None,
+            )
+    
+    return WireframeSVGConfig(
+        width=width,
+        height=height,
+        accent_color=accent_color,
+    )
+
+
+def wrap_svg_for_png_export(svg: str, scheme: Optional[ColorScheme], width: int, height: int, white_bg: bool = True) -> str:
+    """Wrap SVG in HTML for PNG export with proper styling.
+    
+    Args:
+        svg: SVG content
+        scheme: Optional color scheme for fonts/effects
+        width: SVG width
+        height: SVG height
+        white_bg: Use white background for easy drop-in (default True)
+    """
+    # Use white background by default for easy drop-in to documents
+    bg_color = "#ffffff" if white_bg else (scheme.bg_secondary if scheme else "#f5f5f7")
+    
+    # Get Google Fonts link if theme uses custom fonts
+    fonts_link = ""
+    if scheme:
+        fonts_link = scheme.get_google_fonts_link() or ""
+    
+    # Add glow effect for themes with glow enabled
+    glow_css = ""
+    if scheme and scheme.effects and scheme.effects.get('glow'):
+        glow_css = f"filter: drop-shadow(0 0 20px {scheme.glow_color or scheme.primary}40);"
+    
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    {fonts_link}
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        html, body {{
+            background: {bg_color};
+            width: {width + 40}px;
+            height: {height + 40}px;
+        }}
+        body {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }}
+        svg {{
+            display: block;
+            width: {width}px;
+            height: {height}px;
+            {glow_css}
+        }}
+    </style>
+</head>
+<body>
+    {svg}
+</body>
+</html>"""
 
 
 def parse_stats_arg(stats_str: Optional[str]) -> Optional[list]:
@@ -294,6 +408,18 @@ def main():
     slide_compare_parser.add_argument('--context', help='Optional context line for attribution')
     slide_compare_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
+    # Premium stacked card
+    premium_card_parser = subparsers.add_parser('premium-card', help='Generate stacked premium card (hero + detail panels)')
+    premium_card_parser.add_argument('--title', required=True, help='Document title / default card headline')
+    premium_card_parser.add_argument('--config', required=True, help='Path to JSON file or raw JSON describing the card payload')
+    premium_card_parser.add_argument('--size', type=int, default=1100, help='Square canvas size in pixels (default: 1100)')
+    premium_card_parser.add_argument('--top-only', action='store_true', help='Render only the top/hero panel')
+    premium_card_parser.add_argument('--bottom-only', action='store_true', help='Render only the bottom/detail panel')
+    premium_card_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    premium_card_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    premium_card_parser.add_argument('--context', help='Optional context line for attribution')
+    premium_card_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    
     # Story-driven slide
     story_slide_parser = subparsers.add_parser('story-slide', help='Generate compelling story-driven slide (What changed, time period, what it means)')
     story_slide_parser.add_argument('--title', required=True, help='Slide title')
@@ -352,25 +478,121 @@ def main():
     hero_prompt_parser.add_argument('--context', help='Optional context line for attribution')
     hero_prompt_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
+    # =========================================================================
+    # Insight Graphics
+    # =========================================================================
+    
+    # Key Insight (standalone pull quote)
+    key_insight_parser = subparsers.add_parser('key-insight', help='Generate standalone key insight / pull quote')
+    key_insight_parser.add_argument('--title', default='Key Insight', help='Document title')
+    key_insight_parser.add_argument('--text', required=True, help='The insight text (supports HTML: <strong>, <em>, <span class="highlight">)')
+    key_insight_parser.add_argument('--label', default='Key Insight', help='Label above the insight (default: Key Insight)')
+    key_insight_parser.add_argument('--eyebrow', help='Optional eyebrow text above label')
+    key_insight_parser.add_argument('--context', help='Optional context text below insight (e.g., source attribution)')
+    key_insight_parser.add_argument('--variant', default='default', choices=['default', 'minimal', 'bold', 'quote'], help='Style variant (default: default)')
+    key_insight_parser.add_argument('--icon', default='lightning', choices=['lightning', 'lightbulb', 'quote', 'star', 'none'], help='Icon type (default: lightning)')
+    key_insight_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
+    key_insight_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
+    key_insight_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    key_insight_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    key_insight_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    key_insight_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10 for inline use)')
+    
+    # Insight Card (insight + SVG illustration)
+    insight_card_parser = subparsers.add_parser('insight-card', help='Generate insight card with SVG illustration')
+    insight_card_parser.add_argument('--title', default='Insight Card', help='Document title')
+    insight_card_parser.add_argument('--text', required=True, help='The insight text (supports HTML)')
+    insight_card_parser.add_argument('--svg-file', help='Path to SVG file to embed')
+    insight_card_parser.add_argument('--svg-type', choices=['before', 'after', 'chat-panel', 'modal-form'], help='Generate SVG wireframe of this type instead of using --svg-file')
+    insight_card_parser.add_argument('--label', default='Key Insight', help='Label above the insight')
+    insight_card_parser.add_argument('--svg-label', help='Label above the SVG')
+    insight_card_parser.add_argument('--eyebrow', help='Optional eyebrow text')
+    insight_card_parser.add_argument('--context', help='Optional context text below insight')
+    insight_card_parser.add_argument('--layout', default='side-by-side', choices=['side-by-side', 'stacked'], help='Layout style (default: side-by-side)')
+    insight_card_parser.add_argument('--svg-position', default='right', choices=['left', 'right'], help='SVG position for side-by-side (default: right)')
+    insight_card_parser.add_argument('--variant', default='bold', choices=['default', 'bold'], help='Insight style variant (default: bold)')
+    insight_card_parser.add_argument('--icon', default='lightning', choices=['lightning', 'lightbulb', 'quote', 'star', 'none'], help='Icon type (default: lightning)')
+    insight_card_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
+    insight_card_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
+    insight_card_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    insight_card_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    insight_card_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    insight_card_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
+    
+    # Insight Story (full graphic with before/after + insight + stats)
+    insight_story_parser = subparsers.add_parser('insight-story', help='Generate full insight story with before/after comparison')
+    insight_story_parser.add_argument('--title', default='Insight Story', help='Document title')
+    insight_story_parser.add_argument('--headline', required=True, help='Main headline')
+    insight_story_parser.add_argument('--subtitle', help='Subtitle text')
+    insight_story_parser.add_argument('--eyebrow', help='Eyebrow text above headline')
+    insight_story_parser.add_argument('--before-svg', help='Path to "before" SVG file (or use --generate-wireframes)')
+    insight_story_parser.add_argument('--before-label', default='Before', help='Label for before panel')
+    insight_story_parser.add_argument('--before-status', help='Status text for before panel (prefix with - for negative, + for positive)')
+    insight_story_parser.add_argument('--after-svg', help='Path to "after" SVG file (or use --generate-wireframes)')
+    insight_story_parser.add_argument('--after-label', default='After', help='Label for after panel')
+    insight_story_parser.add_argument('--after-status', help='Status text for after panel')
+    insight_story_parser.add_argument('--generate-wireframes', action='store_true', help='Auto-generate before/after wireframe SVGs')
+    insight_story_parser.add_argument('--shift-from', help='Left side of shift badge (e.g., "Tickets")')
+    insight_story_parser.add_argument('--shift-to', help='Right side of shift badge (e.g., "Control")')
+    insight_story_parser.add_argument('--shift-badge', help='Additional badge text')
+    insight_story_parser.add_argument('--insight-text', help='Key insight text (supports HTML)')
+    insight_story_parser.add_argument('--insight-label', default='Key Insight', help='Label above insight')
+    insight_story_parser.add_argument('--stats', help='Comma-separated stats in Label:Value format')
+    insight_story_parser.add_argument('--accent-color', default='#0071e3', help='Accent color')
+    insight_story_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
+    insight_story_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    insight_story_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    insight_story_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    insight_story_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
+    
+    # =========================================================================
+    # SVG Wireframe Generation
+    # =========================================================================
+    
+    wireframe_svg_parser = subparsers.add_parser('wireframe-svg', help='Generate pure SVG wireframes')
+    wireframe_svg_parser.add_argument('--type', required=True, choices=['before', 'after', 'chat-panel', 'modal-form', 'ticket-flow'], help='Wireframe type')
+    wireframe_svg_parser.add_argument('--width', type=int, default=400, help='SVG width (default: 400)')
+    wireframe_svg_parser.add_argument('--height', type=int, default=300, help='SVG height (default: 300)')
+    wireframe_svg_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
+    wireframe_svg_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
+    wireframe_svg_parser.add_argument('--output', required=True, help='Output SVG/PNG path')
+    wireframe_svg_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    wireframe_svg_parser.add_argument('--png', action='store_true', help='Export as PNG instead of SVG')
+    wireframe_svg_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
+    # Chat panel specific options
+    wireframe_svg_parser.add_argument('--messages', help='JSON array of messages: [{"role":"user","text":"..."},{"role":"assistant","text":"..."}]')
+    wireframe_svg_parser.add_argument('--inline-card', help='JSON object for inline card: {"title":"...","status":"...","progress":75}')
+    wireframe_svg_parser.add_argument('--action-buttons', help='Comma-separated button labels')
+    wireframe_svg_parser.add_argument('--success-toast', help='JSON object: {"title":"...","subtitle":"..."}')
+    # Modal form specific options
+    wireframe_svg_parser.add_argument('--modal-title', default='Support Request', help='Modal title')
+    wireframe_svg_parser.add_argument('--fields', help='Comma-separated field labels')
+    wireframe_svg_parser.add_argument('--submit-label', default='Submit', help='Submit button text')
+    
     args = parser.parse_args()
     
     if not args.command:
         parser.print_help()
         return 1
     
-    attribution = Attribution(
-        copyright=args.copyright,
-        context=getattr(args, 'context', None)
-    )
-    
     output_path = Path(args.output)
     
-    # If PNG export requested, ensure output path has .png extension
-    if getattr(args, 'png', False):
-        if output_path.suffix != '.png':
-            output_path = output_path.with_suffix('.png')
-    
-    generator = ModernGraphicsGenerator(args.title, attribution)
+    # Handle wireframe-svg specially (no generator needed)
+    if args.command == 'wireframe-svg':
+        # SVG generation doesn't need attribution or generator
+        pass
+    else:
+        attribution = Attribution(
+            copyright=args.copyright,
+            context=getattr(args, 'context', None)
+        )
+        
+        # If PNG export requested, ensure output path has .png extension
+        if getattr(args, 'png', False):
+            if output_path.suffix != '.png':
+                output_path = output_path.with_suffix('.png')
+        
+        generator = ModernGraphicsGenerator(getattr(args, 'title', 'Untitled'), attribution)
     
     if args.command == 'cycle':
         steps = parse_steps(args.steps)
@@ -556,6 +778,49 @@ def main():
             generator.save(html, output_path)
             print(f"Generated slide card comparison: {output_path}")
     
+    elif args.command == 'premium-card':
+        config_source = args.config
+        config_path = Path(config_source)
+        if config_path.exists():
+            config_raw = config_path.read_text(encoding='utf-8')
+        else:
+            config_raw = config_source
+        try:
+            card_config = json.loads(config_raw)
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid JSON for --config: {exc}")
+        if getattr(args, 'top_only', False) and getattr(args, 'bottom_only', False):
+            raise SystemExit("Cannot combine --top-only and --bottom-only. Choose a single panel or leave both enabled.")
+        show_top = not getattr(args, 'bottom_only', False)
+        show_bottom = not getattr(args, 'top_only', False)
+        title_text = card_config.get('title') or args.title
+        html = generate_premium_card(
+            title=title_text,
+            tagline=card_config.get('tagline', ''),
+            subtext=card_config.get('subtext', ''),
+            eyebrow=card_config.get('eyebrow', ''),
+            features=card_config.get('features', []),
+            hero=card_config.get('hero', {}),
+            palette=card_config.get('palette', {}),
+            canvas_size=getattr(args, 'size', 1100),
+            show_top_panel=show_top,
+            show_bottom_panel=show_bottom,
+            attribution=attribution
+        )
+        if getattr(args, 'png', False):
+            viewport = getattr(args, 'size', 1100)
+            generator.export_to_png(
+                html,
+                output_path,
+                viewport_width=viewport,
+                viewport_height=viewport,
+                padding=0
+            )
+            print(f"Generated premium card PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated premium card: {output_path}")
+    
     elif args.command == 'modern-hero':
         highlights = parse_highlights_arg(getattr(args, 'highlights', None))
         highlight_tiles = None
@@ -696,6 +961,273 @@ def main():
         else:
             generator.save(html, output_path)
             print(f"Generated story-driven slide: {output_path}")
+    
+    # =========================================================================
+    # Insight Graphics Commands
+    # =========================================================================
+    
+    elif args.command == 'key-insight':
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
+        
+        html = generate_key_insight(
+            generator,
+            text=args.text,
+            label=getattr(args, 'label', 'Key Insight'),
+            eyebrow=getattr(args, 'eyebrow', None),
+            context=getattr(args, 'context', None),
+            variant=getattr(args, 'variant', 'default'),
+            icon=getattr(args, 'icon', 'lightning'),
+            accent_color=getattr(args, 'accent_color', '#0071e3'),
+            color_scheme=color_scheme,
+        )
+        padding = getattr(args, 'padding', 10)
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=900, viewport_height=400, padding=padding)
+            print(f"Generated key insight PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated key insight: {output_path}")
+    
+    elif args.command == 'insight-card':
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
+        
+        # Get SVG content
+        svg_content = None
+        if getattr(args, 'svg_file', None):
+            svg_path = Path(args.svg_file)
+            if not svg_path.exists():
+                raise SystemExit(f"SVG file not found: {svg_path}")
+            svg_content = svg_path.read_text()
+        elif getattr(args, 'svg_type', None):
+            # Use themed config if theme specified
+            config = get_wireframe_config_from_theme(
+                getattr(args, 'theme', None),
+                width=360,
+                height=280,
+                accent_color=getattr(args, 'accent_color', '#0071e3'),
+            )
+            if args.svg_type == 'before':
+                svg_content = generate_before_wireframe_svg(config)
+            elif args.svg_type == 'after':
+                svg_content = generate_after_wireframe_svg(config)
+            elif args.svg_type == 'chat-panel':
+                svg_content = generate_chat_panel_svg(config)
+            elif args.svg_type == 'modal-form':
+                svg_content = generate_modal_form_svg(config)
+        else:
+            raise SystemExit("Either --svg-file or --svg-type is required")
+        
+        html = generate_insight_card(
+            generator,
+            text=args.text,
+            svg_content=svg_content,
+            label=getattr(args, 'label', 'Key Insight'),
+            svg_label=getattr(args, 'svg_label', None),
+            eyebrow=getattr(args, 'eyebrow', None),
+            context=getattr(args, 'context', None),
+            layout=getattr(args, 'layout', 'side-by-side'),
+            svg_position=getattr(args, 'svg_position', 'right'),
+            variant=getattr(args, 'variant', 'bold'),
+            icon=getattr(args, 'icon', 'lightning'),
+            accent_color=getattr(args, 'accent_color', '#0071e3'),
+            color_scheme=color_scheme,
+        )
+        padding = getattr(args, 'padding', 10)
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=960, viewport_height=400, padding=padding)
+            print(f"Generated insight card PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated insight card: {output_path}")
+    
+    elif args.command == 'insight-story':
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
+        
+        # Get before/after SVGs
+        before_svg = None
+        after_svg = None
+        
+        if getattr(args, 'generate_wireframes', False):
+            # Use themed config if theme specified
+            config = get_wireframe_config_from_theme(
+                getattr(args, 'theme', None),
+                width=360,
+                height=280,
+                accent_color=getattr(args, 'accent_color', '#0071e3'),
+            )
+            before_svg = generate_before_wireframe_svg(config)
+            after_svg = generate_after_wireframe_svg(config)
+        else:
+            if getattr(args, 'before_svg', None):
+                before_path = Path(args.before_svg)
+                if before_path.exists():
+                    before_svg = before_path.read_text()
+            if getattr(args, 'after_svg', None):
+                after_path = Path(args.after_svg)
+                if after_path.exists():
+                    after_svg = after_path.read_text()
+        
+        # Parse status strings
+        before_status = None
+        if getattr(args, 'before_status', None):
+            status_text = args.before_status
+            if status_text.startswith('-'):
+                before_status = {'type': 'negative', 'text': status_text[1:].strip()}
+            elif status_text.startswith('+'):
+                before_status = {'type': 'positive', 'text': status_text[1:].strip()}
+            else:
+                before_status = {'type': 'neutral', 'text': status_text}
+        
+        after_status = None
+        if getattr(args, 'after_status', None):
+            status_text = args.after_status
+            if status_text.startswith('-'):
+                after_status = {'type': 'negative', 'text': status_text[1:].strip()}
+            elif status_text.startswith('+'):
+                after_status = {'type': 'positive', 'text': status_text[1:].strip()}
+            else:
+                after_status = {'type': 'neutral', 'text': status_text}
+        
+        stats = parse_stats_arg(getattr(args, 'stats', None))
+        
+        html = generate_insight_story(
+            generator,
+            headline=args.headline,
+            subtitle=getattr(args, 'subtitle', None),
+            eyebrow=getattr(args, 'eyebrow', None),
+            before_svg=before_svg,
+            before_label=getattr(args, 'before_label', 'Before'),
+            before_status=before_status,
+            after_svg=after_svg,
+            after_label=getattr(args, 'after_label', 'After'),
+            after_status=after_status,
+            shift_from=getattr(args, 'shift_from', None),
+            shift_to=getattr(args, 'shift_to', None),
+            shift_badge=getattr(args, 'shift_badge', None),
+            insight_text=getattr(args, 'insight_text', ''),
+            insight_label=getattr(args, 'insight_label', 'Key Insight'),
+            stats=stats,
+            accent_color=getattr(args, 'accent_color', '#0071e3'),
+            color_scheme=color_scheme,
+        )
+        padding = getattr(args, 'padding', 10)
+        # Determine viewport size based on content
+        has_svgs = before_svg or after_svg
+        viewport_height = 1100 if has_svgs else 500
+        if getattr(args, 'png', False):
+            generator.export_to_png(html, output_path, viewport_width=1400, viewport_height=viewport_height, padding=padding)
+            print(f"Generated insight story PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated insight story: {output_path}")
+    
+    # =========================================================================
+    # SVG Wireframe Generation
+    # =========================================================================
+    
+    elif args.command == 'wireframe-svg':
+        # Get color scheme if theme specified
+        theme_name = getattr(args, 'theme', None)
+        color_scheme = get_scheme(theme_name) if theme_name else None
+        
+        # Create config from theme or defaults
+        config = get_wireframe_config_from_theme(
+            theme_name,
+            width=getattr(args, 'width', 400),
+            height=getattr(args, 'height', 300),
+            accent_color=getattr(args, 'accent_color', '#0071e3'),
+        )
+        
+        wireframe_type = args.type
+        svg_content = None
+        
+        if wireframe_type == 'before':
+            svg_content = generate_before_wireframe_svg(config)
+        
+        elif wireframe_type == 'after':
+            svg_content = generate_after_wireframe_svg(config)
+        
+        elif wireframe_type == 'chat-panel':
+            messages = None
+            if getattr(args, 'messages', None):
+                try:
+                    messages = json.loads(args.messages)
+                except json.JSONDecodeError as exc:
+                    raise SystemExit(f"Invalid JSON for --messages: {exc}")
+            
+            inline_card = None
+            if getattr(args, 'inline_card', None):
+                try:
+                    inline_card = json.loads(args.inline_card)
+                except json.JSONDecodeError as exc:
+                    raise SystemExit(f"Invalid JSON for --inline-card: {exc}")
+            
+            action_buttons = None
+            if getattr(args, 'action_buttons', None):
+                action_buttons = [b.strip() for b in args.action_buttons.split(',')]
+            
+            success_toast = None
+            if getattr(args, 'success_toast', None):
+                try:
+                    success_toast = json.loads(args.success_toast)
+                except json.JSONDecodeError as exc:
+                    raise SystemExit(f"Invalid JSON for --success-toast: {exc}")
+            
+            svg_content = generate_chat_panel_svg(
+                config=config,
+                messages=messages,
+                inline_card=inline_card,
+                action_buttons=action_buttons,
+                success_toast=success_toast,
+            )
+        
+        elif wireframe_type == 'modal-form':
+            fields = None
+            if getattr(args, 'fields', None):
+                fields = [f.strip() for f in args.fields.split(',')]
+            
+            svg_content = generate_modal_form_svg(
+                config=config,
+                title=getattr(args, 'modal_title', 'Support Request'),
+                fields=fields,
+                submit_label=getattr(args, 'submit_label', 'Submit'),
+            )
+        
+        elif wireframe_type == 'ticket-flow':
+            svg_content = generate_ticket_flow_svg(config)
+        
+        # Export as PNG or save as SVG
+        if getattr(args, 'png', False):
+            # Need generator for PNG export
+            attribution = Attribution(
+                copyright=args.copyright,
+                context=getattr(args, 'context', None)
+            )
+            generator = ModernGraphicsGenerator(f"Wireframe {wireframe_type}", attribution)
+            
+            # Wrap SVG in HTML for proper rendering
+            width = getattr(args, 'width', 400)
+            height = getattr(args, 'height', 300)
+            html = wrap_svg_for_png_export(svg_content, color_scheme, width, height)
+            
+            padding = getattr(args, 'padding', 10)
+            if output_path.suffix != '.png':
+                output_path = output_path.with_suffix('.png')
+            generator.export_to_png(html, output_path, viewport_width=width + 40, viewport_height=height + 40, padding=padding)
+            print(f"Generated wireframe PNG: {output_path}")
+        else:
+            # Save SVG
+            output_path.write_text(svg_content)
+            print(f"Generated wireframe SVG: {output_path}")
     
     return 0
 

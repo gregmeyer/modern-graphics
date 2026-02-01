@@ -7,9 +7,10 @@
 [**Jump to the theme demo →**](examples/output/theme-demo/index.html) *(PNG previews are versioned; run `python examples/generate_complete_theme_demo.py` to regenerate HTML locally.)*
 
 ## Why teams use it
-- 🎨 **One theme across everything** – set colors + fonts once, reuse across heroes, cards, and diagrams
-- 📊 **10+ built-in layouts** – story slides, cycles, timelines, funnels, pyramids, grids, and editorial cards
-- ⚡ **Simple Python API** – instantiate a generator and export PNGs in a few lines
+- 🎨 **7 built-in themes** – apple, corporate, dark, warm, green, arcade, nike – or create your own
+- 📊 **15+ built-in layouts** – story slides, cycles, timelines, funnels, pyramids, grids, insight cards, and wireframes
+- 💡 **Insight graphics workflow** – create wireframe → generate SVG → present as insight card or story
+- ⚡ **CLI + Python API** – use `--theme apple` from command line or instantiate in code
 - 🤖 **Prompt-ready workflows** – optional AI helpers for themes, decks, or article summaries
 - 🧩 **Extensible** – write your own diagram modules or SVG.js mockups
 - 🖼️ **Production exports** – high-res PNGs with automatic cropping
@@ -19,6 +20,7 @@
 - **[How Do I Get Started?](#how-do-i-get-started)** - Get your first graphic in 5 minutes
 - **[How Do I Prompt Creatively?](#how-do-i-prompt-creatively)** - AI-powered generation techniques
 - **[What Can You Create?](#what-can-you-create)** - See all diagram types and examples
+- **[Insight Graphics Guide](#insight-graphics-guide)** - Create insight cards, pull quotes, and before/after stories
 - **[Customization Guide](#customization-guide)** - Create custom themes and styles
 - **[Examples & Showcase](#examples--showcase)** - Browse real examples
 - **[Documentation](#documentation)** - Complete guides and API reference
@@ -49,10 +51,80 @@ html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
 - **Flow & journeys:** cycles, flywheels, funnels, pyramids, milestone timelines, roadmaps
 - **Comparison & grids:** comparison cards, matrices, KPI or insight grids
 - **Before/after stories:** transformation cards, makeover grids, KPI deltas
+- **Insight graphics:** key insights, insight cards with SVG illustrations, insight stories with before/after comparisons
 
 **Preview them:** PNG thumbnails live in `examples/output/showcase/diagram-types/` (tracked). For themed variants (funnel, pyramid, hero canvas cards, etc.), run `python examples/generate_complete_theme_demo.py` and open `examples/output/theme-demo/index.html`.
 
 [Diagram reference →](docs/DIAGRAM_TYPES.md)
+
+### Insight Graphics (New!)
+
+Create compelling insight graphics for articles and presentations—from standalone pull quotes to full before/after comparison stories.
+
+| Key Insight | Insight Card | Insight Story |
+|-------------|--------------|---------------|
+| ![Key Insight](examples/output/showcase/insight-graphics/02-key-insight-bold.png) | ![Insight Card](examples/output/showcase/insight-graphics/04-insight-card.png) | ![Insight Story](examples/output/showcase/insight-graphics/05-insight-story.png) |
+| Standalone pull quote with variants | Insight + SVG illustration | Full before/after with stats |
+
+**The workflow:** Create wireframe → Generate SVG → Present as insight graphic
+
+```python
+from modern_graphics import ModernGraphicsGenerator, Attribution
+from modern_graphics.diagrams.wireframe_svg import generate_after_wireframe_svg, WireframeSVGConfig
+from modern_graphics.diagrams.insight import generate_insight_card
+
+generator = ModernGraphicsGenerator("My Insight", Attribution())
+
+# 1. Generate an SVG wireframe
+svg = generate_after_wireframe_svg(WireframeSVGConfig(width=360, height=280))
+
+# 2. Combine with insight in a card
+html = generate_insight_card(
+    generator,
+    text="The chatbot isn't replacing <em>resolution</em>. It's replacing <em>waiting</em>.",
+    svg_content=svg,
+    svg_label="Inline control surface",
+    variant="bold",
+)
+
+# 3. Export with tight cropping for inline use
+generator.export_to_png(html, "insight-card.png", padding=10)
+```
+
+**CLI support with themes:**
+```bash
+# Standalone key insight with Apple theme
+modern-graphics key-insight \
+  --text "The key insight with <span class=\"highlight\">highlights</span>" \
+  --variant bold \
+  --theme apple \
+  --output insight.png --png
+
+# Insight card with arcade theme and auto-generated wireframe
+modern-graphics insight-card \
+  --text "The insight text..." \
+  --svg-type after \
+  --svg-label "Inline control surface" \
+  --theme arcade \
+  --output card.png --png
+
+# Full insight story with Nike theme
+modern-graphics insight-story \
+  --headline "Chat is a Dynamic Control Surface" \
+  --generate-wireframes \
+  --before-status "-Context interrupted" \
+  --after-status "+Context preserved" \
+  --insight-text "The key insight..." \
+  --theme nike \
+  --output story.png --png
+
+# Wireframe PNG with theme
+modern-graphics wireframe-svg --type after --theme apple --png --output wireframe.png
+```
+
+**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`
+
+[Insight Graphics Guide →](#insight-graphics-guide)
 
 ### Hero Slides
 
@@ -133,6 +205,15 @@ Now your graphic uses consistent branding that you can apply to all future graph
   ![Theme Demo](examples/output/theme-demo/04-slide-cards-two.png) *(PNG checked in; run `python examples/generate_complete_theme_demo.py` to rebuild `index.html` locally)*
 - **Illustrate long-form content:** Feed an article outline and let the system storyboard it ([use cases](examples/output/showcase/use-cases/)).  
   ![Use Case](examples/output/showcase/use-cases/corporate-report.png)
+- **Ops guardrail premium cards:** The new `premium-card` CLI renders the stacked hero/detail layout we used for the Ops Leaders “questions for agents” article.  
+  ```bash
+  modern-graphics premium-card \
+    --title "Ops Guardrail Premium Card" \
+    --config examples/ops_guardrail_premium_card.json \
+    --output examples/output/generated/ops-guardrail-card.png \
+    --png
+  ```
+  Add `--top-only` (hero canvas) or `--bottom-only` (detail card) to mirror the article’s workflow. The command above drops PNGs into `examples/output/generated/` so you can compare your output to the guardrail showcase cards.
 
 Want more? Browse diagram thumbnails in repo (e.g., `examples/output/showcase/hero-slides/01-*.png`), or run `python scripts/run_showcase.py` to regenerate the curated PNGs.
 
@@ -357,12 +438,103 @@ scheme = create_custom_scheme(
 scheme.save_to_json("my_theme.json")
 ```
 
-#### Use Predefined Schemes
+#### Advanced Custom Theme (Full Control)
+
+For complete control over fonts, colors, and effects, define a `ColorScheme` directly. This is especially useful for dark themes or brand-specific styling.
+
+| Hero Story | Key Insight | Insight Card |
+|------------|-------------|--------------|
+| ![Custom Hero](examples/output/showcase/insight-graphics/custom-theme/01-custom-theme-hero.png) | ![Custom Key Insight](examples/output/showcase/insight-graphics/custom-theme/02-custom-theme-key-insight.png) | ![Custom Insight Card](examples/output/showcase/insight-graphics/custom-theme/03-custom-theme-insight-card.png) |
 
 ```python
-from modern_graphics import CORPORATE_SCHEME, DARK_SCHEME, WARM_SCHEME
+from modern_graphics.color_scheme import ColorScheme
+from modern_graphics.diagrams.wireframe_svg import WireframeSVGConfig
 
-html = CORPORATE_SCHEME.apply_to_html(generated_html)
+# Define a complete custom theme (e.g., Seattle Seahawks)
+MY_THEME = ColorScheme(
+    name="My Brand",
+    description="Custom brand theme",
+    # Fonts - use display font for headlines, body font for text
+    google_font_name="Roboto Condensed",
+    google_font_weights="400;700",
+    font_style="sans-serif",
+    google_fonts_extra=["Oswald"],  # Additional fonts to load
+    font_family_display="'Oswald', 'Roboto Condensed', sans-serif",
+    font_family_body="'Roboto Condensed', sans-serif",
+    # Colors
+    primary="#69BE28",      # Main accent
+    secondary="#A5ACAF",    # Secondary accent
+    accent="#002244",       # Tertiary accent
+    success="#69BE28",
+    error="#c41e3a",
+    # Text colors (use light text for dark backgrounds)
+    text_primary="#FFFFFF",
+    text_secondary="#C8CDD0",
+    text_tertiary="#A5ACAF",
+    # Backgrounds (dark theme example)
+    bg_primary="#002244",   # Card backgrounds
+    bg_secondary="#001529", # Page background
+    bg_tertiary="#4A6B8A",  # Tertiary elements
+    # Borders
+    border_light="#003366",
+    border_medium="#69BE28",
+    # Effects (optional)
+    effects={"glow": True},
+    glow_color="#69BE28",
+)
+
+# Create wireframe config from theme (with custom button colors for contrast)
+def get_wireframe_config(width=400, height=300):
+    return WireframeSVGConfig(
+        width=width,
+        height=height,
+        accent_color=MY_THEME.primary,
+        success_color=MY_THEME.success,
+        text_primary=MY_THEME.text_primary,
+        surface_1=MY_THEME.bg_primary,
+        surface_2=MY_THEME.bg_secondary,
+        border_color=MY_THEME.border_medium,
+        font_family=MY_THEME.font_family_body,
+        # For dark themes, set explicit button colors
+        button_bg=MY_THEME.primary,
+        button_text="#002244",  # Contrasting text
+    )
+
+# Use with insight graphics
+html = generate_key_insight(
+    generator,
+    text="Your insight here",
+    variant="bold",
+    color_scheme=MY_THEME,
+)
+
+# Use with wireframes
+config = get_wireframe_config()
+svg = generate_after_wireframe_svg(config)
+```
+
+#### Use Predefined Schemes
+
+7 built-in themes are available:
+
+| Theme | Description |
+|-------|-------------|
+| `apple` | Clean, minimal Apple-inspired design |
+| `corporate` | Professional blue/gray for business |
+| `dark` | Dark mode with bright accents |
+| `warm` | Friendly orange/amber tones |
+| `green` | Nature-inspired green palette |
+| `arcade` | Retro 8-bit with neon colors and pixel fonts |
+| `nike` | Bold athletic style with volt green |
+
+```python
+from modern_graphics.color_scheme import get_scheme, APPLE_SCHEME, ARCADE_SCHEME
+
+# Get by name
+scheme = get_scheme("apple")
+
+# Or import directly
+html = APPLE_SCHEME.apply_to_html(generated_html)
 ```
 
 ### Apply Themes
@@ -386,6 +558,266 @@ generator.export_to_png(html, Path('output.png'))
 - **[Custom Templates](docs/ADVANCED.md#custom-templates)** - Create custom templates
 - **[SVG.js Integration](docs/ADVANCED.md#svgjs-integration)** - Custom SVG graphics
 - **[Advanced Topics](docs/ADVANCED.md)** - All advanced features
+
+## Insight Graphics Guide
+
+Create compelling insight graphics for articles and presentations. The system supports a full workflow: **wireframe → SVG → presentation**.
+
+**Preview thumbnails:** PNG examples are in `examples/output/showcase/insight-graphics/` (tracked in git).
+
+### Graphic Types
+
+#### 1. Key Insight (Standalone Pull Quote)
+
+A standalone insight/pull quote with multiple style variants.
+
+| Default | Bold | Quote |
+|---------|------|-------|
+| ![Default](examples/output/showcase/insight-graphics/01-key-insight-default.png) | ![Bold](examples/output/showcase/insight-graphics/02-key-insight-bold.png) | ![Quote](examples/output/showcase/insight-graphics/03-key-insight-quote.png) |
+
+```python
+from modern_graphics.diagrams.insight import generate_key_insight
+
+html = generate_key_insight(
+    generator,
+    text="The chatbot isn't replacing <span class=\"highlight\">resolution</span>. It's replacing <span class=\"highlight\">waiting</span>.",
+    label="Key Insight",
+    eyebrow="Chat as Control Surface",
+    context="Action happens inline, in context, without handoffs.",
+    variant="bold",  # "default", "minimal", "bold", "quote"
+    icon="lightning",  # "lightning", "lightbulb", "quote", "star", "none"
+)
+```
+
+**Variants:**
+- `default` - Standard card with icon
+- `minimal` - Left border accent, no icon
+- `bold` - Gradient background with accent border
+- `quote` - Pull quote style with large quote icon
+
+#### 2. Insight Card (Insight + SVG)
+
+Combines a key insight with an illustrative SVG wireframe.
+
+![Insight Card](examples/output/showcase/insight-graphics/04-insight-card.png)
+
+```python
+from modern_graphics.diagrams.insight import generate_insight_card
+from modern_graphics.diagrams.wireframe_svg import generate_after_wireframe_svg
+
+# Generate wireframe SVG
+svg = generate_after_wireframe_svg()
+
+# Create card
+html = generate_insight_card(
+    generator,
+    text="The key insight text...",
+    svg_content=svg,
+    label="Key Insight",
+    svg_label="Inline control surface",
+    layout="side-by-side",  # or "stacked"
+    svg_position="right",   # or "left"
+    variant="bold",
+)
+```
+
+#### 3. Insight Story (Full Graphic)
+
+Complete insight graphic with before/after comparison, shift indicators, and stats.
+
+![Insight Story](examples/output/showcase/insight-graphics/05-insight-story.png)
+
+```python
+from modern_graphics.diagrams.insight import generate_insight_story
+from modern_graphics.diagrams.wireframe_svg import (
+    generate_before_wireframe_svg,
+    generate_after_wireframe_svg,
+)
+
+# Generate wireframes
+before_svg = generate_before_wireframe_svg()
+after_svg = generate_after_wireframe_svg()
+
+# Create full story
+html = generate_insight_story(
+    generator,
+    headline="Chat is a Dynamic Control Surface",
+    subtitle="When conversations stay stateful and take action without handoffs...",
+    eyebrow="The Interface Shift",
+    before_svg=before_svg,
+    before_label="Ticketed Support",
+    before_status={"type": "negative", "text": "Context interrupted"},
+    after_svg=after_svg,
+    after_label="Inline Chat",
+    after_status={"type": "positive", "text": "Context preserved"},
+    shift_from="Tickets",
+    shift_to="Control",
+    shift_badge="User-owned inbox",
+    insight_text="The chatbot isn't replacing resolution. It's replacing <span class=\"highlight\">waiting</span>.",
+    stats=[
+        {"label": "Old Model", "value": "Declare → Queue → Wait"},
+        {"label": "New Model", "value": "Intent → Inline action"},
+    ],
+)
+```
+
+### SVG Wireframe Generators
+
+Generate pure SVG wireframes for embedding in insight graphics or other compositions.
+
+```python
+from modern_graphics.diagrams.wireframe_svg import (
+    WireframeSVGConfig,
+    generate_chat_panel_svg,
+    generate_modal_form_svg,
+    generate_before_wireframe_svg,
+    generate_after_wireframe_svg,
+    generate_ticket_flow_svg,
+)
+
+# Configure appearance
+config = WireframeSVGConfig(
+    width=400,
+    height=300,
+    accent_color="#0071e3",
+    success_color="#34c759",
+)
+
+# Generate specific wireframes
+chat_svg = generate_chat_panel_svg(
+    config=config,
+    messages=[
+        {"role": "user", "text": "Update my card"},
+        {"role": "assistant", "text": "Here's your plan:"},
+    ],
+    inline_card={"title": "Pro Plan", "status": "Active", "progress": 75},
+    action_buttons=["Update", "Cancel"],
+    success_toast={"title": "Card updated", "subtitle": "Action completed"},
+)
+
+modal_svg = generate_modal_form_svg(
+    config=config,
+    title="Support Request",
+    fields=["Email", "Description"],
+    submit_label="Submit",
+)
+
+# Or use the pre-composed before/after wireframes
+before_svg = generate_before_wireframe_svg(config)  # Modal + ticket status
+after_svg = generate_after_wireframe_svg(config)    # App with chat panel
+```
+
+### CLI Commands
+
+All insight graphics are available via CLI with theme support:
+
+```bash
+# Key Insight with theme
+modern-graphics key-insight \
+  --text "The insight text with <span class=\"highlight\">highlights</span>" \
+  --variant bold \
+  --icon lightning \
+  --theme apple \
+  --output insight.png --png --padding 10
+
+# Insight Card with theme and auto-generated wireframe
+modern-graphics insight-card \
+  --text "The insight text..." \
+  --svg-type after \
+  --svg-label "Inline control surface" \
+  --layout side-by-side \
+  --theme apple \
+  --output card.png --png
+
+# Insight Card with custom SVG file
+modern-graphics insight-card \
+  --text "The insight text..." \
+  --svg-file my-wireframe.svg \
+  --theme corporate \
+  --output card.png --png
+
+# Insight Story with theme and auto-generated wireframes
+modern-graphics insight-story \
+  --headline "Chat is a Dynamic Control Surface" \
+  --subtitle "When conversations stay stateful..." \
+  --eyebrow "The Interface Shift" \
+  --generate-wireframes \
+  --before-label "Ticketed Support" \
+  --before-status "-Context interrupted" \
+  --after-label "Inline Chat" \
+  --after-status "+Context preserved" \
+  --shift-from "Tickets" \
+  --shift-to "Control" \
+  --insight-text "The key insight..." \
+  --stats "Old Model:Declare → Queue,New Model:Intent → Action" \
+  --theme apple \
+  --output story.png --png
+
+# Generate standalone SVG wireframes (with optional PNG export)
+modern-graphics wireframe-svg --type before --theme apple --output before.svg
+modern-graphics wireframe-svg --type after --theme arcade --png --output after.png
+modern-graphics wireframe-svg --type chat-panel \
+  --messages '[{"role":"user","text":"Help me"},{"role":"assistant","text":"Sure!"}]' \
+  --inline-card '{"title":"Plan","progress":75}' \
+  --theme nike \
+  --png \
+  --output chat.png
+```
+
+**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`
+
+### Export Settings
+
+For inline-ready graphics, use tight padding:
+
+```python
+# Tight cropping for inline use
+generator.export_to_png(html, "output.png", padding=10)
+
+# No padding at all
+generator.export_to_png(html, "output.png", padding=0)
+
+# Standard padding for standalone graphics
+generator.export_to_png(html, "output.png", padding=40)
+```
+
+### Theme Integration
+
+All insight graphics respect the ColorScheme system. Use themes via CLI or Python:
+
+**CLI (recommended for quick generation):**
+```bash
+# Use any of the 7 built-in themes
+modern-graphics key-insight --text "Your insight" --theme apple --png --output insight.png
+modern-graphics wireframe-svg --type after --theme arcade --png --output wireframe.png
+modern-graphics insight-story --headline "Title" --generate-wireframes --theme nike --png --output story.png
+```
+
+**Python (for custom themes or programmatic use):**
+```python
+from modern_graphics import create_custom_scheme
+from modern_graphics.color_scheme import get_scheme, APPLE_SCHEME
+from modern_graphics.diagrams.wireframe_svg import WireframeSVGConfig
+
+# Use a built-in scheme
+scheme = get_scheme("apple")  # or APPLE_SCHEME
+
+# Or create custom scheme
+scheme = create_custom_scheme(
+    name="My Brand",
+    primary="#6366f1",
+    google_font_name="Inter",
+)
+
+# Apply to wireframe config
+config = WireframeSVGConfig.from_color_scheme(scheme)
+
+# Generate themed wireframe
+svg = generate_chat_panel_svg(config=config, ...)
+
+# Apply theme to insight card
+html = generate_insight_card(generator, ..., color_scheme=scheme)
+```
 
 ## Core Concepts
 
@@ -470,6 +902,8 @@ All structured data generation works without OpenAI:
 - ✅ **Timeline diagrams** - `generate_timeline_diagram(events)`
 - ✅ **Story slides** - `generate_story_slide(...)`
 - ✅ **Hero slides** - `generate_modern_hero(...)`
+- ✅ **Insight graphics** - `generate_key_insight()`, `generate_insight_card()`, `generate_insight_story()`
+- ✅ **SVG wireframes** - `generate_chat_panel_svg()`, `generate_before_wireframe_svg()`, etc.
 - ✅ **CLI commands** - All CLI commands work without OpenAI
 - ✅ **PNG export** - Export works without OpenAI
 - ✅ **Templates** - Using existing templates works without OpenAI

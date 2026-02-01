@@ -160,6 +160,39 @@ def generate_slide_card_comparison(
     return html
 
 
+def generate_premium_card(
+    title: str,
+    tagline: str,
+    subtext: str,
+    eyebrow: str,
+    features: List[str],
+    hero: Dict[str, Any],
+    palette: Dict[str, str],
+    canvas_size: int = 1100,
+    show_top_panel: bool = True,
+    show_bottom_panel: bool = True,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience helper to render the stacked premium card layout."""
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = generator.generate_premium_card(
+        title=title,
+        tagline=tagline,
+        subtext=subtext,
+        eyebrow=eyebrow,
+        features=features,
+        hero=hero,
+        palette=palette,
+        canvas_size=canvas_size,
+        show_top_panel=show_top_panel,
+        show_bottom_panel=show_bottom_panel,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
 def generate_story_slide(
     title: str,
     what_changed: str,
@@ -265,6 +298,311 @@ def generate_modern_hero_triptych(
         eyebrow=eyebrow,
         headline_align=headline_align,
         subheadline_align=subheadline_align,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_wireframe_diagram(
+    title: str,
+    variant: str = "chat-panel",
+    diagram_title: Optional[str] = None,
+    subtitle: Optional[str] = None,
+    eyebrow: Optional[str] = None,
+    chat_messages: Optional[List[Dict[str, Any]]] = None,
+    chat_inline_card: Optional[Dict[str, Any]] = None,
+    chat_action_buttons: Optional[List[Dict[str, Any]]] = None,
+    chat_quick_actions: Optional[List[str]] = None,
+    modal_title: str = "Submit Support Request",
+    modal_fields: Optional[List[Dict[str, str]]] = None,
+    modal_submit_text: str = "Submit Request",
+    success_toast: Optional[Dict[str, str]] = None,
+    status: Optional[Dict[str, str]] = None,
+    ticket_status: Optional[Dict[str, Any]] = None,
+    width: int = 600,
+    height: int = 520,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function to generate wireframe diagram.
+    
+    Args:
+        title: Generator title
+        variant: Wireframe variant - "chat-panel", "modal-form", "dashboard"
+        diagram_title: Title displayed above wireframe
+        subtitle: Subtitle text
+        eyebrow: Eyebrow text
+        chat_messages: Chat messages for chat-panel variant
+        chat_inline_card: Inline card config for chat-panel
+        chat_action_buttons: Action buttons for chat-panel
+        chat_quick_actions: Quick actions for chat-panel
+        modal_title: Modal title for modal-form variant
+        modal_fields: Form fields for modal-form
+        modal_submit_text: Submit button text
+        success_toast: Success toast config
+        status: Status pill config
+        ticket_status: Ticket status flow config
+        width: SVG width
+        height: SVG height
+        output_path: Optional path to save HTML
+        attribution: Attribution config
+        
+    Returns:
+        HTML string
+    """
+    from .diagrams.wireframe import generate_wireframe_diagram as _generate
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _generate(
+        generator,
+        variant=variant,
+        title=diagram_title,
+        subtitle=subtitle,
+        eyebrow=eyebrow,
+        chat_messages=chat_messages,
+        chat_inline_card=chat_inline_card,
+        chat_action_buttons=chat_action_buttons,
+        chat_quick_actions=chat_quick_actions,
+        modal_title=modal_title,
+        modal_fields=modal_fields,
+        modal_submit_text=modal_submit_text,
+        success_toast=success_toast,
+        status=status,
+        ticket_status=ticket_status,
+        width=width,
+        height=height,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_wireframe_comparison(
+    title: str,
+    before: Dict[str, Any],
+    after: Dict[str, Any],
+    headline: Optional[str] = None,
+    subheadline: Optional[str] = None,
+    eyebrow: Optional[str] = None,
+    insight: Optional[str] = None,
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function to generate before/after wireframe comparison.
+    
+    Args:
+        title: Generator title
+        before: Config dict for "before" wireframe
+        after: Config dict for "after" wireframe
+        headline: Main headline
+        subheadline: Subtitle
+        eyebrow: Eyebrow text
+        insight: Key insight text for bottom card
+        output_path: Optional path to save HTML
+        attribution: Attribution config
+        
+    Returns:
+        HTML string
+    """
+    from .diagrams.wireframe import generate_wireframe_comparison as _generate
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _generate(
+        generator,
+        before=before,
+        after=after,
+        headline=headline,
+        subheadline=subheadline,
+        eyebrow=eyebrow,
+        insight=insight,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_insight_story(
+    title: str,
+    headline: str,
+    subtitle: Optional[str] = None,
+    eyebrow: Optional[str] = None,
+    before_svg: Optional[str] = None,
+    before_label: str = "Before",
+    before_status: Optional[Dict[str, str]] = None,
+    after_svg: Optional[str] = None,
+    after_label: str = "After",
+    after_status: Optional[Dict[str, str]] = None,
+    shift_from: Optional[str] = None,
+    shift_to: Optional[str] = None,
+    shift_badge: Optional[str] = None,
+    insight_text: str = "",
+    insight_label: str = "Key Insight",
+    stats: Optional[List[Dict[str, str]]] = None,
+    accent_color: str = "#0071e3",
+    success_color: str = "#34c759",
+    error_color: str = "#ff3b30",
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function to generate an insight story graphic.
+    
+    A full insight graphic with visual comparison panels (before/after SVGs),
+    key insight callout, and footer stats.
+    
+    Args:
+        title: Generator title
+        headline: Main headline
+        subtitle: Subtitle text
+        eyebrow: Eyebrow text above headline
+        before_svg: SVG content for "before" panel
+        before_label: Label for before panel
+        before_status: Status dict with 'type' and 'text'
+        after_svg: SVG content for "after" panel
+        after_label: Label for after panel
+        after_status: Status dict with 'type' and 'text'
+        shift_from: Left side of shift badge
+        shift_to: Right side of shift badge
+        shift_badge: Additional badge text
+        insight_text: The key insight text (supports HTML)
+        insight_label: Label above insight text
+        stats: List of stat dicts with 'label' and 'value'
+        accent_color: Primary accent color
+        success_color: Success/positive color
+        error_color: Error/negative color
+        output_path: Optional path to save HTML
+        attribution: Attribution config
+        
+    Returns:
+        HTML string
+    """
+    from .diagrams.insight import generate_insight_story as _generate
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _generate(
+        generator,
+        headline=headline,
+        subtitle=subtitle,
+        eyebrow=eyebrow,
+        before_svg=before_svg,
+        before_label=before_label,
+        before_status=before_status,
+        after_svg=after_svg,
+        after_label=after_label,
+        after_status=after_status,
+        shift_from=shift_from,
+        shift_to=shift_to,
+        shift_badge=shift_badge,
+        insight_text=insight_text,
+        insight_label=insight_label,
+        stats=stats,
+        accent_color=accent_color,
+        success_color=success_color,
+        error_color=error_color,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_key_insight(
+    title: str,
+    text: str,
+    label: str = "Key Insight",
+    eyebrow: Optional[str] = None,
+    context: Optional[str] = None,
+    accent_color: str = "#0071e3",
+    variant: str = "default",
+    icon: str = "lightning",
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function to generate a standalone key insight / pull quote.
+    
+    Args:
+        title: Generator title
+        text: The insight text (supports HTML for bold/highlight)
+        label: Label above the insight
+        eyebrow: Optional eyebrow text above label
+        context: Optional context text below the insight
+        accent_color: Primary accent color
+        variant: Style variant - "default", "minimal", "bold", "quote"
+        icon: Icon type - "lightning", "lightbulb", "quote", "star", "none"
+        output_path: Optional path to save HTML
+        attribution: Attribution config
+        
+    Returns:
+        HTML string
+    """
+    from .diagrams.insight import generate_key_insight as _generate
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _generate(
+        generator,
+        text=text,
+        label=label,
+        eyebrow=eyebrow,
+        context=context,
+        accent_color=accent_color,
+        variant=variant,
+        icon=icon,
+    )
+    if output_path:
+        generator.save(html, output_path)
+    return html
+
+
+def generate_insight_card(
+    title: str,
+    text: str,
+    svg_content: str,
+    label: str = "Key Insight",
+    svg_label: Optional[str] = None,
+    eyebrow: Optional[str] = None,
+    context: Optional[str] = None,
+    layout: str = "side-by-side",
+    svg_position: str = "right",
+    accent_color: str = "#0071e3",
+    variant: str = "bold",
+    icon: str = "lightning",
+    output_path: Optional[Path] = None,
+    attribution: Optional[Attribution] = None,
+) -> str:
+    """Convenience function to generate an insight card with SVG illustration.
+    
+    Combines a key insight (pull quote) with an illustrative SVG in a
+    compact card format suitable for inline use.
+    
+    Args:
+        title: Generator title
+        text: The insight text (supports HTML for bold/highlight)
+        svg_content: SVG string to display
+        label: Label above the insight
+        svg_label: Optional label above the SVG
+        eyebrow: Optional eyebrow text
+        context: Optional context text below insight
+        layout: "side-by-side" or "stacked"
+        svg_position: "left" or "right" for side-by-side layout
+        accent_color: Primary accent color
+        variant: Style variant - "default" or "bold"
+        icon: Icon type - "lightning", "lightbulb", "quote", "star", "none"
+        output_path: Optional path to save HTML
+        attribution: Attribution config
+        
+    Returns:
+        HTML string
+    """
+    from .diagrams.insight import generate_insight_card as _generate
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    html = _generate(
+        generator,
+        text=text,
+        svg_content=svg_content,
+        label=label,
+        svg_label=svg_label,
+        eyebrow=eyebrow,
+        context=context,
+        layout=layout,
+        svg_position=svg_position,
+        accent_color=accent_color,
+        variant=variant,
+        icon=icon,
     )
     if output_path:
         generator.save(html, output_path)

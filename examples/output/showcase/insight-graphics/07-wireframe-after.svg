@@ -1,0 +1,74 @@
+<svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+        
+    <defs>
+        <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="6" stdDeviation="12" flood-opacity="0.1"/>
+        </filter>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.06"/>
+        </filter>
+        <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0071e3"/>
+            <stop offset="100%" stop-color="#0071e3"/>
+        </linearGradient>
+        <linearGradient id="successGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#34c759"/>
+            <stop offset="100%" stop-color="#34c759"/>
+        </linearGradient>
+    </defs>
+    
+        <rect x="0" y="0" width="400" height="320" fill="#ffffff" rx="16"/>
+        <rect x="0" y="0" width="400" height="32" rx="16" fill="#f5f5f7"/>
+        <rect x="0" y="16" width="400" height="16" fill="#f5f5f7"/>
+        <circle cx="18" cy="16" r="5" fill="#d2d2d7"/>
+        <circle cx="34" cy="16" r="5" fill="#d2d2d7"/>
+        <circle cx="50" cy="16" r="5" fill="#d2d2d7"/>
+        <rect x="70" y="8" width="120" height="16" rx="4" fill="#ffffff" stroke="#e8e8ed"/>
+    
+        <rect x="0" y="32" width="240" height="288" fill="#f5f5f7"/>
+        <rect x="16" y="48" width="208" height="48" rx="10" fill="#ffffff" filter="url(#softShadow)"/>
+        <rect x="16" y="108" width="208" height="72" rx="10" fill="#ffffff" filter="url(#softShadow)"/>
+    
+            <rect x="240" y="32" width="160" height="288" fill="#ffffff"/>
+            <line x1="240" y1="32" x2="240" y2="320" stroke="#e8e8ed"/>
+            <text x="256" y="54" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="600" 
+                  fill="#1d1d1f">Help</text>
+            <circle cx="380" cy="48" r="4" fill="#34c759"/>
+            <line x1="240" y1="68" x2="400" y2="68" stroke="#e8e8ed"/>
+        
+            <rect x="290" y="80" width="96" height="24" rx="12" fill="url(#accentGrad)"/>
+            <text x="302" y="96" font-family="Inter, -apple-system, sans-serif" font-size="10" fill="white">Update my card</text>
+        
+            <rect x="252" y="112" width="100" height="20" rx="10" fill="#f5f5f7"/>
+            <text x="262" y="126" font-family="Inter, -apple-system, sans-serif" font-size="9" 
+                  fill="#6e6e73">Here's your plan:</text>
+        
+                <rect x="252" y="140" width="136" height="60" rx="10" 
+                      fill="#ffffff" stroke="#e8e8ed" filter="url(#softShadow)"/>
+                <text x="262" y="158" font-family="Inter, -apple-system, sans-serif" font-size="10" 
+                      font-weight="600" fill="#1d1d1f">Pro Plan</text>
+                <rect x="340" y="148" width="40" height="16" rx="8" fill="rgba(52,199,89,0.12)"/>
+                <text x="348" y="160" font-family="Inter, -apple-system, sans-serif" font-size="8" 
+                      font-weight="600" fill="#34c759">Active</text>
+                <rect x="262" y="170" width="116" height="5" rx="2.5" fill="#e8e8ed"/>
+                <rect x="262" y="170" width="87" height="5" rx="2.5" fill="url(#accentGrad)"/>
+                <text x="262" y="192" font-family="Inter, -apple-system, sans-serif" font-size="8" 
+                      fill="#86868b">18 days remaining</text>
+            
+            <rect x="252" y="210" width="64" height="24" rx="12" fill="url(#accentGrad)"/>
+            <text x="264" y="226" font-family="Inter, -apple-system, sans-serif" font-size="10" 
+                  font-weight="600" fill="white">Update</text>
+            <rect x="324" y="210" width="56" height="24" rx="12" fill="#ffffff" stroke="#e8e8ed"/>
+            <text x="336" y="226" font-family="Inter, -apple-system, sans-serif" font-size="10" 
+                  fill="#6e6e73">Cancel</text>
+        
+            <rect x="16" y="260" width="156" height="44" rx="12" fill="#ffffff" filter="url(#cardShadow)"/>
+            <circle cx="40" cy="282" r="14" fill="rgba(52,199,89,0.1)"/>
+            <path d="M34 282 L38 286 L46 278" 
+                  stroke="#34c759" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <text x="62" y="278" font-family="Inter, -apple-system, sans-serif" font-size="10" 
+                  font-weight="600" fill="#1d1d1f">Card updated</text>
+            <text x="62" y="292" font-family="Inter, -apple-system, sans-serif" font-size="9" 
+                  fill="#86868b">Action completed</text>
+        
+    </svg>

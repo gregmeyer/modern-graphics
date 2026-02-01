@@ -167,6 +167,11 @@ def export_html_to_png(
                            document.querySelector('.slide-comparison-container') !== null;
                 }""")
                 
+                # Check if this is a premium card
+                is_premium_card = page.evaluate("""() => {
+                    return document.querySelector('.premium-card-stage') !== null;
+                }""")
+                
                 # Check if this is a cycle diagram
                 is_cycle = page.evaluate("""() => {
                     return document.querySelector('.cycle-container') !== null;
@@ -207,6 +212,13 @@ def export_html_to_png(
                             width: containerRect.width,
                             height: containerRect.height
                         };
+                    }""")
+                elif is_premium_card:
+                    content_bbox = page.evaluate("""() => {
+                        const container = document.querySelector('.premium-card-stage');
+                        if (!container) return null;
+                        const rect = container.getBoundingClientRect();
+                        return { x: rect.left - 10, y: rect.top, width: rect.width + 20, height: rect.height };
                     }""")
                 elif is_story_slide:
                     content_bbox = page.evaluate("""() => {
