@@ -118,8 +118,8 @@ def _timeline_svg(hero: Dict[str, Any], palette: Dict[str, str], base_id: str) -
                 </filter>
             </defs>
             <style>
-                .timeline-label {{ font-size: 20px; font-weight: 600; fill: #e2e8f0; font-family: {DEFAULT_FONT}; }}
-                .timeline-detail {{ font-size: 14px; fill: #94a3b8; font-family: {DEFAULT_FONT}; }}
+                .timeline-label {{ font-size: 20px; font-weight: 600; fill: {palette.get('text_secondary', '#e2e8f0')}; font-family: {DEFAULT_FONT}; }}
+                .timeline-detail {{ font-size: 14px; fill: {palette.get('text_subtle', '#94a3b8')}; font-family: {DEFAULT_FONT}; }}
             </style>
             <rect x="0" y="0" width="{width}" height="{height}" rx="32"
                   fill="url(#timeline-bg-{base_id})" />
@@ -184,8 +184,8 @@ def _isolation_svg(hero: Dict[str, Any], palette: Dict[str, str], base_id: str) 
                 </linearGradient>
             </defs>
             <style>
-                .zone-label {{ font-size: 18px; font-weight: 600; fill: #f8fafc; font-family: {DEFAULT_FONT}; }}
-                .zone-detail {{ font-size: 14px; fill: #cbd5e1; font-family: {DEFAULT_FONT}; }}
+                .zone-label {{ font-size: 18px; font-weight: 600; fill: {palette.get('text_primary', '#f8fafc')}; font-family: {DEFAULT_FONT}; }}
+                .zone-detail {{ font-size: 14px; fill: {palette.get('text_muted', '#cbd5e1')}; font-family: {DEFAULT_FONT}; }}
             </style>
             <rect x="0" y="0" width="{width}" height="{height}" rx="32"
                   fill="url(#isolation-bg-{base_id})" />
@@ -244,8 +244,8 @@ def _window_svg(hero: Dict[str, Any], palette: Dict[str, str], base_id: str) -> 
                 </linearGradient>
             </defs>
             <style>
-                .window-label {{ font-size: 17px; font-weight: 600; fill: #f8fafc; font-family: {DEFAULT_FONT}; }}
-                .window-detail {{ font-size: 13px; fill: #f1f5f9; opacity: 0.85; font-family: {DEFAULT_FONT}; }}
+                .window-label {{ font-size: 17px; font-weight: 600; fill: {palette.get('text_primary', '#f8fafc')}; font-family: {DEFAULT_FONT}; }}
+                .window-detail {{ font-size: 13px; fill: {palette.get('text_muted', '#f1f5f9')}; opacity: 0.85; font-family: {DEFAULT_FONT}; }}
             </style>
             <rect x="0" y="0" width="{width}" height="{height}" rx="32"
                   fill="url(#window-bg-{base_id})" />
@@ -306,6 +306,15 @@ def generate_premium_card(
         raise ValueError("At least one of top or bottom panel must be enabled.")
 
     palette_config = _merge_palette(palette or {})
+    text_primary = palette_config.get("text_primary", "#f8fafc")
+    text_secondary = palette_config.get("text_secondary", "#e2e8f0")
+    text_muted = palette_config.get("text_muted", "#cbd5e1")
+    badge_bg = palette_config.get("badge_bg", "rgba(2,6,23,0.6)")
+    hero_visual_bg = palette_config.get("hero_visual_bg", "rgba(2,6,23,0.55)")
+    hero_visual_border = palette_config.get("hero_visual_border", "rgba(148,163,184,0.18)")
+    card_body_bg = palette_config.get("card_body_bg", "rgba(4,12,30,0.65)")
+    feature_bg = palette_config.get("feature_bg", "rgba(2,6,23,0.65)")
+    panel_shadow = palette_config.get("panel_shadow", "inset 0 0 60px rgba(0,0,0,0.45)")
     font_family = palette_config.get("font_family", DEFAULT_FONT)
     stage_size = max(canvas_size, 800)
     card_width = stage_size - 100
@@ -400,12 +409,13 @@ def generate_premium_card(
 
         body {{
             margin: 0;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: var(--ops-font);
-            color: #f8fafc;
+            color: {text_primary};
             background: var(--canvas-bg);
         }}
 
@@ -413,8 +423,9 @@ def generate_premium_card(
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 10px;
             height: auto;
+            background: var(--canvas-bg);
         }}
 
         .ops-card {{
@@ -462,7 +473,7 @@ def generate_premium_card(
             display: flex;
             flex-direction: column;
             gap: 18px;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.45);
+            box-shadow: {panel_shadow};
         }}
 
         .hero-header {{
@@ -475,16 +486,16 @@ def generate_premium_card(
             font-size: 13px;
             letter-spacing: 0.4em;
             text-transform: uppercase;
-            color: #e2e8f0;
+            color: {text_secondary};
             padding: 6px 22px;
             border-radius: 999px;
             border: 1px solid var(--panel-border);
-            background: rgba(2,6,23,0.6);
+            background: {badge_bg};
         }}
 
         .hero-caption {{
             font-size: 14px;
-            color: #cbd5e1;
+            color: {text_muted};
             letter-spacing: 0.08em;
         }}
 
@@ -498,8 +509,8 @@ def generate_premium_card(
             flex: 1.15;
             border-radius: 28px;
             overflow: hidden;
-            border: 1px solid rgba(148,163,184,0.18);
-            background: rgba(2,6,23,0.55);
+            border: 1px solid {hero_visual_border};
+            background: {hero_visual_bg};
             padding: 16px;
         }}
 
@@ -541,7 +552,7 @@ def generate_premium_card(
         }}
 
         .card-body {{
-            background: rgba(4,12,30,0.65);
+            background: {card_body_bg};
             border-radius: 32px;
             padding: 32px;
             border: 1px solid rgba(148,163,184,0.25);
@@ -564,13 +575,13 @@ def generate_premium_card(
         .card-body .tagline {{
             font-size: 22px;
             margin: 0 0 16px;
-            color: #e2e8f0;
+            color: {text_secondary};
         }}
 
         .card-body .subtext {{
             font-size: 18px;
             margin: 0 0 20px;
-            color: #cbd5e1;
+            color: {text_muted};
             line-height: 1.5;
         }}
 
@@ -588,7 +599,7 @@ def generate_premium_card(
             align-items: center;
             gap: 12px;
             font-size: 18px;
-            background: rgba(2,6,23,0.65);
+            background: {feature_bg};
             border-radius: 18px;
             padding: 14px 18px;
             border: 1px solid rgba(148,163,184,0.25);

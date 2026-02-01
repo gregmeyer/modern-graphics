@@ -1,0 +1,54 @@
+<svg viewBox="0 0 400 320" xmlns="http://www.w3.org/2000/svg">
+        
+    <defs>
+        <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="6" stdDeviation="12" flood-opacity="0.1"/>
+        </filter>
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.06"/>
+        </filter>
+        <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0071e3"/>
+            <stop offset="100%" stop-color="#0071e3"/>
+        </linearGradient>
+        <linearGradient id="successGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#34c759"/>
+            <stop offset="100%" stop-color="#34c759"/>
+        </linearGradient>
+    </defs>
+    
+        <rect x="0" y="0" width="400" height="320" fill="#ffffff" rx="16"/>
+        <rect x="0" y="0" width="400" height="32" rx="16" fill="#f5f5f7"/>
+        <rect x="0" y="16" width="400" height="16" fill="#f5f5f7"/>
+        <circle cx="18" cy="16" r="5" fill="#d2d2d7"/>
+        <circle cx="34" cy="16" r="5" fill="#d2d2d7"/>
+        <circle cx="50" cy="16" r="5" fill="#d2d2d7"/>
+        <rect x="70" y="8" width="120" height="16" rx="4" fill="#ffffff" stroke="#e8e8ed"/>
+    
+        <rect x="0" y="32" width="400" height="288" fill="#f5f5f7"/>
+        <rect x="0" y="32" width="400" height="228" fill="rgba(29,29,31,0.2)"/>
+    
+            <rect x="90.0" y="60" width="220" height="140" 
+                  rx="14" fill="#ffffff" filter="url(#cardShadow)"/>
+            <rect x="90.0" y="60" width="220" height="32" rx="14" fill="#f5f5f7"/>
+            <rect x="90.0" y="78" width="220" height="14" fill="#f5f5f7"/>
+            <text x="106.0" y="82" 
+                  font-family="Inter, -apple-system, sans-serif" font-size="11" font-weight="600" 
+                  fill="#1d1d1f">Support Request</text>
+            <rect x="106.0" y="104" width="188" height="22" 
+                  rx="5" fill="#f5f5f7" stroke="#e8e8ed"/>
+            <rect x="106.0" y="134" width="188" height="22" 
+                  rx="5" fill="#f5f5f7" stroke="#e8e8ed"/>
+            <rect x="106.0" y="166" width="188" height="24" 
+                  rx="6" fill="#1d1d1f"/>
+            <text x="200.0" y="182" text-anchor="middle"
+                  font-family="Inter, -apple-system, sans-serif" font-size="10" font-weight="600" fill="white">Submit</text>
+        
+            <rect x="40" y="268" width="320" height="44" rx="12" fill="#ffffff" filter="url(#softShadow)"/>
+            <text x="56" y="282" font-family="Inter, -apple-system, sans-serif" font-size="8" font-weight="600" 
+                  fill="#86868b" letter-spacing="0.05em">TICKET STATUS</text>
+            <rect x="56" y="290" width="44" height="16" rx="8" fill="#e8e8ed"/>
+            <rect x="108" y="290" width="60" height="16" rx="8" fill="rgba(0, 113, 227, 0.12)"/>
+            <rect x="176" y="290" width="52" height="16" rx="8" fill="#f5f5f7"/>
+        
+    </svg>

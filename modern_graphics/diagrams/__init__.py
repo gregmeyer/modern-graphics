@@ -15,6 +15,16 @@ from .premium_card import generate_premium_card
 from .story_slide import generate_story_slide
 from .creative_story_slide import generate_combo_chart
 from .unified_story_slide import generate_unified_story_slide
+from .wireframe import generate_wireframe_diagram, generate_wireframe_comparison
+from .insight import generate_insight_story, generate_key_insight, generate_insight_card
+from .wireframe_svg import (
+    WireframeSVGConfig,
+    generate_chat_panel_svg,
+    generate_modal_form_svg,
+    generate_ticket_flow_svg,
+    generate_before_wireframe_svg,
+    generate_after_wireframe_svg,
+)
 
 # Registry of diagram types
 DIAGRAM_REGISTRY: Dict[str, Type[DiagramGenerator]] = {
@@ -50,4 +60,16 @@ __all__ = [
     'generate_story_slide',
     'generate_combo_chart',
     'generate_unified_story_slide',
+    'generate_wireframe_diagram',
+    'generate_wireframe_comparison',
+    'generate_insight_story',
+    'generate_key_insight',
+    'generate_insight_card',
+    # SVG wireframe generators
+    'WireframeSVGConfig',
+    'generate_chat_panel_svg',
+    'generate_modal_form_svg',
+    'generate_ticket_flow_svg',
+    'generate_before_wireframe_svg',
+    'generate_after_wireframe_svg',
 ]

@@ -218,7 +218,7 @@ def export_html_to_png(
                         const container = document.querySelector('.premium-card-stage');
                         if (!container) return null;
                         const rect = container.getBoundingClientRect();
-                        return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+                        return { x: rect.left - 10, y: rect.top, width: rect.width + 20, height: rect.height };
                     }""")
                 elif is_story_slide:
                     content_bbox = page.evaluate("""() => {

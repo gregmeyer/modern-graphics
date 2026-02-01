@@ -35,6 +35,19 @@ class ColorScheme:
     google_font_weights: str = "400;500;600;700"  # Font weights to load
     font_style: str = "sans-serif"  # "sans-serif", "serif", or "monospace"
     
+    # Extended font configuration (for themes with multiple fonts)
+    font_family_display: Optional[str] = None  # Headlines/headers (e.g., pixel font)
+    font_family_body: Optional[str] = None     # Body text
+    google_fonts_extra: Optional[List[str]] = None  # Additional Google Fonts to load
+    
+    # Visual effects
+    effects: Optional[Dict[str, bool]] = None  # e.g., {"glow": True, "scanlines": True}
+    glow_color: Optional[str] = None           # Color for glow effects
+    border_style: str = "soft"                 # "soft", "sharp", "pixel"
+    
+    # Custom CSS injection
+    custom_css: Optional[str] = None           # Arbitrary CSS to inject
+    
     # Primary colors
     primary: str = "#2563eb"  # Main brand color
     secondary: str = "#64748b"  # Secondary/accent
@@ -90,6 +103,20 @@ class ColorScheme:
         # Build font family if Google Font is specified
         if self.google_font_name:
             self.font_family = f"'{self.google_font_name}', {self._get_font_fallback()}"
+        
+        # Default display/body fonts to main font_family if not specified
+        if self.font_family_display is None:
+            self.font_family_display = self.font_family
+        if self.font_family_body is None:
+            self.font_family_body = self.font_family
+        
+        # Default effects
+        if self.effects is None:
+            self.effects = {}
+        
+        # Default glow color to primary
+        if self.glow_color is None:
+            self.glow_color = self.primary
     
     def _get_font_fallback(self) -> str:
         """Get appropriate font fallback based on font style"""
@@ -101,18 +128,28 @@ class ColorScheme:
             return "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
     
     def get_google_fonts_link(self) -> Optional[str]:
-        """Generate Google Fonts link tag if using Google Font"""
-        if not self.google_font_name:
+        """Generate Google Fonts link tag if using Google Font(s)"""
+        fonts_to_load = []
+        
+        # Primary font
+        if self.google_font_name:
+            weights = self.google_font_weights.replace(';', ';')
+            if not weights.startswith('wght@'):
+                weights = f"wght@{weights}"
+            font_name_encoded = self.google_font_name.replace(' ', '+')
+            fonts_to_load.append(f"family={font_name_encoded}:{weights}")
+        
+        # Extra fonts (for themes with multiple fonts like 8-bit)
+        if self.google_fonts_extra:
+            for font in self.google_fonts_extra:
+                font_encoded = font.replace(' ', '+')
+                fonts_to_load.append(f"family={font_encoded}")
+        
+        if not fonts_to_load:
             return None
         
-        # Convert weights string to format Google Fonts expects
-        # Input: "400;600;700" -> Output: "wght@400;600;700"
-        weights = self.google_font_weights.replace(';', ';')
-        if not weights.startswith('wght@'):
-            weights = f"wght@{weights}"
-        
-        font_name_encoded = self.google_font_name.replace(' ', '+')
-        return f"<link href='https://fonts.googleapis.com/css2?family={font_name_encoded}:{weights}&display=swap' rel='stylesheet'>"
+        fonts_param = "&".join(fonts_to_load)
+        return f"<link href='https://fonts.googleapis.com/css2?{fonts_param}&display=swap' rel='stylesheet'>"
     
     def get_css_overrides(self) -> str:
         """Generate CSS overrides for all graphics types"""
@@ -673,6 +710,113 @@ GREEN_SCHEME = ColorScheme(
     border_dark="#34d399",
 )
 
+ARCADE_SCHEME = ColorScheme(
+    name="Arcade",
+    description="Retro 8-bit arcade theme with neon colors and pixel fonts",
+    google_font_name="Space Mono",
+    google_font_weights="400;700",
+    font_style="monospace",
+    google_fonts_extra=["Press Start 2P", "VT323"],
+    font_family_display="'Press Start 2P', monospace",
+    font_family_body="'VT323', 'Space Mono', monospace",
+    # Neon colors
+    primary="#00fff5",      # Electric cyan
+    secondary="#7209b7",    # Purple
+    accent="#f72585",       # Hot magenta
+    success="#39ff14",      # Neon green
+    warning="#ffff00",      # Arcade yellow
+    error="#ff0040",        # Neon red
+    # Text
+    text_primary="#e0e0e0",
+    text_secondary="#a0a0a0",
+    text_tertiary="#707070",
+    text_on_dark="#ffffff",
+    # Dark backgrounds
+    bg_primary="#1a1a2e",
+    bg_secondary="#0f0f23",
+    bg_tertiary="#16213e",
+    bg_dark="#0a0a15",
+    # Borders
+    border_light="#3a3a5e",
+    border_medium="#00fff5",
+    border_dark="#f72585",
+    # Effects
+    effects={"glow": True, "scanlines": True, "pixel_borders": True},
+    glow_color="#00fff5",
+    border_style="pixel",
+)
+
+NIKE_SCHEME = ColorScheme(
+    name="Nike",
+    description="Bold athletic theme inspired by Nike's iconic volt and black aesthetic",
+    google_font_name="Oswald",
+    google_font_weights="400;500;600;700",
+    font_style="sans-serif",
+    google_fonts_extra=["Bebas Neue", "Inter"],
+    font_family_display="'Bebas Neue', 'Oswald', sans-serif",
+    font_family_body="'Inter', 'Oswald', sans-serif",
+    # Nike colors
+    primary="#AAFF00",      # Volt green
+    secondary="#FF6B00",    # Nike orange
+    accent="#FFFFFF",       # White accent
+    success="#AAFF00",      # Volt
+    warning="#FF6B00",      # Orange
+    error="#FF3030",        # Red
+    # Text - high contrast
+    text_primary="#FFFFFF",
+    text_secondary="#B0B0B0",
+    text_tertiary="#707070",
+    text_on_dark="#FFFFFF",
+    # Dark backgrounds
+    bg_primary="#111111",
+    bg_secondary="#000000",
+    bg_tertiary="#1a1a1a",
+    bg_dark="#000000",
+    # Borders - minimal, sharp
+    border_light="#333333",
+    border_medium="#AAFF00",
+    border_dark="#FFFFFF",
+    # Effects - bold, no frills
+    effects={"glow": True, "scanlines": False, "pixel_borders": False},
+    glow_color="#AAFF00",
+    border_style="sharp",
+)
+
+APPLE_SCHEME = ColorScheme(
+    name="Apple",
+    description="Clean, minimal Apple-inspired design with subtle elegance",
+    google_font_name="Inter",
+    google_font_weights="400;500;600;700",
+    font_style="sans-serif",
+    font_family_display="'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    font_family_body="'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    # Apple colors
+    primary="#0071e3",      # Apple blue
+    secondary="#86868b",    # Apple gray
+    accent="#147ce5",       # Slightly darker blue
+    success="#34c759",      # Apple green
+    warning="#ff9f0a",      # Apple orange
+    error="#ff3b30",        # Apple red
+    # Text - refined hierarchy
+    text_primary="#1d1d1f",
+    text_secondary="#6e6e73",
+    text_tertiary="#86868b",
+    text_on_dark="#f5f5f7",
+    # Light, airy backgrounds
+    bg_primary="#ffffff",
+    bg_secondary="#f5f5f7",
+    bg_tertiary="#e8e8ed",
+    bg_dark="#1d1d1f",
+    # Subtle borders
+    border_light="#d2d2d7",
+    border_medium="#c7c7cc",
+    border_dark="#aeaeb2",
+    # Effects - subtle, refined
+    effects={"glow": False, "scanlines": False, "pixel_borders": False},
+    glow_color="#0071e3",
+    border_style="soft",
+)
+
 
 def create_custom_scheme(
     name: str,
@@ -735,12 +879,150 @@ SCHEME_REGISTRY: Dict[str, ColorScheme] = {
     "dark": DARK_SCHEME,
     "warm": WARM_SCHEME,
     "green": GREEN_SCHEME,
+    "arcade": ARCADE_SCHEME,
+    "nike": NIKE_SCHEME,
+    "apple": APPLE_SCHEME,
 }
 
 
 def get_scheme(name: str) -> Optional[ColorScheme]:
     """Get a color scheme by name"""
     return SCHEME_REGISTRY.get(name.lower())
+
+
+def get_contrast_ratio(color1: str, color2: str) -> float:
+    """Calculate WCAG contrast ratio between two colors.
+    
+    Returns a value between 1 and 21. WCAG requires:
+    - 4.5:1 for normal text
+    - 3:1 for large text
+    - 7:1 for enhanced accessibility
+    """
+    def get_luminance(hex_color: str) -> float:
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16) / 255
+        g = int(hex_color[2:4], 16) / 255
+        b = int(hex_color[4:6], 16) / 255
+        
+        # Apply gamma correction
+        r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
+        g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
+        b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
+        
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    
+    l1 = get_luminance(color1)
+    l2 = get_luminance(color2)
+    
+    lighter = max(l1, l2)
+    darker = min(l1, l2)
+    
+    return (lighter + 0.05) / (darker + 0.05)
+
+
+def validate_scheme_contrast(scheme: ColorScheme, min_ratio: float = 4.5) -> Dict[str, any]:
+    """Validate a color scheme has sufficient contrast ratios.
+    
+    Args:
+        scheme: The ColorScheme to validate
+        min_ratio: Minimum contrast ratio (default 4.5 for WCAG AA)
+    
+    Returns:
+        Dict with 'valid' bool and 'issues' list of problem areas
+    """
+    issues = []
+    
+    # Check text on backgrounds
+    checks = [
+        ("text_primary on bg_primary", scheme.text_primary, scheme.bg_primary),
+        ("text_primary on bg_secondary", scheme.text_primary, scheme.bg_secondary),
+        ("text_secondary on bg_primary", scheme.text_secondary, scheme.bg_primary),
+        ("text_secondary on bg_secondary", scheme.text_secondary, scheme.bg_secondary),
+        ("text_tertiary on bg_primary", scheme.text_tertiary, scheme.bg_primary),
+        ("primary on bg_primary", scheme.primary, scheme.bg_primary),
+        ("primary on bg_secondary", scheme.primary, scheme.bg_secondary),
+    ]
+    
+    for name, fg, bg in checks:
+        ratio = get_contrast_ratio(fg, bg)
+        if ratio < min_ratio:
+            issues.append({
+                "check": name,
+                "foreground": fg,
+                "background": bg,
+                "ratio": round(ratio, 2),
+                "required": min_ratio,
+            })
+    
+    return {
+        "valid": len(issues) == 0,
+        "issues": issues,
+        "scheme_name": scheme.name,
+    }
+
+
+def auto_fix_contrast(scheme: ColorScheme, min_ratio: float = 4.5) -> ColorScheme:
+    """Create a new scheme with auto-fixed contrast issues.
+    
+    Adjusts text colors to meet minimum contrast requirements.
+    """
+    import copy
+    fixed = copy.deepcopy(scheme)
+    
+    def adjust_for_contrast(fg: str, bg: str, target_ratio: float) -> str:
+        """Lighten or darken foreground to achieve target contrast."""
+        current_ratio = get_contrast_ratio(fg, bg)
+        if current_ratio >= target_ratio:
+            return fg
+        
+        # Determine if we need to lighten or darken
+        bg_lum = _get_relative_luminance(bg)
+        
+        # For dark backgrounds, lighten the text; for light, darken it
+        hex_fg = fg.lstrip('#')
+        r = int(hex_fg[0:2], 16)
+        g = int(hex_fg[2:4], 16)
+        b = int(hex_fg[4:6], 16)
+        
+        for i in range(50):  # Max 50 iterations
+            if bg_lum < 0.5:
+                # Dark background - lighten text
+                r = min(255, r + 5)
+                g = min(255, g + 5)
+                b = min(255, b + 5)
+            else:
+                # Light background - darken text
+                r = max(0, r - 5)
+                g = max(0, g - 5)
+                b = max(0, b - 5)
+            
+            new_fg = f"#{r:02x}{g:02x}{b:02x}"
+            if get_contrast_ratio(new_fg, bg) >= target_ratio:
+                return new_fg
+        
+        # Fallback to black or white
+        return "#ffffff" if bg_lum < 0.5 else "#000000"
+    
+    # Fix text colors against primary background
+    fixed.text_primary = adjust_for_contrast(fixed.text_primary, fixed.bg_primary, min_ratio)
+    fixed.text_secondary = adjust_for_contrast(fixed.text_secondary, fixed.bg_primary, min_ratio * 0.7)
+    fixed.text_tertiary = adjust_for_contrast(fixed.text_tertiary, fixed.bg_primary, min_ratio * 0.5)
+    
+    return fixed
+
+
+def _get_relative_luminance(hex_color: str) -> float:
+    """Get relative luminance of a color (0-1)."""
+    hex_color = hex_color.lstrip('#')
+    r = int(hex_color[0:2], 16) / 255
+    g = int(hex_color[2:4], 16) / 255
+    b = int(hex_color[4:6], 16) / 255
+    
+    r = r / 12.92 if r <= 0.03928 else ((r + 0.055) / 1.055) ** 2.4
+    g = g / 12.92 if g <= 0.03928 else ((g + 0.055) / 1.055) ** 2.4
+    b = b / 12.92 if b <= 0.03928 else ((b + 0.055) / 1.055) ** 2.4
+    
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
 def register_scheme(scheme: ColorScheme):
