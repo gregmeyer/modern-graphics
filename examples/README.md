@@ -79,6 +79,15 @@ python scripts/ai_assisted_template.py
   - Output: `examples/output/generated/combo_chart.png`
   - Shows: Multiple chart types in one graphic
 
+- **`flow_styles_example.py`** - All flow layout styles as PNG (post-it and optional content_card)
+  - Output: `examples/output/flow_styles/*.png`
+  - Shows: linear, zigzag, vertical, arc, outline, orgchart, fishbone, mindmap
+  - Run: `PYTHONPATH=. python examples/flow_styles_example.py` (add `--content-card` for content_card nodes, `--svg` to also write SVG)
+
+- **`hero_mermaid_diagrams.py`** - Hero slides with Mermaid or wireframe flow diagrams
+  - Output: `examples/output/mermaid_hero/hero_<diagram>.html`, `hero_<diagram>.png`
+  - Flow styles: `--diagram postit_flow`, `postit_flow_zigzag`, `postit_flow_vertical`, `postit_flow_arc`, `postit_flow_outline`, `postit_flow_orgchart`, `postit_flow_fishbone`, `postit_flow_mindmap`
+
 ### 🤖 AI-Assisted Examples
 
 **Require OpenAI API Key** - Explore prompt-based generation:

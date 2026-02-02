@@ -1,0 +1,18 @@
+%% Mermaid sequenceDiagram - OAuth2 authorization code flow
+sequenceDiagram
+  participant U as User
+  participant A as App
+  participant IdP as Identity Provider
+  participant API as API
+
+  U->>A: Open app / Login
+  A->>A: Generate state, code_verifier
+  A-->>U: Redirect to IdP (client_id, redirect_uri, scope)
+  U->>IdP: Authenticate (e.g. password, MFA)
+  IdP-->>U: Redirect back (code, state)
+  U->>A: Return with code
+  A->>IdP: Exchange code for tokens (code, code_verifier)
+  IdP-->>A: access_token, refresh_token
+  A->>API: Request (Authorization: Bearer)
+  API-->>A: Response
+  A-->>U: Show dashboard

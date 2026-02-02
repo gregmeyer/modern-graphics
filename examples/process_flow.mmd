@@ -1,0 +1,9 @@
+%% Process flow (flowchart). Left-to-right pipeline.
+flowchart LR
+  A([Start]) --> B[Validate input]
+  B --> C{Valid?}
+  C -->|Yes| D[Process]
+  C -->|No| E[Return error]
+  D --> F[Transform]
+  F --> G([End])
+  E --> G

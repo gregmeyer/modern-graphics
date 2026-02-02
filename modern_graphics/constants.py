@@ -46,19 +46,43 @@ BASE_STYLES = """
 
 ATTRIBUTION_STYLES = """
         .attribution {
-            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
             font-weight: 500;
-            color: #C7C7CC;
-            letter-spacing: -0.01em;
+            color: #8E8E93;
+            letter-spacing: 0.02em;
             text-align: right;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            max-width: 100%;
+        }
+        
+        .attribution .attribution-sep {
+            color: rgba(142, 142, 147, 0.6);
+            font-weight: 400;
+            user-select: none;
         }
         
         .attribution .context {
-            margin-bottom: 2px;
-            color: #C7C7CC;
+            color: #8E8E93;
         }
         
         .attribution .copyright {
-            color: #C7C7CC;
+            color: #8E8E93;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .attribution {
+                background: rgba(255, 255, 255, 0.06);
+                border-color: rgba(255, 255, 255, 0.08);
+                color: rgba(255, 255, 255, 0.7);
+            }
+            .attribution .context,
+            .attribution .copyright { color: rgba(255, 255, 255, 0.7); }
+            .attribution .attribution-sep { color: rgba(255, 255, 255, 0.4); }
         }
     """

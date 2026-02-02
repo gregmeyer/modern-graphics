@@ -25,6 +25,18 @@ from .wireframe_svg import (
     generate_before_wireframe_svg,
     generate_after_wireframe_svg,
 )
+from .wireframe_scene import (
+    render_scene,
+    list_element_types,
+    list_presets,
+    SCENE_PRESETS,
+    ELEMENT_REGISTRY,
+    compute_flow_layout,
+    build_flow_elements,
+    build_postit_flow_elements,
+)
+from .transaction_icons_svg import render_transaction_svg
+from .mermaid_svg import mermaid_to_svg
 
 # Registry of diagram types
 DIAGRAM_REGISTRY: Dict[str, Type[DiagramGenerator]] = {
@@ -72,4 +84,15 @@ __all__ = [
     'generate_ticket_flow_svg',
     'generate_before_wireframe_svg',
     'generate_after_wireframe_svg',
+    # Scene-spec wireframe
+    'render_scene',
+    'list_element_types',
+    'list_presets',
+    'SCENE_PRESETS',
+    'ELEMENT_REGISTRY',
+    'compute_flow_layout',
+    'build_flow_elements',
+    'build_postit_flow_elements',
+    'render_transaction_svg',
+    'mermaid_to_svg',
 ]

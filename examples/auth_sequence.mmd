@@ -1,0 +1,19 @@
+%% Mermaid sequenceDiagram (participants + message arrows over time). Not a flowchart.
+sequenceDiagram
+  participant U as User
+  participant A as App
+  participant Auth as Auth Service
+  participant DB as Session Store
+
+  U->>A: Login (email, password)
+  A->>Auth: Validate credentials
+  Auth->>DB: Lookup user
+  DB-->>Auth: User record
+  Auth-->>A: JWT + refresh token
+  A->>A: Store tokens
+  A-->>U: Redirect to dashboard
+  Note over U,A: Subsequent requests
+  U->>A: Request (cookie/header)
+  A->>Auth: Verify token
+  Auth-->>A: Claims
+  A-->>U: Response

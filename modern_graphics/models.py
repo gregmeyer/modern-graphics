@@ -1,25 +1,32 @@
 """Data models for Modern Graphics Generator"""
 
-from typing import Optional, Literal
 from dataclasses import dataclass
+from datetime import date
+from typing import Optional, Literal
 
 
 @dataclass
 class Attribution:
-    """Attribution bug configuration"""
-    copyright: str = "© Greg Meyer 2025 • gregmeyer.com"
+    """Attribution label configuration.
+    
+    If copyright is set, it is used as-is. Otherwise the line is built from
+    person + current year + website (e.g. "© Jane 2026 • example.com").
+    """
+    person: str = "Greg Meyer"
+    website: str = "gregmeyer.com"
+    copyright: Optional[str] = None  # If set, used as-is; else built from person + year + website
     context: Optional[str] = None
     position: Literal["bottom-right", "bottom-center", "below-element"] = "bottom-right"
     margin_top: int = 20
     
-    # Styling options
-    font_size: str = "12px"
+    # Styling options (pill label)
+    font_size: str = "11px"
     font_color: str = "#8E8E93"
-    font_weight: str = "400"
-    background_color: Optional[str] = None  # None = transparent
-    opacity: float = 0.8
-    padding: str = "8px 12px"
-    border_radius: str = "6px"
+    font_weight: str = "500"
+    background_color: Optional[str] = None  # None = use default pill background
+    opacity: float = 1.0
+    padding: str = "6px 12px"
+    border_radius: str = "20px"
     show: bool = True  # Set to False to hide attribution completely
 
 
