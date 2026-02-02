@@ -52,6 +52,8 @@ html = scheme.apply_to_html(html)  # Colors + fonts applied automatically
 - **Comparison & grids:** comparison cards, matrices, KPI or insight grids
 - **Before/after stories:** transformation cards, makeover grids, KPI deltas
 - **Insight graphics:** key insights, insight cards with SVG illustrations, insight stories with before/after comparisons
+- **Post-it flow wireframes:** tilted sticky-note flows with multiple layout options (linear, zigzag, vertical, arc, outline, org chart, fishbone, mind map)
+- **Mermaid diagrams:** flowcharts, Sankey, and sequence diagrams with theme support, embedded in heroes or insight cards
 
 **Preview them:** PNG thumbnails live in `examples/output/showcase/diagram-types/` (tracked). For themed variants (funnel, pyramid, hero canvas cards, etc.), run `python examples/generate_complete_theme_demo.py` and open `examples/output/theme-demo/index.html`.
 

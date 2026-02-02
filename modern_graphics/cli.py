@@ -21,6 +21,18 @@ Usage:
     modern-graphics wireframe-svg --type before --output before.svg
     modern-graphics wireframe-svg --type after --output after.svg
     modern-graphics wireframe-svg --type chat-panel --output chat.svg
+
+    # Scene-spec wireframe (preset or JSON spec)
+    modern-graphics wireframe-scene --preset before --output before.svg
+    modern-graphics wireframe-scene --preset after --theme apple --png --output after.png
+    modern-graphics wireframe-scene --spec my_scene.json --output scene.svg
+
+    # Mermaid: render Mermaid diagram to SVG or PNG (requires mermaid-cli)
+    modern-graphics mermaid --input diagram.mmd --output diagram.svg
+    modern-graphics mermaid --input - --output diagram.svg   # read Mermaid from stdin
+    modern-graphics mermaid --input diagram.mmd --output diagram.png --png
+    modern-graphics insight-card --text "Insight" --mermaid-file diagram.mmd --output card.html
+    modern-graphics modern-hero --title "Doc" --headline "Headline" --mermaid-file diagram.mmd --output hero.html
 """
 
 import argparse
@@ -59,6 +71,9 @@ from .diagrams.wireframe_svg import (
     generate_before_wireframe_svg,
     generate_after_wireframe_svg,
 )
+from .diagrams.wireframe_scene import render_scene, list_presets, SCENE_PRESETS
+from .diagrams.wireframe_elements.config import WireframeConfig
+from .diagrams.mermaid_svg import mermaid_to_svg
 from .color_scheme import get_scheme, list_schemes, ColorScheme
 
 
@@ -294,8 +309,10 @@ def parse_stats_arg(stats_str: Optional[str]) -> Optional[list]:
 
 def main():
     parser = argparse.ArgumentParser(description='Generate modern HTML/CSS graphics')
+    parser.add_argument('--person', default='Greg Meyer', help='Attribution person name (default: Greg Meyer)')
+    parser.add_argument('--website', default='gregmeyer.com', help='Attribution website (default: gregmeyer.com)')
     subparsers = parser.add_subparsers(dest='command', help='Diagram type')
-    
+
     # Cycle diagram
     cycle_parser = subparsers.add_parser('cycle', help='Generate cycle diagram')
     cycle_parser.add_argument('--title', required=True, help='Diagram title')
@@ -303,9 +320,11 @@ def main():
     cycle_parser.add_argument('--arrow', default='→', help='Arrow text (default: →)')
     cycle_parser.add_argument('--cycle-end', help='Text to display after cycle (e.g., "(repeat)")')
     cycle_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    cycle_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    cycle_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     cycle_parser.add_argument('--context', help='Optional context line for attribution')
     cycle_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
+    cycle_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
+    cycle_parser.add_argument('--no-loop', action='store_true', help='Hide the loop-back (↻) indicator after the last step')
     
     # Comparison diagram
     comp_parser = subparsers.add_parser('comparison', help='Generate comparison diagram')
@@ -314,9 +333,10 @@ def main():
     comp_parser.add_argument('--right', required=True, help='Right column: "Title:Step1,Step2:Outcome"')
     comp_parser.add_argument('--vs', default='vs', help='VS text (default: vs)')
     comp_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    comp_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    comp_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     comp_parser.add_argument('--context', help='Optional context line for attribution')
     comp_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
+    comp_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     
     # Grid diagram
     grid_parser = subparsers.add_parser('grid', help='Generate grid diagram')
@@ -326,9 +346,10 @@ def main():
     grid_parser.add_argument('--goal', help='Goal text for convergence section')
     grid_parser.add_argument('--outcome', help='Outcome text for convergence section')
     grid_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    grid_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    grid_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     grid_parser.add_argument('--context', help='Optional context line for attribution')
     grid_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
+    grid_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     
     # Flywheel diagram
     flywheel_parser = subparsers.add_parser('flywheel', help='Generate flywheel diagram')
@@ -338,9 +359,10 @@ def main():
     flywheel_parser.add_argument('--center', help='Optional center label')
     flywheel_parser.add_argument('--radius', type=int, default=200, help='Circle radius in pixels (default: 200)')
     flywheel_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    flywheel_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    flywheel_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     flywheel_parser.add_argument('--context', help='Optional context line for attribution')
     flywheel_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
+    flywheel_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     
     # Timeline diagram
     timeline_parser = subparsers.add_parser('timeline', help='Generate timeline diagram')
@@ -349,10 +371,11 @@ def main():
     timeline_parser.add_argument('--colors', help='Comma-separated list of colors (blue,green,orange,purple,red,gray)')
     timeline_parser.add_argument('--orientation', choices=['horizontal', 'vertical'], default='horizontal', help='Timeline orientation (default: horizontal)')
     timeline_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    timeline_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    timeline_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     timeline_parser.add_argument('--context', help='Optional context line for attribution')
     timeline_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
-    
+    timeline_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
+
     # Pyramid diagram
     pyramid_parser = subparsers.add_parser('pyramid', help='Generate pyramid diagram')
     pyramid_parser.add_argument('--title', required=True, help='Diagram title')
@@ -360,8 +383,9 @@ def main():
     pyramid_parser.add_argument('--colors', help='Comma-separated list of colors (blue,green,orange,purple,red,gray)')
     pyramid_parser.add_argument('--orientation', choices=['up', 'down'], default='up', help='Pyramid orientation - up (pointing up) or down (pointing down) (default: up)')
     pyramid_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    pyramid_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    pyramid_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     pyramid_parser.add_argument('--context', help='Optional context line for attribution')
+    pyramid_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     pyramid_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
     # Before/After diagram
@@ -371,7 +395,7 @@ def main():
     before_after_parser.add_argument('--after', required=True, help='Comma-separated list of "after" items')
     before_after_parser.add_argument('--transition', default='→', help='Transition text between states (default: →)')
     before_after_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    before_after_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    before_after_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     before_after_parser.add_argument('--context', help='Optional context line for attribution')
     before_after_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
@@ -383,8 +407,9 @@ def main():
     funnel_parser.add_argument('--colors', help='Comma-separated list of colors (blue,green,orange,purple,red,gray)')
     funnel_parser.add_argument('--percentages', action='store_true', help='Display percentages instead of values')
     funnel_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    funnel_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    funnel_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     funnel_parser.add_argument('--context', help='Optional context line for attribution')
+    funnel_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     funnel_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
     # Slide card diagram
@@ -393,8 +418,9 @@ def main():
     slide_cards_parser.add_argument('--cards', required=True, help='JSON string with cards array: [{"title":"...","tagline":"...","subtext":"...","filename":"...","color":"blue|green|purple|gray","features":["..."],"badge":"..."}]')
     slide_cards_parser.add_argument('--arrow', default='→', help='Arrow text between cards (default: →)')
     slide_cards_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    slide_cards_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    slide_cards_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     slide_cards_parser.add_argument('--context', help='Optional context line for attribution')
+    slide_cards_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     slide_cards_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
     # Slide card comparison
@@ -404,8 +430,9 @@ def main():
     slide_compare_parser.add_argument('--right', required=True, help='JSON string with right card: {"title":"...","tagline":"...","color":"...","features":["..."],"badge":"..."}')
     slide_compare_parser.add_argument('--vs', default='→', help='VS text between cards (default: →)')
     slide_compare_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    slide_compare_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    slide_compare_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     slide_compare_parser.add_argument('--context', help='Optional context line for attribution')
+    slide_compare_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
     slide_compare_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     
     # Premium stacked card
@@ -416,7 +443,7 @@ def main():
     premium_card_parser.add_argument('--top-only', action='store_true', help='Render only the top/hero panel')
     premium_card_parser.add_argument('--bottom-only', action='store_true', help='Render only the bottom/detail panel')
     premium_card_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    premium_card_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    premium_card_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     premium_card_parser.add_argument('--context', help='Optional context line for attribution')
     premium_card_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
@@ -432,7 +459,7 @@ def main():
     story_slide_parser.add_argument('--hero-variant', choices=['auto', 'light', 'dark'], default='auto', help='Force hero panel variant (default: auto)')
     story_slide_parser.add_argument('--hero-svg-js', action='store_true', help='Render hero mockup using SVG.js')
     story_slide_parser.add_argument('--output', required=True, help='Output HTML file path (or PNG if --png is set)')
-    story_slide_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    story_slide_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     story_slide_parser.add_argument('--context', help='Optional context line for attribution')
     story_slide_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML')
 
@@ -447,12 +474,15 @@ def main():
     modern_hero_parser.add_argument('--flow-nodes', help='JSON array describing flow nodes for a freeform layout')
     modern_hero_parser.add_argument('--flow-connections', help='Optional JSON array of {\"from\":\"id\",\"to\":\"id\"} connections')
     modern_hero_parser.add_argument('--freeform-canvas', help='Raw HTML/SVG snippet to inject into the hero body')
+    modern_hero_parser.add_argument('--mermaid-file', help='Path to Mermaid .mmd file; render to SVG and inject into hero body (requires mermaid-cli)')
+    modern_hero_parser.add_argument('--mermaid-font', help='Font family for the Mermaid diagram (e.g. Roboto, "Georgia, serif")')
+    modern_hero_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme for hero and Mermaid diagram: {", ".join(list_schemes())}')
     modern_hero_parser.add_argument('--stats', help='Comma-separated stats in Label:Value format')
     modern_hero_parser.add_argument('--cta', help='CTA copy')
     modern_hero_parser.add_argument('--visual-description', help='Optional freeform description (keywords like "curved arrow" or "glassmorphism")')
     modern_hero_parser.add_argument('--background', default='light', choices=['light', 'dark'], help='Background variant (default: light)')
     modern_hero_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    modern_hero_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    modern_hero_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     modern_hero_parser.add_argument('--context', help='Optional context line for attribution')
     modern_hero_parser.add_argument('--png', action='store_true', help='Export as PNG')
 
@@ -465,7 +495,7 @@ def main():
     modern_triptych_parser.add_argument('--stats', help='Comma-separated stats in Label:Value format')
     modern_triptych_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
     modern_triptych_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    modern_triptych_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    modern_triptych_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     modern_triptych_parser.add_argument('--context', help='Optional context line for attribution')
     modern_triptych_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
@@ -474,7 +504,7 @@ def main():
     hero_prompt_parser.add_argument('--title', default='Modern Hero Prompt', help='Document title scope')
     hero_prompt_parser.add_argument('--prompt-file', required=True, help='Path to JSON prompt describing the hero (layout, headline, stats, etc.)')
     hero_prompt_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    hero_prompt_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    hero_prompt_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     hero_prompt_parser.add_argument('--context', help='Optional context line for attribution')
     hero_prompt_parser.add_argument('--png', action='store_true', help='Export as PNG')
     
@@ -494,8 +524,10 @@ def main():
     key_insight_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
     key_insight_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
     key_insight_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    key_insight_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    key_insight_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     key_insight_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    key_insight_parser.add_argument('--square', action='store_true', help='Export PNG as square (use with --png)')
+    key_insight_parser.add_argument('--size', type=int, default=800, help='Side length in pixels for square export (default: 800). Used with --square.')
     key_insight_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10 for inline use)')
     
     # Insight Card (insight + SVG illustration)
@@ -504,6 +536,8 @@ def main():
     insight_card_parser.add_argument('--text', required=True, help='The insight text (supports HTML)')
     insight_card_parser.add_argument('--svg-file', help='Path to SVG file to embed')
     insight_card_parser.add_argument('--svg-type', choices=['before', 'after', 'chat-panel', 'modal-form'], help='Generate SVG wireframe of this type instead of using --svg-file')
+    insight_card_parser.add_argument('--mermaid-file', help='Path to Mermaid .mmd file; render to SVG and use as illustration (requires mermaid-cli)')
+    insight_card_parser.add_argument('--mermaid-font', help='Font family for the Mermaid diagram (e.g. Roboto, "Georgia, serif")')
     insight_card_parser.add_argument('--label', default='Key Insight', help='Label above the insight')
     insight_card_parser.add_argument('--svg-label', help='Label above the SVG')
     insight_card_parser.add_argument('--eyebrow', help='Optional eyebrow text')
@@ -515,8 +549,10 @@ def main():
     insight_card_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
     insight_card_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
     insight_card_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    insight_card_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    insight_card_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     insight_card_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    insight_card_parser.add_argument('--square', action='store_true', help='Export PNG as square (use with --png)')
+    insight_card_parser.add_argument('--size', type=int, default=800, help='Side length in pixels for square export (default: 800). Used with --square.')
     insight_card_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
     
     # Insight Story (full graphic with before/after + insight + stats)
@@ -541,7 +577,7 @@ def main():
     insight_story_parser.add_argument('--accent-color', default='#0071e3', help='Accent color')
     insight_story_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
     insight_story_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    insight_story_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    insight_story_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     insight_story_parser.add_argument('--png', action='store_true', help='Export as PNG')
     insight_story_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
     
@@ -556,7 +592,7 @@ def main():
     wireframe_svg_parser.add_argument('--accent-color', default='#0071e3', help='Accent color (default: #0071e3)')
     wireframe_svg_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
     wireframe_svg_parser.add_argument('--output', required=True, help='Output SVG/PNG path')
-    wireframe_svg_parser.add_argument('--copyright', default='© Greg Meyer 2025 • gregmeyer.com', help='Copyright text')
+    wireframe_svg_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     wireframe_svg_parser.add_argument('--png', action='store_true', help='Export as PNG instead of SVG')
     wireframe_svg_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
     # Chat panel specific options
@@ -568,6 +604,26 @@ def main():
     wireframe_svg_parser.add_argument('--modal-title', default='Support Request', help='Modal title')
     wireframe_svg_parser.add_argument('--fields', help='Comma-separated field labels')
     wireframe_svg_parser.add_argument('--submit-label', default='Submit', help='Submit button text')
+
+    # Scene-spec wireframe: preset or custom JSON spec
+    wireframe_scene_parser = subparsers.add_parser('wireframe-scene', help='Render wireframe from scene preset or JSON spec')
+    wireframe_scene_parser.add_argument('--preset', choices=list_presets(), help='Preset name (e.g. before, after)')
+    wireframe_scene_parser.add_argument('--spec', help='Path to JSON file with width, height, elements')
+    wireframe_scene_parser.add_argument('--theme', choices=list_schemes(), help=f'Color theme: {", ".join(list_schemes())}')
+    wireframe_scene_parser.add_argument('--output', required=True, help='Output SVG/PNG path')
+    wireframe_scene_parser.add_argument('--png', action='store_true', help='Export as PNG instead of SVG')
+    wireframe_scene_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
+
+    # Mermaid: render Mermaid source to SVG (or PNG)
+    mermaid_parser = subparsers.add_parser('mermaid', help='Render Mermaid diagram to SVG or PNG')
+    mermaid_parser.add_argument('--input', required=True, help='Path to .mmd file, or "-" to read Mermaid from stdin')
+    mermaid_parser.add_argument('--output', required=True, help='Output SVG or PNG path')
+    mermaid_parser.add_argument('--theme', choices=list_schemes(), help=f'Apply color theme to diagram: {", ".join(list_schemes())}')
+    mermaid_parser.add_argument('--font', help='Font family for the diagram (e.g. Roboto, "Georgia, serif"). Overrides theme font when --theme is set.')
+    mermaid_parser.add_argument('--width', type=int, help='SVG width (passed to mermaid-cli)')
+    mermaid_parser.add_argument('--height', type=int, help='SVG height (passed to mermaid-cli)')
+    mermaid_parser.add_argument('--png', action='store_true', help='Export as PNG instead of SVG')
+    mermaid_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
     
     args = parser.parse_args()
     
@@ -577,14 +633,16 @@ def main():
     
     output_path = Path(args.output)
     
-    # Handle wireframe-svg specially (no generator needed)
-    if args.command == 'wireframe-svg':
-        # SVG generation doesn't need attribution or generator
+    # Handle wireframe-svg, wireframe-scene, mermaid specially (no generator until PNG)
+    if args.command in ('wireframe-svg', 'wireframe-scene', 'mermaid'):
+        # SVG generation doesn't need attribution or generator until --png
         pass
     else:
         attribution = Attribution(
+            person=getattr(args, 'person', 'Greg Meyer'),
+            website=getattr(args, 'website', 'gregmeyer.com'),
             copyright=args.copyright,
-            context=getattr(args, 'context', None)
+            context=getattr(args, 'context', None),
         )
         
         # If PNG export requested, ensure output path has .png extension
@@ -596,13 +654,19 @@ def main():
     
     if args.command == 'cycle':
         steps = parse_steps(args.steps)
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
         html = generate_cycle_diagram(
             title=args.title,
             steps=steps,
             arrow_text=args.arrow,
             cycle_end_text=getattr(args, 'cycle_end', None),
             attribution=attribution,
-            attribution_on_last=True
+            attribution_on_last=True,
+            color_scheme=color_scheme,
+            show_loop_indicator=not getattr(args, 'no_loop', False),
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -614,12 +678,17 @@ def main():
     elif args.command == 'comparison':
         left_column = parse_column(args.left)
         right_column = parse_column(args.right)
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
         html = generate_comparison_diagram(
             title=args.title,
             left_column=left_column,
             right_column=right_column,
             vs_text=args.vs,
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme,
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -636,12 +705,17 @@ def main():
                 'goal': args.goal or '',
                 'outcome': args.outcome or ''
             }
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
         html = generate_grid_diagram(
             title=args.title,
             items=items,
             columns=args.columns,
             convergence=convergence,
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme,
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -652,13 +726,17 @@ def main():
     
     elif args.command == 'flywheel':
         elements = parse_flywheel_elements(args.elements, args.colors)
-        
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
         html = generate_flywheel_diagram(
             title=args.title,
             elements=elements,
             center_label=getattr(args, 'center', None),
             radius=args.radius,
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme,
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -669,12 +747,16 @@ def main():
     
     elif args.command == 'timeline':
         events = parse_timeline_events(args.events, getattr(args, 'colors', None))
-        
+        # Get color scheme if theme specified
+        color_scheme = None
+        if getattr(args, 'theme', None):
+            color_scheme = get_scheme(args.theme)
         html = generate_timeline_diagram(
             title=args.title,
             events=events,
             orientation=getattr(args, 'orientation', 'horizontal'),
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme,
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -685,12 +767,13 @@ def main():
     
     elif args.command == 'pyramid':
         layers = parse_pyramid_layers(args.layers, getattr(args, 'colors', None))
-        
+        color_scheme = get_scheme(args.theme) if getattr(args, 'theme', None) else None
         html = generate_pyramid_diagram(
             title=args.title,
             layers=layers,
             orientation=getattr(args, 'orientation', 'up'),
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -723,12 +806,13 @@ def main():
             getattr(args, 'values', None),
             getattr(args, 'colors', None)
         )
-        
+        color_scheme = get_scheme(args.theme) if getattr(args, 'theme', None) else None
         html = generate_funnel_diagram(
             title=args.title,
             stages=stages,
             show_percentages=getattr(args, 'percentages', False),
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme
         )
         if getattr(args, 'png', False):
             generator.export_to_png(html, output_path)
@@ -739,12 +823,13 @@ def main():
     
     elif args.command == 'slide-cards':
         cards = json.loads(args.cards)
-        
+        color_scheme = get_scheme(args.theme) if getattr(args, 'theme', None) else None
         html = generate_slide_card_diagram(
             title=args.title,
             cards=cards,
             arrow_text=getattr(args, 'arrow', '→'),
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme
         )
         if getattr(args, 'png', False):
             # Use wider viewport for horizontal card layouts
@@ -760,13 +845,14 @@ def main():
     elif args.command == 'slide-compare':
         left_card = json.loads(args.left)
         right_card = json.loads(args.right)
-        
+        color_scheme = get_scheme(args.theme) if getattr(args, 'theme', None) else None
         html = generate_slide_card_comparison(
             title=args.title,
             left_card=left_card,
             right_card=right_card,
             vs_text=getattr(args, 'vs', '→'),
-            attribution=attribution
+            attribution=attribution,
+            color_scheme=color_scheme
         )
         if getattr(args, 'png', False):
             # Use wider viewport for side-by-side comparison
@@ -842,6 +928,19 @@ def main():
             except json.JSONDecodeError as exc:
                 raise SystemExit(f"Invalid JSON for --flow-connections: {exc}")
         freeform_canvas = getattr(args, 'freeform_canvas', None)
+        if getattr(args, 'mermaid_file', None):
+            mermaid_path = Path(args.mermaid_file)
+            if not mermaid_path.exists():
+                raise SystemExit(f"Mermaid file not found: {mermaid_path}")
+            hero_mermaid_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
+            try:
+                freeform_canvas = mermaid_to_svg(
+                    mermaid_path.read_text(encoding="utf-8"),
+                    color_scheme=hero_mermaid_scheme,
+                    font_family=getattr(args, 'mermaid_font', None),
+                )
+            except RuntimeError as e:
+                raise SystemExit(str(e))
         stats = parse_stats_arg(getattr(args, 'stats', None))
         html = generate_modern_hero(
             title=args.title,
@@ -985,7 +1084,11 @@ def main():
         )
         padding = getattr(args, 'padding', 10)
         if getattr(args, 'png', False):
-            generator.export_to_png(html, output_path, viewport_width=900, viewport_height=400, padding=padding)
+            size = getattr(args, 'size', 800)
+            if getattr(args, 'square', False):
+                generator.export_to_png(html, output_path, viewport_width=size, viewport_height=size, padding=padding)
+            else:
+                generator.export_to_png(html, output_path, viewport_width=900, viewport_height=400, padding=padding)
             print(f"Generated key insight PNG: {output_path}")
         else:
             generator.save(html, output_path)
@@ -999,7 +1102,21 @@ def main():
         
         # Get SVG content
         svg_content = None
-        if getattr(args, 'svg_file', None):
+        if getattr(args, 'mermaid_file', None):
+            mermaid_path = Path(args.mermaid_file)
+            if not mermaid_path.exists():
+                raise SystemExit(f"Mermaid file not found: {mermaid_path}")
+            mermaid_source = mermaid_path.read_text(encoding="utf-8")
+            mermaid_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
+            try:
+                svg_content = mermaid_to_svg(
+                    mermaid_source,
+                    color_scheme=mermaid_scheme,
+                    font_family=getattr(args, 'mermaid_font', None),
+                )
+            except RuntimeError as e:
+                raise SystemExit(str(e))
+        elif getattr(args, 'svg_file', None):
             svg_path = Path(args.svg_file)
             if not svg_path.exists():
                 raise SystemExit(f"SVG file not found: {svg_path}")
@@ -1021,7 +1138,7 @@ def main():
             elif args.svg_type == 'modal-form':
                 svg_content = generate_modal_form_svg(config)
         else:
-            raise SystemExit("Either --svg-file or --svg-type is required")
+            raise SystemExit("One of --svg-file, --svg-type, or --mermaid-file is required")
         
         html = generate_insight_card(
             generator,
@@ -1040,7 +1157,11 @@ def main():
         )
         padding = getattr(args, 'padding', 10)
         if getattr(args, 'png', False):
-            generator.export_to_png(html, output_path, viewport_width=960, viewport_height=400, padding=padding)
+            size = getattr(args, 'size', 800)
+            if getattr(args, 'square', False):
+                generator.export_to_png(html, output_path, viewport_width=size, viewport_height=size, padding=padding)
+            else:
+                generator.export_to_png(html, output_path, viewport_width=960, viewport_height=400, padding=padding)
             print(f"Generated insight card PNG: {output_path}")
         else:
             generator.save(html, output_path)
@@ -1228,7 +1349,91 @@ def main():
             # Save SVG
             output_path.write_text(svg_content)
             print(f"Generated wireframe SVG: {output_path}")
-    
+
+    elif args.command == 'wireframe-scene':
+        preset = getattr(args, 'preset', None)
+        spec_path = getattr(args, 'spec', None)
+        if not preset and not spec_path:
+            raise SystemExit("wireframe-scene requires either --preset or --spec")
+        if preset and spec_path:
+            raise SystemExit("wireframe-scene: use either --preset or --spec, not both")
+
+        theme_name = getattr(args, 'theme', None)
+        scheme = get_scheme(theme_name) if theme_name else None
+        default_width = 600
+        default_height = 520
+
+        if preset:
+            spec = SCENE_PRESETS[preset]
+        else:
+            with open(spec_path, encoding="utf-8") as f:
+                spec = json.load(f)
+            if not isinstance(spec, dict) or "elements" not in spec:
+                raise SystemExit("wireframe-scene --spec: JSON must be an object with 'width', 'height', and 'elements'")
+
+        scene_width = spec.get("width", default_width)
+        scene_height = spec.get("height", default_height)
+        config = WireframeConfig.from_color_scheme(scheme, width=scene_width, height=scene_height) if scheme else WireframeConfig(width=scene_width, height=scene_height)
+
+        svg_content = render_scene(spec, config)
+
+        if getattr(args, 'png', False):
+            attribution = Attribution(
+                copyright=getattr(args, 'copyright', None),
+                context=getattr(args, 'context', None),
+            )
+            generator = ModernGraphicsGenerator("Wireframe scene", attribution)
+            html = wrap_svg_for_png_export(svg_content, scheme, scene_width, scene_height)
+            if output_path.suffix != '.png':
+                output_path = output_path.with_suffix('.png')
+            padding = getattr(args, 'padding', 10)
+            generator.export_to_png(html, output_path, viewport_width=scene_width + 40, viewport_height=scene_height + 40, padding=padding)
+            print(f"Generated wireframe scene PNG: {output_path}")
+        else:
+            output_path.write_text(svg_content)
+            print(f"Generated wireframe scene SVG: {output_path}")
+
+    elif args.command == 'mermaid':
+        import re
+        import sys
+        inp = getattr(args, 'input', None)
+        if inp == '-':
+            mermaid_source = sys.stdin.read()
+        else:
+            mermaid_path = Path(inp)
+            if not mermaid_path.exists():
+                raise SystemExit(f"Input file not found: {mermaid_path}")
+            mermaid_source = mermaid_path.read_text(encoding="utf-8")
+        mermaid_theme_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
+        try:
+            svg_content = mermaid_to_svg(
+                mermaid_source,
+                width=getattr(args, 'width', None),
+                height=getattr(args, 'height', None),
+                color_scheme=mermaid_theme_scheme,
+                font_family=getattr(args, 'font', None),
+            )
+        except RuntimeError as e:
+            raise SystemExit(str(e))
+        if getattr(args, 'png', False):
+            m = re.search(r'viewBox="[^"]*\s+([\d.]+)\s+([\d.]+)"', svg_content)
+            vw = int(float(m.group(1))) if m else 800
+            vh = int(float(m.group(2))) if m else 600
+            attribution = Attribution(
+                copyright=getattr(args, 'copyright', None),
+                context=getattr(args, 'context', None),
+            )
+            generator = ModernGraphicsGenerator("Mermaid diagram", attribution)
+            html = wrap_svg_for_png_export(svg_content, None, vw, vh)
+            if output_path.suffix != '.png':
+                output_path = output_path.with_suffix('.png')
+            padding = getattr(args, 'padding', 10)
+            generator.export_to_png(html, output_path, viewport_width=vw + 40, viewport_height=vh + 40, padding=padding)
+            print(f"Generated Mermaid PNG: {output_path}")
+        else:
+            output_path.write_text(svg_content)
+            print(f"Generated Mermaid SVG: {output_path}")
+
     return 0
 
 

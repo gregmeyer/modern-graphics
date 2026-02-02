@@ -62,59 +62,68 @@ class ModernGraphicsGenerator(BaseGenerator):
         steps: List[Dict[str, any]],
         arrow_text: str = "→",
         cycle_end_text: Optional[str] = None,
-        attribution_on_last: bool = True
+        attribution_on_last: bool = True,
+        color_scheme: Optional["ColorScheme"] = None,
+        show_loop_indicator: bool = True,
     ) -> str:
         """Generate a cycle/flow diagram"""
         from .diagrams.cycle import generate_cycle_diagram as _generate
-        return _generate(self, steps, arrow_text, cycle_end_text, attribution_on_last)
+        return _generate(
+            self, steps, arrow_text, cycle_end_text, attribution_on_last, color_scheme, show_loop_indicator
+        )
     
     def generate_comparison_diagram(
         self,
         left_column: Dict[str, any],
         right_column: Dict[str, any],
-        vs_text: str = "vs"
+        vs_text: str = "vs",
+        color_scheme: Optional["ColorScheme"] = None
     ) -> str:
         """Generate a comparison diagram"""
         from .diagrams.comparison import generate_comparison_diagram as _generate
-        return _generate(self, left_column, right_column, vs_text)
+        return _generate(self, left_column, right_column, vs_text, color_scheme)
     
     def generate_grid_diagram(
         self,
         items: List[Dict[str, any]],
         columns: int = 5,
-        convergence: Optional[Dict[str, str]] = None
+        convergence: Optional[Dict[str, str]] = None,
+        color_scheme: Optional["ColorScheme"] = None
     ) -> str:
         """Generate a grid diagram"""
         from .diagrams.grid import generate_grid_diagram as _generate
-        return _generate(self, items, columns, convergence)
+        return _generate(self, items, columns, convergence, color_scheme)
     
     def generate_flywheel_diagram(
         self,
         elements: List[Dict[str, any]],
         center_label: Optional[str] = None,
-        radius: int = 200
+        radius: int = 200,
+        color_scheme: Optional["ColorScheme"] = None
     ) -> str:
         """Generate a flywheel diagram"""
         from .diagrams.flywheel import generate_flywheel_diagram as _generate
-        return _generate(self, elements, center_label, radius)
+        return _generate(self, elements, center_label, radius, color_scheme)
     
     def generate_timeline_diagram(
         self,
         events: List[Dict[str, any]],
-        orientation: str = "horizontal"
+        orientation: str = "horizontal",
+        color_scheme: Optional["ColorScheme"] = None
     ) -> str:
         """Generate a timeline diagram"""
         from .diagrams.timeline import generate_timeline_diagram as _generate
-        return _generate(self, events, orientation)
+        return _generate(self, events, orientation, color_scheme)
     
     def generate_pyramid_diagram(
         self,
         layers: List[Dict[str, any]],
-        orientation: str = "up"
+        orientation: str = "up",
+        color_scheme: Optional["ColorScheme"] = None,
     ) -> str:
         """Generate a pyramid diagram"""
         from .diagrams.pyramid import generate_pyramid_diagram as _generate
-        return _generate(self, layers, orientation)
+        return _generate(self, layers, orientation, color_scheme)
     
     def generate_before_after_diagram(
         self,
@@ -129,17 +138,19 @@ class ModernGraphicsGenerator(BaseGenerator):
     def generate_funnel_diagram(
         self,
         stages: List[Dict[str, any]],
-        show_percentages: bool = False
+        show_percentages: bool = False,
+        color_scheme: Optional["ColorScheme"] = None,
     ) -> str:
         """Generate a funnel diagram"""
         from .diagrams.funnel import generate_funnel_diagram as _generate
-        return _generate(self, stages, show_percentages)
+        return _generate(self, stages, show_percentages, color_scheme)
     
     def generate_slide_card_diagram(
         self,
         cards: List[Dict[str, any]],
         arrow_text: str = "→",
-        style: str = "default"
+        style: str = "default",
+        color_scheme: Optional["ColorScheme"] = None,
     ) -> str:
         """Generate a horizontal slide card diagram
         
@@ -147,17 +158,19 @@ class ModernGraphicsGenerator(BaseGenerator):
             cards: List of card dictionaries
             arrow_text: Text to display between cards
             style: Layout style - 'default' (vertical cards) or 'lower_third' (horizontal bar style)
+            color_scheme: Optional ColorScheme for theming
         """
-        return generate_slide_card_diagram(self, cards, arrow_text, style)
+        return generate_slide_card_diagram(self, cards, arrow_text, style, color_scheme)
     
     def generate_slide_card_comparison(
         self,
         left_card: Dict[str, any],
         right_card: Dict[str, any],
-        vs_text: str = "→"
+        vs_text: str = "→",
+        color_scheme: Optional["ColorScheme"] = None,
     ) -> str:
         """Generate a side-by-side slide card comparison"""
-        return generate_slide_card_comparison(self, left_card, right_card, vs_text)
+        return generate_slide_card_comparison(self, left_card, right_card, vs_text, color_scheme)
 
     def generate_premium_card(
         self,
@@ -207,6 +220,8 @@ class ModernGraphicsGenerator(BaseGenerator):
         headline_align: str = "left",
         subheadline_align: Optional[str] = None,
         graphic_position: str = "center",
+        color_scheme: Optional["ColorScheme"] = None,
+        insight_callout: Optional[Dict[str, str]] = None,
     ) -> str:
         """Generate the open modern hero layout."""
         return generate_modern_hero(
@@ -226,6 +241,8 @@ class ModernGraphicsGenerator(BaseGenerator):
             headline_align=headline_align,
             subheadline_align=subheadline_align,
             graphic_position=graphic_position,
+            color_scheme=color_scheme,
+            insight_callout=insight_callout,
         )
 
     def generate_modern_hero_triptych(

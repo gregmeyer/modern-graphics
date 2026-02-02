@@ -1,77 +1,97 @@
-"""Timeline diagram generator"""
+"""Timeline diagram generator - Material Design inspired"""
 
-from typing import List, Dict
+from typing import List, Dict, Optional, Any, TYPE_CHECKING
 from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
-from ..utils import generate_step_style
+from .theme_utils import extract_theme_colors, generate_css_variables, inject_google_fonts, with_alpha
+
+if TYPE_CHECKING:
+    from ..color_scheme import ColorScheme
+
+
+def _event_marker_color(color_key: str, generator: BaseGenerator, theme: Any) -> str:
+    """Resolve step/marker color from template or theme accent."""
+    template = getattr(generator, "template", None)
+    if template and hasattr(template, "get_gradient"):
+        try:
+            start, _ = template.get_gradient(color_key)
+            return start
+        except Exception:
+            pass
+    return theme.accent
 
 
 def generate_timeline_diagram(
     generator: BaseGenerator,
     events: List[Dict[str, any]],
-    orientation: str = "horizontal"
+    orientation: str = "horizontal",
+    color_scheme: Optional["ColorScheme"] = None,
 ) -> str:
-    """Generate a timeline diagram with a continuous line and event markers"""
+    """Generate a timeline diagram (Material Design inspired).
+    
+    Args:
+        generator: BaseGenerator instance
+        events: List of event dicts with 'date', 'text'/'title', optional 'description', 'color'
+        orientation: 'horizontal' or 'vertical'
+        color_scheme: Optional ColorScheme for theming
+        
+    Returns:
+        HTML string
+    """
     if orientation != "horizontal":
-        # For vertical, keep simpler layout for now
-        return _generate_vertical_timeline(generator, events)
+        return _generate_vertical_timeline(generator, events, color_scheme)
+    
+    theme = extract_theme_colors(color_scheme)
+    
+    # Material elevation 2dp (card)
+    shadow = "0 2px 6px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12)"
+    if theme.is_dark:
+        shadow = "0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2)"
     
     events_html = []
     events_css = []
     
     for i, event in enumerate(events):
-        event_id = f'event-{i}'
-        date = event.get('date', '')
-        text = event.get('text', event.get('title', ''))
-        description = event.get('description', '')
-        color = event.get('color', 'gray')
-        event_class = event.get('class', event_id.replace(' ', '-').lower())
-        
-        # Get color from template
-        step_style = event.get('style')
-        css = generate_step_style(step_style, color, template=generator.template)
-        
-        # Get marker color from template gradient (use first color)
-        grad_start, grad_end = generator.template.get_gradient(color)
-        marker_color = grad_start
-        
-        # Extract background color for arrow
-        bg_color = grad_start  # Use gradient start for arrow
+        event_id = f"event-{i}"
+        date = event.get("date", "")
+        text = event.get("text", event.get("title", ""))
+        description = event.get("description", "")
+        color = event.get("color", "gray")
+        event_class = event.get("class", event_id.replace(" ", "-").lower())
+        marker_color = _event_marker_color(color, generator, theme)
         
         events_css.append(f"""
-        .event-marker.{event_class} {{ 
+        .timeline-step-indicator.{event_class} {{
             background: {marker_color};
+            border-color: var(--bg-card);
         }}
-        .event-card.{event_class} {{
-            {css}
-        }}
-        .event-card.{event_class}::after {{
-            border-top-color: {bg_color};
+        .timeline-step-indicator.{event_class} .step-num {{
+            color: white;
         }}""")
         
-        # Position cards above the line, alternating slightly for visual interest
-        card_position = "above" if i % 2 == 0 else "above"  # Keep all above for consistency
-        
+        desc_html = f'<div class="md-body2">{description}</div>' if description else ""
         events_html.append(f"""
-            <div class="timeline-event">
-                <div class="event-card {event_class} {card_position}">
-                    <div class="event-date">{date}</div>
-                    <div class="event-title">{text}</div>
-                    {f'<div class="event-description">{description}</div>' if description else ''}
+            <div class="timeline-step">
+                <div class="timeline-step-content">
+                    <div class="md-overline">{date}</div>
+                    <div class="md-subtitle1">{text}</div>
+                    {desc_html}
                 </div>
-                <div class="event-marker {event_class}"></div>
+                <div class="timeline-step-indicator {event_class}">
+                    <span class="step-num">{i + 1}</span>
+                </div>
             </div>""")
     
     css_content = f"""
+        {generate_css_variables(theme)}
+        
         .timeline-container {{
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 40px;
-            position: relative;
             width: 100%;
             max-width: 1200px;
-            padding: 40px 20px;
+            padding: 40px 24px;
         }}
         
         .wrapper {{
@@ -81,129 +101,111 @@ def generate_timeline_diagram(
             width: 100%;
         }}
         
-        .title {{
+        .md-headline {{
+            font-family: var(--font-display);
             font-size: 24px;
             font-weight: 700;
-            color: #1D1D1F;
-            margin-bottom: 20px;
+            color: var(--text-1);
             letter-spacing: -0.02em;
             line-height: 1.2;
+            margin-bottom: 32px;
             text-align: center;
         }}
         
-        .timeline {{
-            position: relative;
+        .timeline-track {{
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: stretch;
             width: 100%;
-            padding: 0 20px;
-            margin: 140px 0 40px 0;
+            position: relative;
         }}
         
-        /* Continuous horizontal line */
-        .timeline::before {{
+        .timeline-track::before {{
             content: '';
             position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #007AFF 0%, #007AFF 100%);
-            opacity: 0.3;
-            z-index: 1;
+            left: 24px;
+            right: 24px;
+            bottom: 12px;
+            height: 2px;
+            background: {with_alpha(theme.text_tertiary, 0.24)};
+            pointer-events: none;
         }}
         
-        .timeline-event {{
-            position: relative;
+        .timeline-step {{
             display: flex;
             flex-direction: column;
             align-items: center;
             flex: 1;
-            z-index: 2;
-        }}
-        
-        .event-marker {{
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #007AFF;
-            border: 3px solid #ffffff;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            position: absolute;
-            bottom: -8px;
-            z-index: 3;
-        }}
-        
-        .event-card {{
-            background: #F5F5F7;
-            border: none;
-            border-radius: 14px;
-            padding: 16px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #1D1D1F;
-            min-width: 200px;
-            max-width: 220px;
-            text-align: center;
-            letter-spacing: -0.01em;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.05);
-            margin-bottom: 40px;
             position: relative;
+            z-index: 1;
         }}
         
-        .event-card.above {{
-            margin-bottom: 40px;
+        .timeline-step-content {{
+            background: var(--bg-card);
+            border: {theme.card_border};
+            border-radius: 8px;
+            padding: 16px 20px;
+            min-width: 160px;
+            max-width: 240px;
+            text-align: center;
+            box-shadow: {shadow};
+            margin-bottom: 24px;
         }}
         
-        .event-card::after {{
-            content: '';
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 8px solid;
-            border-top-color: inherit;
+        .md-overline {{
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-3);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }}
+        
+        .md-subtitle1 {{
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.01em;
+            line-height: 1.4;
+        }}
+        
+        .md-body2 {{
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-2);
+            letter-spacing: 0.02em;
+            line-height: 1.43;
+            margin-top: 8px;
+        }}
+        
+        .timeline-step-indicator {{
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }}
+        
+        .step-num {{
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
         }}
         
         {''.join(events_css)}
-        
-        .event-date {{
-            font-size: 12px;
-            font-weight: 600;
-            color: #8E8E93;
-            margin-bottom: 6px;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }}
-        
-        .event-title {{
-            font-size: 16px;
-            font-weight: 700;
-            color: #1D1D1F;
-            letter-spacing: -0.01em;
-            line-height: 1.3;
-            margin-bottom: 4px;
-        }}
-        
-        .event-description {{
-            font-size: 13px;
-            font-weight: 500;
-            color: #8E8E93;
-            letter-spacing: -0.01em;
-            line-height: 1.4;
-            margin-top: 6px;
-        }}
         
         .attribution {{
             margin-top: {generator.attribution.margin_top}px;
             font-size: 12px;
             font-weight: 500;
-            color: #C7C7CC;
+            color: var(--text-3);
             letter-spacing: -0.01em;
             text-align: right;
             width: 100%;
@@ -211,58 +213,76 @@ def generate_timeline_diagram(
         }}
         
         {ATTRIBUTION_STYLES}
-        """
+    """
     
     html_content = f"""
     <div class="wrapper">
     <div class="timeline-container">
-        <div class="title">{generator.title}</div>
-        <div class="timeline">
+        <div class="md-headline">{generator.title}</div>
+        <div class="timeline-track">
 {''.join(events_html)}
         </div>
     </div>
     {generator._generate_attribution_html()}
     </div>
-        """
+    """
     
-    return generator._wrap_html(html_content, css_content)
+    html = generator._wrap_html(html_content, css_content)
+    return inject_google_fonts(html, theme)
 
 
-def _generate_vertical_timeline(generator: BaseGenerator, events: List[Dict[str, any]]) -> str:
-    """Generate a vertical timeline (fallback for vertical orientation)"""
+def _generate_vertical_timeline(
+    generator: BaseGenerator,
+    events: List[Dict[str, any]],
+    color_scheme: Optional["ColorScheme"] = None,
+) -> str:
+    """Generate a vertical timeline (Material Design: central line, alternating content, chips)."""
+    theme = extract_theme_colors(color_scheme)
+    
+    shadow = "0 2px 6px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12)"
+    if theme.is_dark:
+        shadow = "0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2)"
+    
     events_html = []
     events_css = []
     
     for i, event in enumerate(events):
-        event_id = f'event-{i}'
-        date = event.get('date', '')
-        text = event.get('text', '')
-        color = event.get('color', 'gray')
-        event_class = event.get('class', event_id.replace(' ', '-').lower())
+        event_id = f"event-{i}"
+        date = event.get("date", "")
+        text = event.get("text", event.get("title", ""))
+        description = event.get("description", "")
+        color = event.get("color", "gray")
+        event_class = event.get("class", event_id.replace(" ", "-").lower())
+        marker_color = _event_marker_color(color, generator, theme)
+        side = "left" if i % 2 == 0 else "right"
         
-        step_style = event.get('style')
-        css = generate_step_style(step_style, color, template=generator.template)
         events_css.append(f"""
-        .event.{event_class} {{ 
-            {css}
+        .vt-dot.{event_class} {{
+            background: {marker_color};
+            border-color: var(--bg-card);
         }}""")
         
+        desc_html = f'<div class="md-body2">{description}</div>' if description else ""
         events_html.append(f"""
-            <div class="timeline-item">
-                <div class="event {event_class}">
-                    <div class="event-date">{date}</div>
-                    <div class="event-text">{text}</div>
+            <div class="vt-item vt-{side}">
+                <div class="vt-content">
+                    <div class="vt-chip">{date}</div>
+                    <div class="md-subtitle1">{text}</div>
+                    {desc_html}
                 </div>
-                {f'<div class="timeline-line"></div>' if i < len(events) - 1 else ''}
+                <div class="vt-dot {event_class}" aria-hidden="true"></div>
             </div>""")
     
     css_content = f"""
+        {generate_css_variables(theme)}
+        
         .timeline-container {{
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 32px;
-            position: relative;
+            width: 100%;
+            max-width: 720px;
+            padding: 40px 24px;
         }}
         
         .wrapper {{
@@ -272,93 +292,125 @@ def _generate_vertical_timeline(generator: BaseGenerator, events: List[Dict[str,
             width: 100%;
         }}
         
-        .title {{
+        .md-headline {{
+            font-family: var(--font-display);
             font-size: 24px;
             font-weight: 700;
-            color: #1D1D1F;
-            margin-bottom: 8px;
+            color: var(--text-1);
             letter-spacing: -0.02em;
             line-height: 1.2;
+            margin-bottom: 32px;
+            text-align: center;
         }}
         
         .timeline {{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            width: 100%;
-            max-width: 1000px;
-        }}
-        
-        .timeline-item {{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
+            position: relative;
             width: 100%;
         }}
         
-        .event {{
-            background: #F5F5F7;
-            border: none;
-            border-radius: 14px;
-            padding: 20px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #1D1D1F;
-            min-width: 180px;
-            text-align: center;
-            letter-spacing: -0.01em;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-        }}
-        {''.join(events_css)}
-        
-        .event-date {{
-            font-size: 14px;
-            font-weight: 500;
-            color: #8E8E93;
-            margin-bottom: 8px;
-            letter-spacing: -0.01em;
-        }}
-        
-        .event-text {{
-            font-size: 16px;
-            font-weight: 600;
-            color: #1D1D1F;
-            letter-spacing: -0.01em;
-        }}
-        
-        .timeline-line {{
+        .timeline::before {{
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
             width: 2px;
-            height: 40px;
-            background: linear-gradient(180deg, #007AFF 0%, #007AFF 100%);
-            opacity: 0.4;
+            background: {with_alpha(theme.text_tertiary, 0.24)};
+            transform: translateX(-50%);
         }}
+        
+        .vt-item {{
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: start;
+            gap: 0 20px;
+            position: relative;
+            margin-bottom: 8px;
+        }}
+        
+        .vt-item.vt-left .vt-content {{ grid-column: 1; }}
+        .vt-item.vt-right .vt-content {{ grid-column: 3; }}
+        
+        .vt-content {{
+            background: var(--bg-card);
+            border: {theme.card_border};
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: {shadow};
+        }}
+        
+        .vt-chip {{
+            display: inline-block;
+            font-family: var(--font-body);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-3);
+            letter-spacing: 0.04em;
+            background: {with_alpha(theme.text_tertiary, 0.12)};
+            padding: 4px 10px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+        }}
+        
+        .vt-content .md-subtitle1 {{
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.01em;
+            line-height: 1.4;
+        }}
+        
+        .vt-content .md-body2 {{
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-2);
+            letter-spacing: 0.02em;
+            line-height: 1.43;
+            margin-top: 8px;
+        }}
+        
+        .vt-dot {{
+            grid-column: 2;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            justify-self: center;
+            position: relative;
+            z-index: 1;
+            margin-top: 20px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+        }}
+        
+        {''.join(events_css)}
         
         .attribution {{
             margin-top: {generator.attribution.margin_top}px;
             font-size: 12px;
             font-weight: 500;
-            color: #C7C7CC;
+            color: var(--text-3);
             letter-spacing: -0.01em;
             text-align: right;
             width: 100%;
-            max-width: 1000px;
+            max-width: 720px;
         }}
         
         {ATTRIBUTION_STYLES}
-        """
+    """
     
     html_content = f"""
     <div class="wrapper">
     <div class="timeline-container">
-        <div class="title">{generator.title}</div>
+        <div class="md-headline">{generator.title}</div>
         <div class="timeline">
 {''.join(events_html)}
         </div>
     </div>
     {generator._generate_attribution_html()}
     </div>
-        """
+    """
     
-    return generator._wrap_html(html_content, css_content)
+    html = generator._wrap_html(html_content, css_content)
+    return inject_google_fonts(html, theme)

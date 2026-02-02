@@ -47,6 +47,7 @@ class ColorScheme:
     
     # Custom CSS injection
     custom_css: Optional[str] = None           # Arbitrary CSS to inject
+    mermaid_flowchart_extra_css: Optional[str] = None  # Extra CSS for Mermaid flowchart nodes (e.g. post-it shadow)
     
     # Primary colors
     primary: str = "#2563eb"  # Main brand color
@@ -746,6 +747,32 @@ ARCADE_SCHEME = ColorScheme(
     border_style="pixel",
 )
 
+POSTIT_SCHEME = ColorScheme(
+    name="Post-it",
+    description="Sticky-note style flowchart with warm yellow notes and soft shadow",
+    google_font_name="Kalam",
+    google_font_weights="400;700",
+    font_style="sans-serif",
+    primary="#fff59d",       # Sticky yellow
+    secondary="#fff9c4",     # Lighter note
+    accent="#ffeb3b",       # Bright yellow accent
+    text_primary="#5d4037", # Brown text
+    text_secondary="#6d4c41",
+    text_tertiary="#8d6e63",
+    text_on_dark="#fffde7",
+    bg_primary="#fffde7",   # Cream background
+    bg_secondary="#fff9c4",
+    bg_tertiary="#fff59d",
+    bg_dark="#f9fbe7",
+    border_light="#ffecb3",
+    border_medium="#d4a84b", # Tan border
+    border_dark="#b8860b",
+    mermaid_flowchart_extra_css=(
+        ".node rect,.node polygon,.node circle{filter:drop-shadow(2px 2px 4px rgba(0,0,0,0.12));} "
+        ".node .label{font-style:normal;}"
+    ),
+)
+
 NIKE_SCHEME = ColorScheme(
     name="Nike",
     description="Bold athletic theme inspired by Nike's iconic volt and black aesthetic",
@@ -880,8 +907,12 @@ SCHEME_REGISTRY: Dict[str, ColorScheme] = {
     "warm": WARM_SCHEME,
     "green": GREEN_SCHEME,
     "arcade": ARCADE_SCHEME,
+    "8-bit": ARCADE_SCHEME,
     "nike": NIKE_SCHEME,
     "apple": APPLE_SCHEME,
+    "postit": POSTIT_SCHEME,
+    "post-it": POSTIT_SCHEME,
+    "sticky": POSTIT_SCHEME,
 }
 
 

@@ -1,40 +1,51 @@
 """Pyramid diagram generator"""
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, TYPE_CHECKING, Tuple
 from ..base import BaseGenerator
+from .theme_utils import (
+    extract_theme_colors,
+    generate_css_variables,
+    inject_google_fonts,
+    with_alpha,
+)
+
+if TYPE_CHECKING:
+    from ..color_scheme import ColorScheme
 
 
 def _get_template(generator: BaseGenerator):
     return getattr(generator, "template", generator.template)
 
 
-def _hex_to_rgb(color: str):
-    color = color.lstrip('#')
-    if len(color) == 3:
-        color = ''.join(ch * 2 for ch in color)
-    return tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
-
-
-def _calculate_luminance(color: str) -> float:
-    r, g, b = [v / 255 for v in _hex_to_rgb(color)]
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-
-def _is_dark_theme(template) -> bool:
-    bg = getattr(template, "background_color", "#FFFFFF")
-    return _calculate_luminance(bg) < 0.5
-
-
-def _layer_gradient(generator: BaseGenerator, color_key: str) -> str:
+def _layer_gradient(
+    generator: BaseGenerator, color_key: str, theme: Any
+) -> Tuple[str, str]:
+    """Return (gradient_css, shadow_css). Use template gradient when available, else theme accent."""
     template = _get_template(generator)
-    start, end = template.get_gradient(color_key or "blue")
-    return f"linear-gradient(135deg, {start}, {end})", template.get_shadow(color_key or "blue")
+    color_key = color_key or "blue"
+    try:
+        if template and hasattr(template, "get_gradient"):
+            start, end = template.get_gradient(color_key)
+            gradient = f"linear-gradient(135deg, {start}, {end})"
+        else:
+            gradient = f"linear-gradient(135deg, {theme.accent}, {theme.accent})"
+    except Exception:
+        gradient = f"linear-gradient(135deg, {theme.accent}, {theme.accent})"
+    try:
+        if template and hasattr(template, "get_shadow"):
+            shadow = template.get_shadow(color_key)
+        else:
+            shadow = f"0 4px 12px {with_alpha(theme.accent, 0.2)}"
+    except Exception:
+        shadow = f"0 4px 12px {with_alpha(theme.accent, 0.2)}"
+    return gradient, shadow
 
 
 def generate_pyramid_diagram(
     generator: BaseGenerator,
     layers: List[Dict[str, Any]],
-    orientation: str = "up"
+    orientation: str = "up",
+    color_scheme: Optional["ColorScheme"] = None,
 ) -> str:
     """Generate a layered pyramid diagram"""
     if not layers:
@@ -45,10 +56,8 @@ def generate_pyramid_diagram(
             {"text": "Impact", "color": "orange"}
         ]
     
+    theme = extract_theme_colors(color_scheme)
     template = _get_template(generator)
-    dark_theme = _is_dark_theme(template)
-    primary_text = "#F8FAFC" if dark_theme else "#0F172A"
-    secondary_text = "rgba(248,250,252,0.75)" if dark_theme else "#6B7280"
     layer_count = len(layers)
     min_width = 40
     max_width = 92
@@ -57,19 +66,22 @@ def generate_pyramid_diagram(
     html_layers = []
     for idx, layer in enumerate(layers):
         color_key = layer.get("color", "blue")
-        gradient, shadow = _layer_gradient(generator, color_key)
+        gradient, shadow = _layer_gradient(generator, color_key, theme)
         width_index = idx if orientation == "up" else (layer_count - 1 - idx)
         width_pct = min_width + (width_index * step)
+        border_color = with_alpha(theme.text_tertiary, 0.2)
         html_layers.append(f"""
-            <div class="pyramid-layer orientation-{orientation}" style="width: {width_pct}%; background: {gradient}; box-shadow: {shadow}; border: 1px solid rgba(0,0,0,0.08);">
+            <div class="pyramid-layer orientation-{orientation}" style="width: {width_pct}%; background: {gradient}; box-shadow: {shadow}; border: 1px solid {border_color};">
                 <div class="layer-label">{layer.get("text", "Layer")}</div>
             </div>
         """)
     
     css_content = f"""
+        {generate_css_variables(theme)}
+        
         body {{
-            font-family: {template.font_family}, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #F5F5F7;
+            font-family: var(--font-body);
+            background: var(--bg-page);
             padding: 60px 20px;
             margin: 0;
             display: flex;
@@ -79,10 +91,10 @@ def generate_pyramid_diagram(
         .pyramid-wrapper {{
             width: 100%;
             max-width: 900px;
-            background: #FFFFFF;
+            background: var(--bg-card);
             border-radius: 32px;
             padding: 48px 60px 60px;
-            box-shadow: 0 30px 70px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 30px 70px {with_alpha(theme.text_primary, 0.12)};
         }}
         
         .pyramid-header {{
@@ -93,13 +105,13 @@ def generate_pyramid_diagram(
         .pyramid-title {{
             font-size: 28px;
             font-weight: 700;
-            color: {primary_text};
+            color: var(--text-1);
             letter-spacing: -0.02em;
         }}
         
         .pyramid-subtitle {{
             font-size: 15px;
-            color: {secondary_text};
+            color: var(--text-2);
             margin-top: 6px;
         }}
         
@@ -117,7 +129,7 @@ def generate_pyramid_diagram(
             display: flex;
             align-items: center;
             justify-content: center;
-            color: {primary_text};
+            color: var(--text-1);
             font-weight: 600;
             letter-spacing: -0.01em;
             font-size: 17px;
@@ -131,7 +143,7 @@ def generate_pyramid_diagram(
         .pyramid-footer {{
             margin-top: 28px;
             font-size: 13px;
-            color: {secondary_text};
+            color: var(--text-2);
             text-align: center;
         }}
         
@@ -154,4 +166,5 @@ def generate_pyramid_diagram(
     </div>
     """
     
-    return generator._wrap_html(html_content, css_content)
+    full_html = generator._wrap_html(html_content, css_content)
+    return inject_google_fonts(full_html, theme)

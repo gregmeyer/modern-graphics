@@ -1,41 +1,77 @@
-"""Grid diagram generator"""
+"""Grid diagram generator - Material Design inspired"""
 
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, TYPE_CHECKING
 from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
+from .theme_utils import extract_theme_colors, generate_css_variables, inject_google_fonts, with_alpha
+
+if TYPE_CHECKING:
+    from ..color_scheme import ColorScheme
 
 
 def generate_grid_diagram(
     generator: BaseGenerator,
     items: List[Dict[str, any]],
     columns: int = 5,
-    convergence: Optional[Dict[str, str]] = None
+    convergence: Optional[Dict[str, str]] = None,
+    color_scheme: Optional["ColorScheme"] = None,
 ) -> str:
-    """Generate a grid diagram (like five tests)"""
+    """Generate a grid diagram (Material Design: elevated cards, 8dp spacing, typography scale).
+    
+    Args:
+        generator: BaseGenerator instance
+        items: List of item dicts with 'text' and optional 'number'
+        columns: Number of columns in grid
+        convergence: Optional dict with 'goal' and 'outcome' for convergence section
+        color_scheme: Optional ColorScheme for theming
+        
+    Returns:
+        HTML string
+    """
+    theme = extract_theme_colors(color_scheme)
+    
     items_html = []
     for item in items:
-        number = item.get('number')
-        text = item['text']
+        number = item.get("number")
+        text = item["text"]
         if number:
             items_html.append(f"""
-            <div class="test">
-                <div class="test-number">{number}</div>
-                <div>{text}</div>
+            <div class="md-card">
+                <div class="md-card-badge" aria-hidden="true">{number}</div>
+                <div class="md-card-content">
+                    <div class="md-subtitle1">{text}</div>
+                </div>
             </div>""")
         else:
-            items_html.append(f'            <div class="test">{text}</div>')
+            items_html.append(f"""
+            <div class="md-card">
+                <div class="md-card-content">
+                    <div class="md-subtitle1">{text}</div>
+                </div>
+            </div>""")
     
     convergence_html = ""
     if convergence:
+        goal = convergence.get("goal", "")
+        outcome = convergence.get("outcome", "")
         convergence_html = f"""
-        <div class="convergence">
-            <div class="arrow">↓</div>
-            <div class="goal">{convergence.get('goal', '')}</div>
-            <div class="arrow">↓</div>
-            <div class="outcome">{convergence.get('outcome', '')}</div>
+        <div class="md-convergence">
+            <div class="md-divider" role="separator"></div>
+            <div class="md-convergence-goal">{goal}</div>
+            <div class="md-convergence-arrow" aria-hidden="true">↓</div>
+            <div class="md-convergence-outcome">{outcome}</div>
         </div>"""
     
+    # Material elevation 1dp (cards), 2dp (outcome)
+    elevation_1 = "0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)"
+    elevation_2 = "0 2px 6px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12)"
+    if theme.is_dark:
+        elevation_1 = "0 2px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)"
+        elevation_2 = "0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2)"
+    
     css_content = f"""
+        {generate_css_variables(theme)}
+        
         .wrapper {{
             display: flex;
             flex-direction: column;
@@ -49,19 +85,21 @@ def generate_grid_diagram(
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 0 24px;
         }}
         
-        .title {{
+        .md-headline {{
+            font-family: var(--font-display);
             font-size: 24px;
             font-weight: 700;
-            color: #1D1D1F;
+            color: var(--text-1);
             margin-bottom: 32px;
             text-align: center;
             letter-spacing: -0.02em;
             line-height: 1.2;
         }}
         
-        .tests-grid {{
+        .md-grid {{
             display: grid;
             grid-template-columns: repeat({columns}, 1fr);
             gap: 16px;
@@ -69,84 +107,123 @@ def generate_grid_diagram(
             width: 100%;
         }}
         
-        .test {{
-            background: linear-gradient(135deg, #EBF5FF 0%, #E3F2FD 100%);
-            border: none;
-            border-radius: 14px;
-            padding: 20px 16px;
+        .md-card {{
+            background: var(--bg-card);
+            border: {theme.card_border};
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 72px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-            font-size: 15px;
-            font-weight: 600;
-            color: #1D1D1F;
-            letter-spacing: -0.01em;
-            line-height: 1.4;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: {elevation_1};
+            transition: box-shadow 0.2s ease;
         }}
         
-        .test-number {{
-            font-size: 32px;
+        .md-card:focus-within {{
+            box-shadow: {elevation_2};
+        }}
+        
+        .md-card-badge {{
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: white;
+            font-family: var(--font-display);
+            font-size: 14px;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: #007AFF;
-            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }}
         
-        .convergence {{
+        .md-card-content {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }}
+        
+        .md-subtitle1 {{
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: 0.01em;
+            line-height: 1.5;
+        }}
+        
+        .md-convergence {{
             text-align: center;
-            margin: 32px 0;
+            margin: 24px 0 32px;
+            width: 100%;
+            max-width: 480px;
         }}
         
-        .arrow {{
-            color: #007AFF;
-            font-size: 24px;
-            margin: 12px 0;
-            font-weight: 600;
+        .md-divider {{
+            height: 1px;
+            background: {with_alpha(theme.text_tertiary, 0.24)};
+            margin: 0 0 24px;
         }}
         
-        .goal {{
-            font-size: 19px;
-            font-weight: 600;
-            color: #1D1D1F;
-            margin: 16px 0;
-            letter-spacing: -0.01em;
+        .md-convergence-goal {{
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-2);
+            letter-spacing: 0.02em;
+            line-height: 1.43;
+            margin-bottom: 16px;
         }}
         
-        .outcome {{
-            font-size: 19px;
+        .md-convergence-arrow {{
+            color: var(--accent);
+            font-size: 20px;
             font-weight: 600;
-            color: #34C759;
-            margin-top: 16px;
-            padding: 20px 32px;
-            background: linear-gradient(135deg, #F0F9F4 0%, #E8F5E9 100%);
-            border-radius: 14px;
+            margin-bottom: 16px;
+        }}
+        
+        .md-convergence-outcome {{
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--success);
+            letter-spacing: 0.01em;
+            padding: 16px 24px;
+            background: {with_alpha(theme.success, 0.12)};
+            border-radius: 8px;
             display: inline-block;
-            letter-spacing: -0.01em;
-            box-shadow: 0 2px 8px rgba(52, 199, 89, 0.12), 0 8px 24px rgba(52, 199, 89, 0.08);
+            box-shadow: {elevation_1};
         }}
         
         .attribution {{
             margin-top: {generator.attribution.margin_top}px;
             font-size: 12px;
             font-weight: 500;
-            color: #C7C7CC;
+            color: var(--text-3);
             letter-spacing: -0.01em;
             text-align: right;
         }}
         
         {ATTRIBUTION_STYLES}
-        """
+    """
     
     html_content = f"""
     <div class="wrapper">
         <div class="container">
-            <div class="title">{generator.title}</div>
-            <div class="tests-grid">
+            <div class="md-headline">{generator.title}</div>
+            <div class="md-grid">
 {''.join(items_html)}
             </div>{convergence_html}
             {generator._generate_attribution_html()}
         </div>
     </div>
-        """
+    """
     
-    return generator._wrap_html(html_content, css_content)
+    html = generator._wrap_html(html_content, css_content)
+    return inject_google_fonts(html, theme)

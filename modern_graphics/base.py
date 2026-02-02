@@ -1,8 +1,10 @@
 """Base class and utilities for Modern Graphics Generator"""
 
+import html as html_module
 import re
-from typing import Optional
+from datetime import date
 from pathlib import Path
+from typing import Optional
 
 from .models import Attribution
 from .templates import StyleTemplate, DEFAULT_TEMPLATE
@@ -18,16 +20,17 @@ class BaseGenerator:
         self.use_svg_js = use_svg_js
     
     def _generate_attribution_html(self) -> str:
-        """Generate attribution bug HTML with customizable styling"""
-        if not self.attribution.show or not self.attribution.copyright:
+        """Generate attribution label HTML (pill style, optional context)."""
+        display_copyright = (
+            self.attribution.copyright
+            if self.attribution.copyright
+            else f"© {self.attribution.person} {date.today().year} • {self.attribution.website}"
+        )
+        if not self.attribution.show or not display_copyright:
             return ""
-        
-        # Build inline styles from attribution config
-        bg_style = f"background-color: {self.attribution.background_color};" if self.attribution.background_color else ""
-        
-        # Position-based text alignment
+
+        bg_style = f"background: {self.attribution.background_color};" if self.attribution.background_color else ""
         text_align = "right" if self.attribution.position == "bottom-right" else "center" if self.attribution.position == "bottom-center" else "left"
-        
         attribution_style = f"""
             font-size: {self.attribution.font_size};
             color: {self.attribution.font_color};
@@ -38,12 +41,22 @@ class BaseGenerator:
             text-align: {text_align};
             {bg_style}
         """.strip()
-        
-        context_html = f'<div class="context" style="font-size: {self.attribution.font_size}; color: {self.attribution.font_color}; opacity: {self.attribution.opacity}; margin-bottom: 2px;">{self.attribution.context}</div>\n        ' if self.attribution.context else ''
-        
+
+        safe_context = html_module.escape(self.attribution.context) if self.attribution.context else ""
+        safe_copyright = html_module.escape(display_copyright)
+        if self.attribution.context:
+            parts = [
+                f'<span class="context">{safe_context}</span>',
+                '<span class="attribution-sep" aria-hidden="true">·</span>',
+                f'<span class="copyright">{safe_copyright}</span>',
+            ]
+            inner = "\n        ".join(parts)
+        else:
+            inner = f'<span class="copyright">{safe_copyright}</span>'
+
         return f"""
-    <div class="attribution" style="{attribution_style}">
-        {context_html}<div class="copyright">{self.attribution.copyright}</div>
+    <div class="attribution" style="{attribution_style}" role="contentinfo">
+        {inner}
     </div>"""
     
     def _wrap_html(self, content: str, styles: str) -> str:

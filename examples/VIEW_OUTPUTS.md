@@ -2,6 +2,22 @@
 
 All generated images and prompts are stored in the `examples/output/generated/` directory.
 
+## Flow styles (post-it and other node types)
+
+**Location:** `examples/output/flow_styles/`
+
+**How to generate:**
+```bash
+cd utils/modern-graphics
+PYTHONPATH=. python examples/flow_styles_example.py
+PYTHONPATH=. python examples/flow_styles_example.py --content-card   # also content_card linear flow
+PYTHONPATH=. python examples/flow_styles_example.py --svg   # also write SVG
+```
+
+**Files:** `postit_flow.png`, `postit_flow_zigzag.png`, `postit_flow_vertical.png`, `postit_flow_arc.png`, `postit_flow_outline.png`, `postit_flow_orgchart.png`, `postit_flow_fishbone.png`, `postit_flow_mindmap.png`, and optionally `content_card_linear.png`. Use `--svg` to also write `.svg` files.
+
+**Hero versions (with headline/subheadline):** Run `PYTHONPATH=. python examples/hero_mermaid_diagrams.py --diagram postit_flow` (or any `postit_flow_*`). Output: `examples/output/mermaid_hero/hero_<diagram>.html` and `hero_<diagram>.png`.
+
 ## Quick Access Paths
 
 ### Temperature Effects Demo (Creative Example)

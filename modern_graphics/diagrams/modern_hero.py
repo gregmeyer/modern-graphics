@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 from html import escape
-from typing import List, Dict, Optional, Any
+from typing import TYPE_CHECKING, List, Dict, Optional, Any
 
 from .base import BaseGenerator
+from .theme_utils import extract_theme_colors, inject_google_fonts
+
+if TYPE_CHECKING:
+    from ..color_scheme import ColorScheme
 
 
 def _render_svg_icon(kind: Optional[str], size: int = 64) -> str:
@@ -28,6 +32,26 @@ def _render_list(items: Optional[List[str]]) -> str:
         return ""
     lis = "".join(f"<li>{item}</li>" for item in items)
     return f"<ul>{lis}</ul>"
+
+
+_QUOTE_ICON_SVG = '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>'
+
+
+def _render_insight_callout(callout: Optional[Dict[str, str]]) -> str:
+    """Render an insight-card-style quote callout (same visual language as key insight card)."""
+    if not callout or not callout.get("text"):
+        return ""
+    text = callout.get("text", "")
+    label = callout.get("label", "")
+    label_html = f'<div class="insight-callout-label">{escape(label)}</div>' if label else ""
+    return f"""
+        <div class="insight-callout">
+            <div class="insight-callout-icon">{_QUOTE_ICON_SVG}</div>
+            <div class="insight-callout-content">
+                {label_html}
+                <p class="insight-callout-text">{text}</p>
+            </div>
+        </div>"""
 
 
 def _render_stats(stats: Optional[List[Dict[str, str]]]) -> str:
@@ -261,6 +285,8 @@ def generate_modern_hero(
     headline_align: str = "left",
     subheadline_align: Optional[str] = None,
     graphic_position: str = "center",
+    color_scheme: Optional["ColorScheme"] = None,
+    insight_callout: Optional[Dict[str, str]] = None,
 ) -> str:
     """Produce an open hero layout with generous whitespace.
     
@@ -326,10 +352,15 @@ def generate_modern_hero(
             if highlight_tiles
             else _render_list(highlights)
         )
-    elif highlights:
-        highlight_html = _render_list(highlights)
+    elif highlights or highlight_tiles:
+        highlight_html = (
+            _render_tile_flow(highlight_tiles)
+            if highlight_tiles
+            else _render_list(highlights)
+        )
     stats_html = _render_stats(stats)
     cta_html = f"<div class='cta'>{cta}</div>" if cta else ""
+    insight_callout_html = _render_insight_callout(insight_callout) if insight_callout and insight_callout.get("text") else ""
     html = f"""
     <div class="hero {hero_classes}">
         <div class="halo"></div>
@@ -343,6 +374,7 @@ def generate_modern_hero(
             {collage_html}
             {flowchart_html}
             {highlight_html}
+            {insight_callout_html}
             {cta_html}
         </div>
         {stats_html}
@@ -376,6 +408,7 @@ def generate_modern_hero(
         .graphic-position-center .hero-body { display: flex; flex-direction: column; align-items: center; }
         .graphic-position-right .hero-body { display: flex; flex-direction: column; align-items: flex-end; }
         .freeform-canvas { position: relative; width: 100%; margin-bottom: 32px; }
+        .freeform-canvas svg { max-width: 100%; height: auto; display: block; }
         .hero-dark .freeform-canvas { color: inherit; }
         .freeform-canvas .canvas-chip { background: rgba(255,255,255,0.9); border-radius: 28px; padding: 18px 32px; min-height: 72px; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 18px 50px rgba(15,15,40,0.12); font-weight: 600; letter-spacing: -0.01em; color: #1F1F29; border: 1px solid rgba(0,0,0,0.04); text-align: center; }
         .hero-dark .freeform-canvas .canvas-chip { background: rgba(20,17,30,0.85); border-color: rgba(255,255,255,0.12); color: #F5F2FF; }
@@ -435,6 +468,19 @@ def generate_modern_hero(
         .tile-label { font-size: 15px; font-weight: 600; color: #2D2E36; }
         .hero-dark .tile-label { color: #F5F0FF; }
         .hero-warm .tile-label { color: #5c2100; }
+        .insight-callout { position: relative; max-width: 720px; margin-top: 28px; padding: 28px 32px 28px 80px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); }
+        .hero-dark .insight-callout { background: rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.08); }
+        .hero-warm .insight-callout { background: rgba(255,255,255,0.9); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+        .insight-callout-icon { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; color: #7C3AED; opacity: 0.35; }
+        .insight-callout-icon svg { width: 100%; height: 100%; }
+        .hero-dark .insight-callout-icon { color: #a78bfa; opacity: 0.5; }
+        .hero-warm .insight-callout-icon { color: #ea580c; opacity: 0.4; }
+        .insight-callout-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; margin-bottom: 8px; }
+        .hero-dark .insight-callout-label { color: #c4b5fd; }
+        .hero-warm .insight-callout-label { color: #c2410c; }
+        .insight-callout-text { margin: 0; font-size: 22px; font-style: italic; line-height: 1.45; color: #374151; }
+        .hero-dark .insight-callout-text { color: #e5e7eb; }
+        .hero-warm .insight-callout-text { color: #431407; }
         .cta { margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: #7C3AED; }
         .hero-dark .cta { color: #F5E1FF; }
         .hero-warm .cta { color: #c2410c; }
@@ -449,6 +495,15 @@ def generate_modern_hero(
         .stat strong { display: block; margin-top: 6px; font-size: 24px; font-weight: 600; letter-spacing: -0.015em; }
         .hero-warm .stat strong { color: #6a2a00; }
     """
+    if color_scheme is not None:
+        theme = extract_theme_colors(color_scheme)
+        css += f"""
+        body {{ font-family: {theme.font_family_body}; }}
+        .hero {{ font-family: {theme.font_family_body}; }}
+        .headline {{ font-family: {theme.font_family_display}; }}
+        .subhead, .eyebrow, .hero-body, .hero-body li, .tile-label, .flow-node .node-label, .stat span, .stat strong, .cta, .ribbon-label, .insight-callout-label, .insight-callout-text {{ font-family: {theme.font_family_body}; }}
+        """
+        return inject_google_fonts(generator._wrap_html(html, css), theme)
     return generator._wrap_html(html, css)
 
 
