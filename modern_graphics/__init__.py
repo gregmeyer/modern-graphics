@@ -13,6 +13,7 @@ from .templates.builder import TemplateBuilder
 from .diagrams import DiagramGenerator, DIAGRAM_REGISTRY, register_diagram, get_diagram_generator
 from .env_config import get_openai_key, get_braintrust_key, load_env_file
 from .template_interview import interview_for_template, quick_template_from_description
+from .graphic_ideas_interview import run_graphic_ideas_interview
 from .prompt_to_story import generate_story_from_prompt, create_story_slide_from_prompt
 from .diagrams.intelligent_story_slide import generate_intelligent_story_slide
 from .diagrams.editorial_story_slide import generate_editorial_story_slide
@@ -109,6 +110,7 @@ __all__ = [
     # AI-assisted template creation
     'interview_for_template',
     'quick_template_from_description',
+    'run_graphic_ideas_interview',
     # Prompt-to-story generation
     'generate_story_from_prompt',
     'create_story_slide_from_prompt',

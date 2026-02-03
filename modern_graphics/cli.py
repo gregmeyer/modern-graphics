@@ -33,10 +33,24 @@ Usage:
     modern-graphics mermaid --input diagram.mmd --output diagram.png --png
     modern-graphics insight-card --text "Insight" --mermaid-file diagram.mmd --output card.html
     modern-graphics modern-hero --title "Doc" --headline "Headline" --mermaid-file diagram.mmd --output hero.html
+
+    # Graphic ideas: "I need some ideas" — interactive interview, stores prompt version
+    modern-graphics ideas
+    modern-graphics ideas --name cy-graphic --save-dir ./my_prompts
+    modern-graphics ideas --no-save
+
+    # Append a note to a prompt file (Notes / changes)
+    modern-graphics prompt-note path/to/prompt.md "Use Material icon for rocket"
+    echo "Next: align arrows" | modern-graphics prompt-note path/to/prompt.md --no-date
+
+    # From prompt file: read prompt .md and create graphic (e.g. Cy insight-story)
+    modern-graphics from-prompt-file raw/cy-example/cy-graphic-prompt-revised.md
+    modern-graphics from-prompt-file path/to/prompt.md --output-dir path/to/graphics
 """
 
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -624,12 +638,197 @@ def main():
     mermaid_parser.add_argument('--height', type=int, help='SVG height (passed to mermaid-cli)')
     mermaid_parser.add_argument('--png', action='store_true', help='Export as PNG instead of SVG')
     mermaid_parser.add_argument('--padding', type=int, default=10, help='PNG padding in pixels (default: 10)')
+
+    # Graphic ideas interview: "I need some ideas" → prompts you, stores prompt version
+    ideas_parser = subparsers.add_parser(
+        'ideas',
+        help='Run graphic ideas interview; prompt collects format, subject, theme, etc., and saves a prompt version',
+    )
+    ideas_parser.add_argument(
+        '--save-dir',
+        type=Path,
+        default=None,
+        help='Directory to save prompt version (default: ./prompt_versions or MODERN_GRAPHICS_PROMPTS_DIR)',
+    )
+    ideas_parser.add_argument(
+        '--name',
+        type=str,
+        default=None,
+        help='Name for the saved file (e.g. cy-graphic); default is timestamp',
+    )
+    ideas_parser.add_argument(
+        '--no-save',
+        action='store_true',
+        help='Do not save to file; only print the built prompt',
+    )
+
+    # From prompt file: read a prompt .md (e.g. cy-graphic-prompt-revised.md) and create a graphic
+    from_prompt_parser = subparsers.add_parser(
+        'from-prompt-file',
+        help='Read a prompt markdown file and create a graphic (e.g. Cy insight-story from Example in the file)',
+    )
+    from_prompt_parser.add_argument(
+        'prompt_file',
+        type=Path,
+        help='Path to prompt markdown file (e.g. cy-graphic-prompt-revised.md)',
+    )
+    from_prompt_parser.add_argument(
+        '--output-dir',
+        type=Path,
+        default=None,
+        help='Output directory for the graphic (default: prompt file sibling "graphics/" if Cy example)',
+    )
+    from_prompt_parser.add_argument(
+        '--png',
+        action='store_true',
+        help='Also export PNG (Cy script already exports both HTML and PNG)',
+    )
+    from_prompt_parser.add_argument(
+        '--note',
+        type=str,
+        default=None,
+        help='Append this note at the bottom of the prompt file (timestamped under Notes / changes), then reprocess',
+    )
+
+    # Append a note to a prompt file (Notes / changes)
+    prompt_note_parser = subparsers.add_parser(
+        'prompt-note',
+        help='Append a note to a prompt markdown file (Notes / changes section)',
+    )
+    prompt_note_parser.add_argument(
+        'prompt_file',
+        type=Path,
+        help='Path to prompt .md file to update',
+    )
+    prompt_note_parser.add_argument(
+        'note',
+        type=str,
+        nargs='?',
+        default=None,
+        help='Note text to append (e.g. "Use Material icon for rocket"). If omitted, read from stdin.',
+    )
+    prompt_note_parser.add_argument(
+        '--date',
+        action='store_true',
+        default=True,
+        help='Prepend today\'s date to the note (default: True)',
+    )
+    prompt_note_parser.add_argument(
+        '--no-date',
+        action='store_true',
+        help='Do not prepend a date to the note',
+    )
     
     args = parser.parse_args()
     
     if not args.command:
         parser.print_help()
         return 1
+
+    if args.command == 'ideas':
+        from .graphic_ideas_interview import run_graphic_ideas_interview
+        run_graphic_ideas_interview(
+            save_dir=getattr(args, 'save_dir', None),
+            prompt_name=getattr(args, 'name', None),
+            skip_save=getattr(args, 'no_save', False),
+        )
+        return 0
+
+    if args.command == 'prompt-note':
+        from datetime import date
+        prompt_path = Path(getattr(args, 'prompt_file')).resolve()
+        if not prompt_path.exists():
+            print(f"Error: prompt file not found: {prompt_path}")
+            return 1
+        note = getattr(args, 'note', None)
+        if note is None or note.strip() == "":
+            import sys
+            note = sys.stdin.read().strip()
+        if not note:
+            print("Error: no note provided (pass as argument or via stdin)")
+            return 1
+        add_date = not getattr(args, 'no_date', False)
+        if add_date:
+            note = f"- **{date.today().isoformat()}:** {note}"
+        else:
+            note = f"- {note}"
+        content = prompt_path.read_text(encoding='utf-8')
+        section = "## Notes / changes"
+        if section in content:
+            content = content.rstrip() + "\n" + note + "\n"
+        else:
+            content = content.rstrip() + "\n\n---\n\n" + section + "\n\n" + note + "\n"
+        prompt_path.write_text(content, encoding='utf-8')
+        print(f"Appended note to: {prompt_path}")
+        return 0
+
+    if args.command == 'from-prompt-file':
+        import re
+        import subprocess
+        import sys
+        from datetime import date
+        prompt_path = Path(args.prompt_file).resolve()
+        if not prompt_path.exists():
+            print(f"Error: prompt file not found: {prompt_path}")
+            return 1
+        note = getattr(args, 'note', None)
+        if note and note.strip():
+            stamped = f"- **{date.today().isoformat()}:** {note.strip()}"
+            content = prompt_path.read_text(encoding='utf-8')
+            section = "## Notes / changes"
+            if section in content:
+                content = content.rstrip() + "\n" + stamped + "\n"
+            else:
+                content = content.rstrip() + "\n\n---\n\n" + section + "\n\n" + stamped + "\n"
+            prompt_path.write_text(content, encoding='utf-8')
+            print(f"Appended note to: {prompt_path}")
+        text = prompt_path.read_text(encoding='utf-8')
+        # Look for "Example (Cy):" line and parse Format = ...; Subject = ...; etc.
+        example_cy_match = re.search(
+            r'Example\s*\(Cy\)\s*:\s*\*?\*?\s*([^\n]+)',
+            text,
+            re.IGNORECASE,
+        )
+        if not example_cy_match:
+            print("No 'Example (Cy):' block found in the prompt file. Add a line like:")
+            print("  **Example (Cy):** Format = insight-story; Subject = Cy / v1.co; ...")
+            return 1
+        line = example_cy_match.group(1).strip()
+        parsed = {}
+        for part in line.split(';'):
+            part = part.strip()
+            if '=' not in part:
+                continue
+            key, _, value = part.partition('=')
+            key = key.strip().lstrip('*').strip().lower()
+            parsed[key] = value.strip().strip('`')
+        format_val = parsed.get('format', '')
+        subject_val = parsed.get('subject', '')
+        if 'insight-story' not in format_val.lower() or 'cy' not in subject_val.lower():
+            print("Example in file is not a Cy insight-story (need Format = insight-story; Subject = ... Cy ...).")
+            return 1
+        output_dir = getattr(args, 'output_dir', None)
+        if output_dir is not None:
+            output_dir = Path(output_dir).resolve()
+        else:
+            output_dir = prompt_path.parent / 'graphics'
+        script_path = output_dir / 'generate_cy_insight_story.py'
+        if not script_path.exists():
+            print(f"Error: Cy generator script not found: {script_path}")
+            print("Expect generate_cy_insight_story.py in the output directory (or prompt file sibling 'graphics/').")
+            return 1
+        modern_graphics_root = Path(__file__).resolve().parent.parent
+        env = {**os.environ, 'PYTHONPATH': str(modern_graphics_root)}
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            cwd=str(script_path.parent),
+            env=env,
+        )
+        if result.returncode != 0:
+            print(f"Generator script exited with code {result.returncode}")
+            return result.returncode
+        print(f"Graphic generated in: {script_path.parent}")
+        return 0
     
     output_path = Path(args.output)
     
