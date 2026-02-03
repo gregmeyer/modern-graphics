@@ -122,3 +122,51 @@ What it means: Predictable revenue and 20% higher retention
 ```
 
 See [Prompt Best Practices](PROMPT_BEST_PRACTICES.md) and [Prompt Examples](PROMPT_EXAMPLES.md) for more guidance.
+
+## Graphic ideas interview ("I need some ideas")
+
+When you need ideas for a hero or insight-story graphic, run the **ideas** interview. It asks you for format, subject, theme, narrative, before/after panels, layout constraints, and outputs, then builds a single prompt and stores it.
+
+**CLI:**
+
+```bash
+modern-graphics ideas
+```
+
+- Saves a prompt version under `./prompt_versions/` (or `MODERN_GRAPHICS_PROMPTS_DIR`).
+- Use `--name my-graphic` to name the file (e.g. `graphic_prompt_my-graphic.md`).
+- Use `--save-dir ./my_prompts` to choose the directory.
+- Use `--no-save` to only print the prompt without saving.
+
+**Python:**
+
+```python
+from modern_graphics import run_graphic_ideas_interview
+from pathlib import Path
+
+result = run_graphic_ideas_interview(
+    save_dir=Path("./prompt_versions"),
+    prompt_name="my-graphic",
+    skip_save=False,
+)
+# result["prompt_text"] — built prompt
+# result["saved_path"] — path to saved file, or None
+```
+
+The interview uses a generic checklist (format, subject, theme, narrative, before/after, layout, outputs). Use the saved prompt when briefing a human or model to generate the graphic.
+
+**Example built prompt (peanut butter and jelly sandwich-making process):**
+
+```python
+from modern_graphics.prompts import EXAMPLE_ANSWERS_PBJ, EXAMPLE_PROMPT_PBJ
+
+# EXAMPLE_ANSWERS_PBJ is the filled-in checklist (format, subject, theme, etc.)
+# EXAMPLE_PROMPT_PBJ is the single paragraph built from it:
+print(EXAMPLE_PROMPT_PBJ)
+```
+
+Output:
+
+```
+Make a insight-story graphic for peanut butter and jelly sandwich-making process with theme/mood: warm, kitchen-friendly; browns, reds, cream. Narrative: From chaos to lunch: three steps, one sandwich. Key insight: The best PB&J is the one you actually make. Before panel: kitchen chaos: bread everywhere, jars scattered, knife in the wrong place. After panel: Spread peanut butter → Add jelly → Close and slice. Done. Layout: horizontal flow, same baseline for arrows; no post-its; small sandwich icon on the right. Outputs: docs/lunch-graphics/, HTML + PNG, generate_pbj_hero.py.
+```
