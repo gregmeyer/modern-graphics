@@ -1,5 +1,6 @@
 """PNG export functionality for Modern Graphics"""
 
+import os
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -81,15 +82,36 @@ def export_html_to_png(
             try:
                 browser = p.chromium.launch(headless=True)
             except Exception:
-                # Retry without the Chromium sandbox (required in some locked-down environments)
-                try:
-                    browser = p.chromium.launch(headless=True, chromium_sandbox=False)
-                except Exception as chromium_error:
-                    # As a final fallback, try WebKit before giving up
+                # Try system Chrome if available (helps in restricted environments)
+                chrome_path = os.environ.get("MODERN_GRAPHICS_CHROME")
+                if chrome_path and Path(chrome_path).exists():
                     try:
-                        browser = p.webkit.launch(headless=True)
+                        browser = p.chromium.launch(
+                            headless=True, executable_path=chrome_path, args=["--no-sandbox"]
+                        )
                     except Exception:
-                        raise chromium_error
+                        browser = None
+                else:
+                    browser = None
+
+                if browser is None:
+                    try:
+                        browser = p.chromium.launch(
+                            headless=True, channel="chrome", args=["--no-sandbox"]
+                        )
+                    except Exception:
+                        browser = None
+
+                if browser is None:
+                    # Retry without the Chromium sandbox (required in some locked-down environments)
+                    try:
+                        browser = p.chromium.launch(headless=True, chromium_sandbox=False)
+                    except Exception as chromium_error:
+                        # As a final fallback, try WebKit before giving up
+                        try:
+                            browser = p.webkit.launch(headless=True)
+                        except Exception:
+                            raise chromium_error
             
             # Create context with high resolution settings
             context = browser.new_context(
