@@ -844,6 +844,42 @@ APPLE_SCHEME = ColorScheme(
     border_style="soft",
 )
 
+OPERATOR_CLARITY_V2_SCHEME = ColorScheme(
+    name="Operator Clarity v2",
+    description="Direct, accountable editorial system for decision-quality narratives",
+    google_font_name="Source Sans 3",
+    google_font_weights="400;500;600;700",
+    font_style="sans-serif",
+    google_fonts_extra=["Space Grotesk", "IBM Plex Mono"],
+    font_family_display="'Space Grotesk', 'Source Sans 3', sans-serif",
+    font_family_body="'Source Sans 3', sans-serif",
+    # Semantic colors
+    primary="#1D4ED8",      # Execution
+    secondary="#EA580C",    # Judgment constraint
+    accent="#14B8A6",       # Validated outcome
+    success="#14B8A6",
+    warning="#EA580C",
+    error="#DC2626",
+    # Text hierarchy
+    text_primary="#0F172A",
+    text_secondary="#334155",
+    text_tertiary="#64748B",
+    text_on_dark="#F8FAFC",
+    # Surfaces
+    bg_primary="#FFFFFF",
+    bg_secondary="#F8FAFC",
+    bg_tertiary="#EEF2F7",
+    bg_dark="#0F172A",
+    # Borders
+    border_light="#E2E8F0",
+    border_medium="#CBD5E1",
+    border_dark="#64748B",
+    # SVG palette mapping
+    svg_primary="#1D4ED8",
+    svg_secondary="#EA580C",
+    svg_accent="#14B8A6",
+)
+
 
 def create_custom_scheme(
     name: str,
@@ -910,6 +946,9 @@ SCHEME_REGISTRY: Dict[str, ColorScheme] = {
     "8-bit": ARCADE_SCHEME,
     "nike": NIKE_SCHEME,
     "apple": APPLE_SCHEME,
+    "operator-clarity-v2": OPERATOR_CLARITY_V2_SCHEME,
+    "operator-clarity": OPERATOR_CLARITY_V2_SCHEME,
+    "operator": OPERATOR_CLARITY_V2_SCHEME,
     "postit": POSTIT_SCHEME,
     "post-it": POSTIT_SCHEME,
     "sticky": POSTIT_SCHEME,

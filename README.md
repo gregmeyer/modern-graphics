@@ -7,7 +7,7 @@
 [**Jump to the theme demo →**](examples/output/theme-demo/index.html) *(PNG previews are versioned; run `python examples/generate_complete_theme_demo.py` to regenerate HTML locally.)*
 
 ## Why teams use it
-- 🎨 **7 built-in themes** – apple, corporate, dark, warm, green, arcade, nike – or create your own
+- 🎨 **8 built-in themes** – apple, corporate, dark, warm, green, arcade, nike, operator-clarity-v2 – or create your own
 - 📊 **15+ built-in layouts** – story slides, cycles, timelines, funnels, pyramids, grids, insight cards, and wireframes
 - 💡 **Insight graphics workflow** – create wireframe → generate SVG → present as insight card or story
 - ⚡ **CLI + Python API** – use `--theme apple` from command line or instantiate in code
@@ -124,7 +124,7 @@ modern-graphics insight-story \
 modern-graphics wireframe-svg --type after --theme apple --png --output wireframe.png
 ```
 
-**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`
+**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`, `operator-clarity-v2`
 
 [Insight Graphics Guide →](#insight-graphics-guide)
 
@@ -517,7 +517,7 @@ svg = generate_after_wireframe_svg(config)
 
 #### Use Predefined Schemes
 
-7 built-in themes are available:
+8 built-in themes are available:
 
 | Theme | Description |
 |-------|-------------|
@@ -528,6 +528,7 @@ svg = generate_after_wireframe_svg(config)
 | `green` | Nature-inspired green palette |
 | `arcade` | Retro 8-bit with neon colors and pixel fonts |
 | `nike` | Bold athletic style with volt green |
+| `operator-clarity-v2` | Direct editorial system for decision-quality narratives |
 
 ```python
 from modern_graphics.color_scheme import get_scheme, APPLE_SCHEME, ARCADE_SCHEME
@@ -766,7 +767,7 @@ modern-graphics wireframe-svg --type chat-panel \
   --output chat.png
 ```
 
-**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`
+**Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`, `operator-clarity-v2`
 
 ### Export Settings
 
@@ -789,10 +790,11 @@ All insight graphics respect the ColorScheme system. Use themes via CLI or Pytho
 
 **CLI (recommended for quick generation):**
 ```bash
-# Use any of the 7 built-in themes
+# Use any of the 8 built-in themes
 modern-graphics key-insight --text "Your insight" --theme apple --png --output insight.png
 modern-graphics wireframe-svg --type after --theme arcade --png --output wireframe.png
 modern-graphics insight-story --headline "Title" --generate-wireframes --theme nike --png --output story.png
+modern-graphics modern-hero --title "Ops" --headline "Judgment is the bottleneck" --theme operator-clarity-v2 --png --output hero.png
 ```
 
 **Python (for custom themes or programmatic use):**
