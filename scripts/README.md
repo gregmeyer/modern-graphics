@@ -77,6 +77,19 @@ Most scripts require:
 AI-assisted scripts require:
 - `OPENAI_API_KEY` environment variable
 
+## Local Smoke Tests (No Repo Bloat)
+
+If `pytest` is unavailable in your system Python, use a temporary virtualenv:
+
+```bash
+python3 -m venv /tmp/mg-pytest-venv
+/tmp/mg-pytest-venv/bin/pip install pytest
+cd /path/to/modern-graphics
+/tmp/mg-pytest-venv/bin/python -m pytest tests/smoke -q
+```
+
+This keeps test tooling out of the repo and avoids committing generated artifacts.
+
 ## Path References
 
 All scripts use relative paths from the project root:
