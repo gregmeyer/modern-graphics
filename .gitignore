@@ -123,6 +123,12 @@ examples/output/template_tests/
 # Internal checklists
 SHARING_CHECKLIST.md
 
+# Allowlist: deterministic insight fixture snapshots only
+!/reports/insight-fixtures/
+!/reports/insight-fixtures/01-key_insight.html
+!/reports/insight-fixtures/02-insight_card.html
+!/reports/insight-fixtures/03-insight_story.html
+
 # Node.js
 node_modules/
 package-lock.json
