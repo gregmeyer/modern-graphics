@@ -972,12 +972,22 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
 - `tests/smoke/test_overhaul_phase1_smoke.py`
+- `tests/smoke/test_layout_strategy_smoke.py`
 
 Generated Phase 1 reports:
 - `reports/phase1-quality.json`
 - `reports/phase1-quality.md`
 - `reports/phase1-token-debt.json`
 - `reports/phase1-token-debt.md`
+
+Phase 2 scaffolding (in progress):
+- Layout strategy registry: `modern_graphics/layouts.py`
+  - Programmatic entrypoint: `ModernGraphicsGenerator.generate_layout(layout_type, **kwargs)`
+  - Built-ins: `hero`, `hero-triptych`, `insight-story`, `key-insight`, `insight-card`
+- Strict template lint gate: `modern_graphics/template_lint.py`
+  - Report outputs:
+    - `reports/phase2-strict-lint.json`
+    - `reports/phase2-strict-lint.md`
 
 ### Getting Started
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes

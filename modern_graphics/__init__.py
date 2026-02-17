@@ -97,6 +97,13 @@ from .critique_gates import (
 )
 from .export_policy import ExportPolicy, DEFAULT_EXPORT_POLICY
 from .cli_clarity import CreateCommand, normalize_density
+from .layouts import (
+    LayoutStrategy,
+    list_layout_strategies,
+    register_layout_strategy,
+    render_layout,
+)
+from .template_lint import run_template_lint
 
 __all__ = [
     # Models
@@ -217,6 +224,11 @@ __all__ = [
     'DEFAULT_EXPORT_POLICY',
     'CreateCommand',
     'normalize_density',
+    'LayoutStrategy',
+    'list_layout_strategies',
+    'register_layout_strategy',
+    'render_layout',
+    'run_template_lint',
 ]
 
 # Version

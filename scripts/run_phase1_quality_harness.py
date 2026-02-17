@@ -25,6 +25,7 @@ from modern_graphics.critique_gates import (  # noqa: E402
     overall_status,
 )
 from modern_graphics.visual_system import scan_files_for_ad_hoc_literals  # noqa: E402
+from modern_graphics.template_lint import run_template_lint  # noqa: E402
 
 FIXTURE_PATH = ROOT / "tests" / "smoke" / "fixtures_phase1.json"
 REPORT_DIR = ROOT / "reports"
@@ -151,10 +152,36 @@ def main() -> int:
     debt_json.write_text(json.dumps(debt, indent=2), encoding="utf-8")
     debt_md.write_text(_token_debt_markdown(debt), encoding="utf-8")
 
+    strict_paths = [
+        ROOT / "modern_graphics" / "layouts.py",
+        ROOT / "modern_graphics" / "template_lint.py",
+    ]
+    strict_lint = run_template_lint(strict_paths, mode="strict")
+    strict_json = REPORT_DIR / "phase2-strict-lint.json"
+    strict_md = REPORT_DIR / "phase2-strict-lint.md"
+    strict_json.write_text(json.dumps(strict_lint, indent=2), encoding="utf-8")
+    strict_md.write_text(
+        "\n".join(
+            [
+                "# Phase 2 Strict Template Lint",
+                "",
+                f"- mode: **{strict_lint['mode']}**",
+                f"- status: **{strict_lint['status']}**",
+                f"- files scanned: **{strict_lint['summary']['files_scanned']}**",
+                f"- files with findings: **{strict_lint['summary']['files_with_findings']}**",
+                f"- total findings: **{strict_lint['summary']['total_findings']}**",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
     print(f"wrote {quality_json}")
     print(f"wrote {quality_md}")
     print(f"wrote {debt_json}")
     print(f"wrote {debt_md}")
+    print(f"wrote {strict_json}")
+    print(f"wrote {strict_md}")
 
     return 0
 

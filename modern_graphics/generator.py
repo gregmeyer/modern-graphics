@@ -21,10 +21,22 @@ from .diagrams import (
     get_diagram_generator,
 )
 from .diagrams.modern_hero import generate_modern_hero, generate_modern_hero_triptych
+from .layouts import render_layout, list_layout_strategies
 
 
 class ModernGraphicsGenerator(BaseGenerator):
     """Generator for modern HTML/CSS graphics"""
+
+    def generate_layout(self, layout_type: str, **kwargs) -> str:
+        """Generate via the Phase 2 layout strategy registry.
+
+        This coexists with legacy generator methods during migration.
+        """
+        return render_layout(layout_type, self, **kwargs)
+
+    def available_layout_strategies(self) -> List[str]:
+        """List registered strategy layout types."""
+        return list_layout_strategies()
     
     def generate_diagram(self, diagram_type: str, **kwargs) -> str:
         """Generate diagram by type name using registry

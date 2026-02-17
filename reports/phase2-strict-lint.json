@@ -1,0 +1,10 @@
+{
+  "mode": "strict",
+  "status": "pass",
+  "summary": {
+    "files_scanned": 2,
+    "files_with_findings": 0,
+    "total_findings": 0
+  },
+  "findings": {}
+}
