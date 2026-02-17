@@ -36,21 +36,20 @@ Usage:
 
     # Graphic ideas: "I need some ideas" — interactive interview, stores prompt version
     modern-graphics ideas
-    modern-graphics ideas --name cy-graphic --save-dir ./my_prompts
+    modern-graphics ideas --name launch-graphic --save-dir ./my_prompts
     modern-graphics ideas --no-save
 
     # Append a note to a prompt file (Notes / changes)
     modern-graphics prompt-note path/to/prompt.md "Use Material icon for rocket"
     echo "Next: align arrows" | modern-graphics prompt-note path/to/prompt.md --no-date
 
-    # From prompt file: read prompt .md and create graphic (e.g. Cy insight-story)
-    modern-graphics from-prompt-file raw/cy-example/cy-graphic-prompt-revised.md
-    modern-graphics from-prompt-file path/to/prompt.md --output-dir path/to/graphics
+    # From prompt file: generate a story slide from prompt markdown
+    modern-graphics from-prompt-file path/to/prompt.md --output prompt-story.html
+    modern-graphics from-prompt-file path/to/prompt.md --output prompt-story.png --png
 """
 
 import argparse
 import json
-import os
 import sys
 import textwrap
 from pathlib import Path
@@ -70,6 +69,7 @@ from . import (
     generate_slide_card_diagram,
     generate_slide_card_comparison,
     generate_story_slide,
+    create_story_slide_from_prompt,
     generate_modern_hero,
     generate_modern_hero_triptych,
     generate_premium_card,
@@ -850,7 +850,7 @@ def main():
         '--name',
         type=str,
         default=None,
-        help='Name for the saved file (e.g. cy-graphic); default is timestamp',
+        help='Name for the saved file (e.g. launch-graphic); default is timestamp',
     )
     ideas_parser.add_argument(
         '--no-save',
@@ -858,32 +858,40 @@ def main():
         help='Do not save to file; only print the built prompt',
     )
 
-    # From prompt file: read a prompt .md (e.g. cy-graphic-prompt-revised.md) and create a graphic
+    # From prompt file: generate a story slide from markdown prompt text
     from_prompt_parser = subparsers.add_parser(
         'from-prompt-file',
-        help='Read a prompt markdown file and create a graphic (e.g. Cy insight-story from Example in the file)',
+        help='Generate a story slide from prompt markdown text',
     )
     from_prompt_parser.add_argument(
         'prompt_file',
         type=Path,
-        help='Path to prompt markdown file (e.g. cy-graphic-prompt-revised.md)',
+        help='Path to prompt markdown file',
     )
     from_prompt_parser.add_argument(
-        '--output-dir',
-        type=Path,
-        default=None,
-        help='Output directory for the graphic (default: prompt file sibling "graphics/" if Cy example)',
+        '--title',
+        default='Prompt Story',
+        help='Document title (default: Prompt Story)',
+    )
+    from_prompt_parser.add_argument(
+        '--model',
+        default='gpt-4-turbo-preview',
+        help='OpenAI model for extraction/composition (default: gpt-4-turbo-preview)',
+    )
+    from_prompt_parser.add_argument(
+        '--theme',
+        choices=list_schemes(),
+        help=f'Optional color theme for output: {", ".join(list_schemes())}',
+    )
+    from_prompt_parser.add_argument(
+        '--output',
+        required=True,
+        help='Output HTML/PNG path',
     )
     from_prompt_parser.add_argument(
         '--png',
         action='store_true',
-        help='Also export PNG (Cy script already exports both HTML and PNG)',
-    )
-    from_prompt_parser.add_argument(
-        '--note',
-        type=str,
-        default=None,
-        help='Append this note at the bottom of the prompt file (timestamped under Notes / changes), then reprocess',
+        help='Export as PNG instead of HTML',
     )
 
     # Append a note to a prompt file (Notes / changes)
@@ -962,70 +970,37 @@ def main():
         return 0
 
     if args.command == 'from-prompt-file':
-        import re
-        import subprocess
-        from datetime import date
         prompt_path = Path(args.prompt_file).resolve()
         if not prompt_path.exists():
             print(f"Error: prompt file not found: {prompt_path}")
             return 1
-        note = getattr(args, 'note', None)
-        if note and note.strip():
-            stamped = f"- **{date.today().isoformat()}:** {note.strip()}"
-            content = prompt_path.read_text(encoding='utf-8')
-            section = "## Notes / changes"
-            if section in content:
-                content = content.rstrip() + "\n" + stamped + "\n"
-            else:
-                content = content.rstrip() + "\n\n---\n\n" + section + "\n\n" + stamped + "\n"
-            prompt_path.write_text(content, encoding='utf-8')
-            print(f"Appended note to: {prompt_path}")
-        text = prompt_path.read_text(encoding='utf-8')
-        # Look for "Example (Cy):" line and parse Format = ...; Subject = ...; etc.
-        example_cy_match = re.search(
-            r'Example\s*\(Cy\)\s*:\s*\*?\*?\s*([^\n]+)',
-            text,
-            re.IGNORECASE,
+
+        prompt_text = prompt_path.read_text(encoding='utf-8').strip()
+        if not prompt_text:
+            print(f"Error: prompt file is empty: {prompt_path}")
+            return 1
+
+        output_path = Path(args.output)
+        if args.png and output_path.suffix != '.png':
+            output_path = output_path.with_suffix('.png')
+
+        attribution = Attribution(
+            person=getattr(args, 'person', 'Greg Meyer'),
+            website=getattr(args, 'website', 'gregmeyer.com'),
         )
-        if not example_cy_match:
-            print("No 'Example (Cy):' block found in the prompt file. Add a line like:")
-            print("  **Example (Cy):** Format = insight-story; Subject = Cy / v1.co; ...")
-            return 1
-        line = example_cy_match.group(1).strip()
-        parsed = {}
-        for part in line.split(';'):
-            part = part.strip()
-            if '=' not in part:
-                continue
-            key, _, value = part.partition('=')
-            key = key.strip().lstrip('*').strip().lower()
-            parsed[key] = value.strip().strip('`')
-        format_val = parsed.get('format', '')
-        subject_val = parsed.get('subject', '')
-        if 'insight-story' not in format_val.lower() or 'cy' not in subject_val.lower():
-            print("Example in file is not a Cy insight-story (need Format = insight-story; Subject = ... Cy ...).")
-            return 1
-        output_dir = getattr(args, 'output_dir', None)
-        if output_dir is not None:
-            output_dir = Path(output_dir).resolve()
+        generator = ModernGraphicsGenerator(args.title, attribution=attribution)
+        html = create_story_slide_from_prompt(generator, prompt_text, model=args.model)
+
+        theme = getattr(args, 'theme', None)
+        if theme:
+            html = get_scheme(theme).apply_to_html(html)
+
+        if args.png:
+            generator.export_to_png(html, output_path, padding=10)
+            print(f"Generated from-prompt-file PNG: {output_path}")
         else:
-            output_dir = prompt_path.parent / 'graphics'
-        script_path = output_dir / 'generate_cy_insight_story.py'
-        if not script_path.exists():
-            print(f"Error: Cy generator script not found: {script_path}")
-            print("Expect generate_cy_insight_story.py in the output directory (or prompt file sibling 'graphics/').")
-            return 1
-        modern_graphics_root = Path(__file__).resolve().parent.parent
-        env = {**os.environ, 'PYTHONPATH': str(modern_graphics_root)}
-        result = subprocess.run(
-            [sys.executable, str(script_path)],
-            cwd=str(script_path.parent),
-            env=env,
-        )
-        if result.returncode != 0:
-            print(f"Generator script exited with code {result.returncode}")
-            return result.returncode
-        print(f"Graphic generated in: {script_path.parent}")
+            generator.save(html, output_path)
+            print(f"Generated from-prompt-file HTML: {output_path}")
         return 0
 
     if args.command == 'create':

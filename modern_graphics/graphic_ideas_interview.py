@@ -33,7 +33,7 @@ def run_graphic_ideas_interview(
 
     Args:
         save_dir: Where to save the prompt version (default: cwd/prompt_versions or MODERN_GRAPHICS_PROMPTS_DIR).
-        prompt_name: Optional name for the file (e.g. "cy-graphic"); otherwise timestamp.
+        prompt_name: Optional name for the file (e.g. "launch-graphic"); otherwise timestamp.
         skip_save: If True, only return the built prompt and do not write a file.
 
     Returns:
