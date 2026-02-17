@@ -153,6 +153,10 @@ Current implementation status (checkpoint):
   - mode normalization
   - padding behavior (`safe` vs `tight`)
   - crop-box bounds clamping
+- Added deterministic export fixture corpus + harness:
+  - fixtures: `tests/smoke/fixtures_export_phase4.json`
+  - snapshots: `reports/export-fixtures/`
+  - report: `reports/phase4-export-fixtures.md`
 
 ## Phase 5: Migration + adoption
 

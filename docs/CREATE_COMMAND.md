@@ -25,6 +25,8 @@ Use `modern-graphics create` when you want one command path with clarity-first d
 - crop mode: `safe`
 - padding mode: `minimal`
 
+For full PNG/export behavior details, see `docs/EXPORT.md`.
+
 ## Layout Decision Table
 
 | If you need... | Use layout | Required inputs |

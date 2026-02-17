@@ -1,92 +1,91 @@
-# Export Options
+# Export Guide
 
-Control PNG export quality, resolution, and cropping.
+Use this guide when you care about predictable bounds and reusable PNG output.
 
-## Basic Export
+## Default Behavior
 
-```python
-# Standard quality (default)
-generator.export_to_png(html, Path('output.png'))
-```
+`export_to_png` defaults are policy-driven:
 
-## Export Parameters
+- `crop_mode="safe"`
+- `padding=None` resolves to policy default (`minimal` => `8px`)
+
+This is the recommended path for most graphics because it keeps whitespace low without clipping important content.
+
+## API Surface
 
 ```python
 generator.export_to_png(
     html_content,
     output_path,
-    viewport_width=2400,        # Browser viewport width (CSS pixels)
-    viewport_height=1600,       # Browser viewport height (CSS pixels)
-    device_scale_factor=2,      # Scale factor for resolution (1-4 recommended)
-    padding=None,                # None => policy default (minimal)
-    crop_mode="safe",            # none | safe | tight
-    temp_html_path=None          # Optional: custom temp HTML path
+    viewport_width=2400,
+    viewport_height=1600,
+    device_scale_factor=2,
+    padding=None,      # None -> policy default
+    crop_mode="safe", # none | safe | tight
 )
 ```
 
-## Resolution Guidelines
+## Crop Modes
 
-### Standard Quality (Default)
-- `viewport_width=2400, device_scale_factor=2`
-- Good for most use cases, fast generation
-- Output: ~4800px wide at 2x scale
-
-### High Quality
-- `viewport_width=3200, device_scale_factor=3`
-- For print or large displays
-- Output: ~9600px wide at 3x scale
-
-### Fast/Low Quality
-- `viewport_width=1200, device_scale_factor=1`
-- For quick previews or small displays
-- Output: ~1200px wide
-
-## Automatic Cropping
-
-By default, PNG exports use minimal padding and `crop_mode="safe"` for easier downstream sizing.
-
-Use `crop_mode` to control bounds behavior:
+### `none`
+- Behavior: no cropping, full-page screenshot.
+- Use when you need exact viewport framing.
 
 ```python
-# No cropping (full page screenshot)
-generator.export_to_png(html, path, crop_mode="none")
-
-# Balanced crop (default)
-generator.export_to_png(html, path, crop_mode="safe")
-
-# Tighter crop around detected content
-generator.export_to_png(html, path, crop_mode="tight")
+generator.export_to_png(html, Path("out.png"), crop_mode="none", padding=0)
 ```
 
-Adjust `padding` if content is too close to edges:
+### `safe` (default)
+- Behavior: crop to detected content bounds with configured padding.
+- Use for production assets that need reliability.
 
 ```python
-# More padding around content
-generator.export_to_png(html, path, padding=40)
-
-# Minimal padding for tight crop
-generator.export_to_png(html, path, padding=5)
+generator.export_to_png(html, Path("out.png"), crop_mode="safe")
 ```
 
-## Hero Slide Export
-
-Hero slides typically use larger viewports:
+### `tight`
+- Behavior: same content bounds detection, reduced effective padding.
+- Use for social/share variants where canvas density should be higher.
 
 ```python
-hero_export_kwargs = {
-    "viewport_width": 1700,
-    "viewport_height": 1100,
-    "device_scale_factor": 2,
-    "padding": 30,
-}
-
-generator.export_to_png(html, Path("hero.png"), **hero_export_kwargs)
+generator.export_to_png(html, Path("out.png"), crop_mode="tight")
 ```
 
-## Saving HTML
+## Padding Guidance
 
-Save HTML files for debugging or web use:
+- `padding=None`: use policy default (`8px` today)
+- `padding=0`: edge-to-edge crop around detected bounds
+- `padding>8`: adds breathing room for noisy compositions or future annotations
+
+Examples:
 
 ```python
-generator.save(html, Path('output.html'))
+# Default reusable output
+generator.export_to_png(html, Path("default.png"), crop_mode="safe")
+
+# Tight social variant
+generator.export_to_png(html, Path("tight.png"), crop_mode="tight", padding=8)
+
+# Full viewport capture
+generator.export_to_png(html, Path("full.png"), crop_mode="none", padding=0)
 ```
+
+## Resolution Guidance
+
+- Standard: `viewport_width=2400`, `device_scale_factor=2`
+- Fast preview: `viewport_width=1200`, `device_scale_factor=1`
+- High-res/print workflows: increase viewport and scale together
+
+## Regression Harnesses
+
+Export determinism is validated by:
+
+- `scripts/validate_overhaul_phase1.py` (policy + crop helper invariants)
+- `scripts/run_phase1_quality_harness.py` (includes export fixture snapshots)
+- `tests/smoke/test_export_phase4_smoke.py` (crop mode + bounds math)
+
+Fixture snapshots are generated under:
+
+- `reports/export-fixtures/`
+- `reports/phase4-export-fixtures.md`
+- `reports/phase4-export-fixtures.json`

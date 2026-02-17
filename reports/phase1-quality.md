@@ -53,7 +53,7 @@
 - `panel_balance`: **pass** - OK
 
 ### timeline - FAIL
-- hard fails: `contrast_ratio, min_text_size`
+- hard fails: `min_text_size, contrast_ratio`
 - soft warns: `focal_point_budget, density_budget`
 - insight warns: `panel_density_budget`
 - `min_text_size`: **fail** - Observed 11px below minimum 13px
@@ -66,7 +66,7 @@
 - `panel_balance`: **pass** - OK
 
 ### funnel - FAIL
-- hard fails: `whitespace_guard, min_text_size`
+- hard fails: `min_text_size, whitespace_guard`
 - insight warns: `panel_density_budget`
 - `min_text_size`: **fail** - Observed 12px below minimum 13px
 - `focal_point_budget`: **pass** - OK
