@@ -76,7 +76,6 @@ def main() -> int:
 
     root = Path(__file__).resolve().parents[1]
     env = dict(os.environ)
-    env["MODERN_GRAPHICS_ENABLE_CREATE"] = "1"
     env["PYTHONPATH"] = str(root)
 
     with tempfile.TemporaryDirectory() as tmpdir:

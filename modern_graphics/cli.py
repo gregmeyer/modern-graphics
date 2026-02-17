@@ -978,10 +978,6 @@ def main():
         return 0
 
     if args.command == 'create':
-        if os.environ.get("MODERN_GRAPHICS_ENABLE_CREATE", "").lower() not in {"1", "true", "yes"}:
-            print("Error: 'create' is experimental. Enable with MODERN_GRAPHICS_ENABLE_CREATE=1")
-            return 1
-
         output_path = Path(args.output)
         attribution = Attribution(
             person=getattr(args, 'person', 'Greg Meyer'),

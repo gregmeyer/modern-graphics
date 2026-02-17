@@ -10,7 +10,6 @@ from pathlib import Path
 
 def _run(root: Path, args: list[str]) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
-    env["MODERN_GRAPHICS_ENABLE_CREATE"] = "1"
     env["PYTHONPATH"] = str(root)
     return subprocess.run(
         [sys.executable, "-m", "modern_graphics.cli", *args],
@@ -54,4 +53,3 @@ def test_create_cli_success_and_error_hints(tmp_path):
     assert fail.returncode != 0
     assert "--left and --right are required" in fail.stdout
     assert "Hint: try `" in fail.stdout
-

@@ -47,7 +47,7 @@ For legacy command migration, see `docs/MIGRATION.md`.
 ### Hero
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment does not." \
   --output ./output/hero.html
@@ -56,7 +56,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 ### Comparison
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout comparison \
   --left "Before:Manual triage:Slow" \
   --right "After:Agentic triage:Faster" \
@@ -66,7 +66,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 ### Insight Card
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "One-page artifacts force explicit decisions." \
   --output ./output/insight-card.html
@@ -75,7 +75,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 ### PNG Export (Expert)
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-story \
   --headline "When shipping gets easy, choosing gets hard." \
   --insight-text "Use a short checklist before shipping." \
