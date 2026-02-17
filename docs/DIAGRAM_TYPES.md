@@ -212,3 +212,6 @@ html = generator.generate_pyramid_diagram(layers)
 
 ### Timeline (Compact) & Variants
 Want variations beyond the default PNGs? Run `python examples/generate_complete_theme_demo.py` to regenerate the latest themed outputs (timeline, funnel, pyramid, hero canvas cards, and more) under `examples/output/theme-demo/`.
+
+### Radar Diagram
+Need radial comparison views? See [Radar Diagram Guide](RADAR_DIAGRAM.md) for usage and examples.

@@ -21,16 +21,11 @@ Task-first map of the docs in this repository.
 - [Prompts Guide](PROMPTS.md) – canonical guide for prompt-based flows (`ideas`, `from-prompt-file`, defaults)
 - [API Reference](API.md) – prompt function signatures and imports
 
-Transitional docs (content consolidated into `PROMPTS.md`):
-- [Prompt Best Practices](PROMPT_BEST_PRACTICES.md)
-- [Prompt Examples](PROMPT_EXAMPLES.md)
-- [Prompt Patterns](PROMPT_PATTERNS.md)
-- [AI Template Creation](AI_TEMPLATE_CREATION.md)
-
 ## Mermaid And Wireframes
 
 - [Mermaid Guide](MERMAID.md) – Mermaid to SVG/PNG + hero/insight integration
 - [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md) – scene schema and payload contract
+- [Radar Diagram](RADAR_DIAGRAM.md) – radar layout usage and examples
 - [Advanced Topics](ADVANCED.md) – freeform canvas and custom SVG strategies
 
 ## Advanced And Contribution
@@ -45,7 +40,7 @@ Transitional docs (content consolidated into `PROMPTS.md`):
 
 - [Overhaul Spec](OVERHAUL_SPEC.md)
 - [Overhaul Workplan](OVERHAUL_WORKPLAN.md)
-- [Overhaul Phase 1 PR Summary](OVERHAUL_PHASE1_PR_SUMMARY.md)
+- [Overhaul Phase 1 PR Summary](archive/OVERHAUL_PHASE1_PR_SUMMARY.md)
 
 Historical plans and notes remain in [`docs/archive/`](archive/).
 
