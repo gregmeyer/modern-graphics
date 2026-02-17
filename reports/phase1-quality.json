@@ -1,8 +1,8 @@
 {
   "summary": {
-    "pass": 2,
-    "warn": 2,
-    "fail": 4
+    "pass": 8,
+    "warn": 0,
+    "fail": 0
   },
   "hard_fail_gates": [
     "contrast_ratio",
@@ -119,16 +119,10 @@
     },
     {
       "target": "story-slide",
-      "status": "warn",
+      "status": "pass",
       "hard_fail_gates": [],
-      "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
-      ],
-      "insight_warn_gates": [
-        "panel_density_budget",
-        "panel_balance"
-      ],
+      "soft_warn_gates": [],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
@@ -137,13 +131,13 @@
         },
         {
           "gate": "focal_point_budget",
-          "status": "warn",
-          "detail": "Observed 3 focal points above target 2"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "density_budget",
-          "status": "warn",
-          "detail": "Density items 10 above target 8"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "contrast_ratio",
@@ -167,31 +161,27 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 7 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
-          "status": "warn",
-          "detail": "Panel balance ratio 1.34 outside [0.70, 1.30]"
+          "status": "pass",
+          "detail": "OK"
         }
       ]
     },
     {
       "target": "comparison",
-      "status": "fail",
-      "hard_fail_gates": [
-        "min_text_size"
-      ],
+      "status": "pass",
+      "hard_fail_gates": [],
       "soft_warn_gates": [],
-      "insight_warn_gates": [
-        "panel_density_budget"
-      ],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
-          "status": "fail",
-          "detail": "Observed 12px below minimum 13px"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "focal_point_budget",
@@ -220,8 +210,8 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 8 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
@@ -232,38 +222,30 @@
     },
     {
       "target": "timeline",
-      "status": "fail",
-      "hard_fail_gates": [
-        "min_text_size",
-        "contrast_ratio"
-      ],
-      "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
-      ],
-      "insight_warn_gates": [
-        "panel_density_budget"
-      ],
+      "status": "pass",
+      "hard_fail_gates": [],
+      "soft_warn_gates": [],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
-          "status": "fail",
-          "detail": "Observed 11px below minimum 13px"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "focal_point_budget",
-          "status": "warn",
-          "detail": "Observed 3 focal points above target 2"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "density_budget",
-          "status": "warn",
-          "detail": "Density items 9 above target 8"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "contrast_ratio",
-          "status": "fail",
-          "detail": "Contrast ratio 4.20 below minimum 4.50"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "whitespace_guard",
@@ -277,8 +259,8 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 9 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
@@ -289,20 +271,15 @@
     },
     {
       "target": "funnel",
-      "status": "fail",
-      "hard_fail_gates": [
-        "min_text_size",
-        "whitespace_guard"
-      ],
+      "status": "pass",
+      "hard_fail_gates": [],
       "soft_warn_gates": [],
-      "insight_warn_gates": [
-        "panel_density_budget"
-      ],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
-          "status": "fail",
-          "detail": "Observed 12px below minimum 13px"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "focal_point_budget",
@@ -321,8 +298,8 @@
         },
         {
           "gate": "whitespace_guard",
-          "status": "fail",
-          "detail": "Whitespace ratio 0.37 above maximum 0.35"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "whitespace_floor",
@@ -331,8 +308,8 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 8 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
@@ -343,15 +320,10 @@
     },
     {
       "target": "grid",
-      "status": "warn",
+      "status": "pass",
       "hard_fail_gates": [],
-      "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
-      ],
-      "insight_warn_gates": [
-        "panel_density_budget"
-      ],
+      "soft_warn_gates": [],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
@@ -360,13 +332,13 @@
         },
         {
           "gate": "focal_point_budget",
-          "status": "warn",
-          "detail": "Observed 4 focal points above target 2"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "density_budget",
-          "status": "warn",
-          "detail": "Density items 11 above target 8"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "contrast_ratio",
@@ -385,8 +357,8 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 11 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
@@ -397,19 +369,15 @@
     },
     {
       "target": "pyramid",
-      "status": "fail",
-      "hard_fail_gates": [
-        "min_text_size"
-      ],
+      "status": "pass",
+      "hard_fail_gates": [],
       "soft_warn_gates": [],
-      "insight_warn_gates": [
-        "panel_density_budget"
-      ],
+      "insight_warn_gates": [],
       "results": [
         {
           "gate": "min_text_size",
-          "status": "fail",
-          "detail": "Observed 12px below minimum 13px"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "focal_point_budget",
@@ -438,8 +406,8 @@
         },
         {
           "gate": "panel_density_budget",
-          "status": "warn",
-          "detail": "Panel density 7 above target 6"
+          "status": "pass",
+          "detail": "OK"
         },
         {
           "gate": "panel_balance",
