@@ -91,6 +91,16 @@ from .diagrams.mermaid_svg import mermaid_to_svg
 from .color_scheme import get_scheme, list_schemes, ColorScheme
 from .cli_clarity import normalize_density
 from .export_policy import ExportPolicy
+from .layout_models import (
+    HeroPayload,
+    ComparisonPayload,
+    TimelinePayload,
+    FunnelPayload,
+    GridPayload,
+    KeyInsightPayload,
+    InsightCardPayload,
+    InsightStoryPayload,
+)
 
 
 def parse_steps(steps_str: str) -> list:
@@ -331,13 +341,25 @@ def main():
 
     # Clarity-first create scaffold (feature-flagged)
     create_parser = subparsers.add_parser('create', help='[Experimental] clarity-first creation surface')
-    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
+    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
     create_parser.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
     create_parser.add_argument('--headline', help='Headline (hero/story)')
     create_parser.add_argument('--subheadline', help='Subheadline (hero/story)')
     create_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
     create_parser.add_argument('--highlights', help='Comma-separated highlights (hero)')
     create_parser.add_argument('--text', help='Insight text (insight)')
+    create_parser.add_argument('--label', default='Key Insight', help='Insight label (key-insight/insight-card)')
+    create_parser.add_argument('--variant', default='bold', help='Insight variant (key-insight: default|minimal|bold|quote, insight-card: default|bold)')
+    create_parser.add_argument('--icon', default='lightning', help='Insight icon (lightning|lightbulb|quote|star|none)')
+    create_parser.add_argument('--svg-file', help='Path to SVG file (insight-card or insight-story panels)')
+    create_parser.add_argument('--svg-label', help='SVG label (insight-card)')
+    create_parser.add_argument('--svg-layout', default='side-by-side', choices=['side-by-side', 'stacked'], help='Insight card layout (default: side-by-side)')
+    create_parser.add_argument('--svg-position', default='right', choices=['left', 'right'], help='Insight card SVG position (default: right)')
+    create_parser.add_argument('--before-svg', help='Path to before SVG (insight-story)')
+    create_parser.add_argument('--after-svg', help='Path to after SVG (insight-story)')
+    create_parser.add_argument('--insight-text', help='Insight story key insight text')
+    create_parser.add_argument('--before-label', default='Before', help='Insight story before label')
+    create_parser.add_argument('--after-label', default='After', help='Insight story after label')
     create_parser.add_argument('--left', help='Left column payload for comparison: \"Title:Step1,Step2:Outcome\"')
     create_parser.add_argument('--right', help='Right column payload for comparison: \"Title:Step1,Step2:Outcome\"')
     create_parser.add_argument('--events', help='Timeline events: \"Date|Event,Date|Event\"')
@@ -888,35 +910,114 @@ def main():
             highlights = parse_highlights_arg(getattr(args, "highlights", None))
             if density == "clarity" and highlights:
                 highlights = highlights[:3]
-            payload = {
-                "headline": args.headline or "Execution scales. Judgment stays scarce.",
-                "subheadline": getattr(args, "subheadline", None),
-                "eyebrow": getattr(args, "eyebrow", None),
-                "highlights": highlights,
-                "background_variant": "light",
-                "color_scheme": color_scheme,
-            }
-        elif args.layout == "insight":
+            try:
+                payload = HeroPayload(
+                    headline=args.headline or "Execution scales. Judgment stays scarce.",
+                    subheadline=getattr(args, "subheadline", None),
+                    eyebrow=getattr(args, "eyebrow", None),
+                    highlights=highlights,
+                    background_variant="light",
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
+        elif args.layout in {"insight", "key-insight"}:
             if not getattr(args, "text", None):
                 print("Error: --text is required for --layout insight")
                 return 1
-            payload = {
-                "text": args.text,
-                "label": "Key Insight",
-                "variant": "bold" if density != "dense" else "default",
-                "icon": "lightning",
-                "color_scheme": color_scheme,
-            }
+            key_variant = getattr(args, "variant", None) or ("bold" if density != "dense" else "default")
+            try:
+                payload = KeyInsightPayload(
+                    text=args.text,
+                    label=getattr(args, "label", "Key Insight"),
+                    variant=key_variant,
+                    icon=getattr(args, "icon", "lightning"),
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
+        elif args.layout == "insight-card":
+            if not getattr(args, "text", None):
+                print("Error: --text is required for --layout insight-card")
+                return 1
+            svg_content = None
+            if getattr(args, "svg_file", None):
+                svg_path = Path(args.svg_file)
+                if not svg_path.exists():
+                    print(f"Error: SVG file not found: {svg_path}")
+                    return 1
+                svg_content = svg_path.read_text(encoding="utf-8")
+            else:
+                cfg = get_wireframe_config_from_theme(getattr(args, "theme", None), width=360, height=260)
+                svg_content = generate_after_wireframe_svg(cfg)
+            card_variant = getattr(args, "variant", None) or ("bold" if density != "dense" else "default")
+            try:
+                payload = InsightCardPayload(
+                    text=args.text,
+                    svg_content=svg_content,
+                    label=getattr(args, "label", "Key Insight"),
+                    svg_label=getattr(args, "svg_label", None),
+                    layout=getattr(args, "svg_layout", "side-by-side"),
+                    svg_position=getattr(args, "svg_position", "right"),
+                    variant=card_variant,
+                    icon=getattr(args, "icon", "lightning"),
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
+        elif args.layout == "insight-story":
+            before_svg = None
+            after_svg = None
+            if getattr(args, "before_svg", None):
+                before_path = Path(args.before_svg)
+                if not before_path.exists():
+                    print(f"Error: before SVG file not found: {before_path}")
+                    return 1
+                before_svg = before_path.read_text(encoding="utf-8")
+            if getattr(args, "after_svg", None):
+                after_path = Path(args.after_svg)
+                if not after_path.exists():
+                    print(f"Error: after SVG file not found: {after_path}")
+                    return 1
+                after_svg = after_path.read_text(encoding="utf-8")
+            if before_svg is None or after_svg is None:
+                cfg = get_wireframe_config_from_theme(getattr(args, "theme", None), width=360, height=260)
+                before_svg = before_svg or generate_before_wireframe_svg(cfg)
+                after_svg = after_svg or generate_after_wireframe_svg(cfg)
+            try:
+                payload = InsightStoryPayload(
+                    headline=args.headline or "Execution scales. Judgment does not.",
+                    insight_text=getattr(args, "insight_text", None) or args.text or "Use explicit gates to decide what ships.",
+                    before_svg=before_svg,
+                    after_svg=after_svg,
+                    subtitle=getattr(args, "subheadline", None),
+                    eyebrow=getattr(args, "eyebrow", None),
+                    before_label=getattr(args, "before_label", "Before"),
+                    after_label=getattr(args, "after_label", "After"),
+                    insight_label=getattr(args, "label", "Key Insight"),
+                    stats=parse_stats_arg(getattr(args, "stats", None)),
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
         elif args.layout == "comparison":
             if not getattr(args, "left", None) or not getattr(args, "right", None):
                 print("Error: --left and --right are required for --layout comparison")
                 return 1
-            payload = {
-                "left_column": parse_column(args.left),
-                "right_column": parse_column(args.right),
-                "vs_text": "vs",
-                "color_scheme": color_scheme,
-            }
+            try:
+                payload = ComparisonPayload(
+                    left_column=parse_column(args.left),
+                    right_column=parse_column(args.right),
+                    vs_text="vs",
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
         elif args.layout == "story":
             payload = {
                 "title": args.title,
@@ -929,20 +1030,28 @@ def main():
             if not getattr(args, "events", None):
                 print("Error: --events is required for --layout timeline")
                 return 1
-            payload = {
-                "events": parse_timeline_events(args.events),
-                "orientation": getattr(args, "orientation", "horizontal"),
-                "color_scheme": color_scheme,
-            }
+            try:
+                payload = TimelinePayload(
+                    events=parse_timeline_events(args.events),
+                    orientation=getattr(args, "orientation", "horizontal"),
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
         elif args.layout == "funnel":
             if not getattr(args, "stages", None):
                 print("Error: --stages is required for --layout funnel")
                 return 1
-            payload = {
-                "stages": parse_funnel_stages(args.stages, getattr(args, "values", None)),
-                "show_percentages": bool(getattr(args, "percentages", False)),
-                "color_scheme": color_scheme,
-            }
+            try:
+                payload = FunnelPayload(
+                    stages=parse_funnel_stages(args.stages, getattr(args, "values", None)),
+                    show_percentages=bool(getattr(args, "percentages", False)),
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
         elif args.layout == "grid":
             if not getattr(args, "items", None):
                 print("Error: --items is required for --layout grid")
@@ -953,17 +1062,25 @@ def main():
                     "goal": getattr(args, "goal", None) or "",
                     "outcome": getattr(args, "outcome", None) or "",
                 }
-            payload = {
-                "items": parse_items(args.items),
-                "columns": getattr(args, "columns", 5),
-                "convergence": convergence,
-                "color_scheme": color_scheme,
-            }
+            try:
+                payload = GridPayload(
+                    items=parse_items(args.items),
+                    columns=getattr(args, "columns", 5),
+                    convergence=convergence,
+                    color_scheme=color_scheme,
+                ).to_strategy_kwargs()
+            except ValueError as exc:
+                print(f"Error: {exc}")
+                return 1
         else:
             print(f"Error: unsupported layout {args.layout}")
             return 1
 
-        html = generator.generate_layout(layout_type, **payload)
+        try:
+            html = generator.generate_layout(layout_type, **payload)
+        except ValueError as exc:
+            print(f"Error: {exc}")
+            return 1
 
         if color_scheme is not None and args.layout in {"story"}:
             html = color_scheme.apply_to_html(html)

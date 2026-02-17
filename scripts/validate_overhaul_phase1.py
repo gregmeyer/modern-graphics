@@ -46,7 +46,9 @@ def main() -> int:
     assert normalize_density("weird") == "clarity"
 
     strict_paths = [
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "layout_models.py",
         Path(__file__).resolve().parents[1] / "modern_graphics" / "layouts.py",
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "generator.py",
         Path(__file__).resolve().parents[1] / "modern_graphics" / "template_lint.py",
     ]
     strict_report = run_template_lint(strict_paths, mode="strict")

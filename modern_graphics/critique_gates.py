@@ -41,6 +41,15 @@ def run_clarity_gates(
     min_contrast_ratio: float = 4.5,
     whitespace_ratio: float = 0.0,
     max_whitespace_ratio: float = 0.35,
+    min_whitespace_ratio: float = 0.10,
+    headline_text_px: int = 0,
+    body_text_px: int = 0,
+    min_headline_to_body_ratio: float = 1.35,
+    panel_density_items: int = 0,
+    max_panel_density_items: int = 6,
+    panel_balance_ratio: float = 1.0,
+    min_panel_balance_ratio: float = 0.70,
+    max_panel_balance_ratio: float = 1.30,
 ) -> CritiqueReport:
     """Run initial quality gates for visual clarity.
 
@@ -109,6 +118,66 @@ def run_clarity_gates(
         )
     else:
         results.append(GateResult(gate="whitespace_guard", status="pass", detail="OK"))
+
+    if whitespace_ratio < min_whitespace_ratio:
+        results.append(
+            GateResult(
+                gate="whitespace_floor",
+                status="warn",
+                detail=(
+                    f"Whitespace ratio {whitespace_ratio:.2f} below recommended "
+                    f"minimum {min_whitespace_ratio:.2f}"
+                ),
+            )
+        )
+    else:
+        results.append(GateResult(gate="whitespace_floor", status="pass", detail="OK"))
+
+    if headline_text_px > 0 and body_text_px > 0:
+        ratio = headline_text_px / max(body_text_px, 1)
+        if ratio < min_headline_to_body_ratio:
+            results.append(
+                GateResult(
+                    gate="headline_hierarchy",
+                    status="warn",
+                    detail=(
+                        f"Headline/body ratio {ratio:.2f} below target "
+                        f"{min_headline_to_body_ratio:.2f}"
+                    ),
+                )
+            )
+        else:
+            results.append(
+                GateResult(gate="headline_hierarchy", status="pass", detail="OK")
+            )
+
+    if panel_density_items > max_panel_density_items:
+        results.append(
+            GateResult(
+                gate="panel_density_budget",
+                status="warn",
+                detail=(
+                    f"Panel density {panel_density_items} above target "
+                    f"{max_panel_density_items}"
+                ),
+            )
+        )
+    else:
+        results.append(GateResult(gate="panel_density_budget", status="pass", detail="OK"))
+
+    if panel_balance_ratio < min_panel_balance_ratio or panel_balance_ratio > max_panel_balance_ratio:
+        results.append(
+            GateResult(
+                gate="panel_balance",
+                status="warn",
+                detail=(
+                    f"Panel balance ratio {panel_balance_ratio:.2f} outside "
+                    f"[{min_panel_balance_ratio:.2f}, {max_panel_balance_ratio:.2f}]"
+                ),
+            )
+        )
+    else:
+        results.append(GateResult(gate="panel_balance", status="pass", detail="OK"))
 
     return CritiqueReport(target=target, results=results)
 

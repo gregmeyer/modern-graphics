@@ -2,6 +2,6 @@
 
 - mode: **strict**
 - status: **pass**
-- files scanned: **2**
+- files scanned: **4**
 - files with findings: **0**
 - total findings: **0**

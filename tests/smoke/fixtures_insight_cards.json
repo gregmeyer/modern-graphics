@@ -1,0 +1,27 @@
+[
+  {
+    "kind": "key_insight",
+    "text": "Execution can scale. Judgment remains human-limited.",
+    "label": "Key Insight",
+    "variant": "bold",
+    "icon": "lightning"
+  },
+  {
+    "kind": "insight_card",
+    "text": "A one-page artifact forces explicit product decisions.",
+    "label": "Insight Story",
+    "svg_label": "Artifact panel",
+    "layout": "side-by-side",
+    "svg_position": "right",
+    "variant": "bold",
+    "icon": "lightning",
+    "svg_content": "<svg viewBox='0 0 240 140'><rect x='8' y='8' width='224' height='124' rx='16' fill='#f5f5f7' /><text x='24' y='72' font-size='14' fill='#1d1d1f'>Artifact</text></svg>"
+  },
+  {
+    "kind": "insight_story",
+    "headline": "When shipping gets easy, choosing gets hard.",
+    "insight_text": "Use a short PM checklist before shipping each AI-generated option.",
+    "before_svg": "<svg viewBox='0 0 240 140'><rect x='8' y='8' width='224' height='124' rx='16' fill='#f3f4f6' /></svg>",
+    "after_svg": "<svg viewBox='0 0 240 140'><rect x='8' y='8' width='224' height='124' rx='16' fill='#ecfdf5' /></svg>"
+  }
+]
