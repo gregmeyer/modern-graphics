@@ -8,6 +8,7 @@ Use this directory as the reference library for everything outside the main READ
 - **[Quick Start Guide](QUICKSTART.md)** – Install, run your first script, and export PNGs
 - **[Create Command Guide](CREATE_COMMAND.md)** – Unified CLI workflow, defaults, and layout recipes
 - **[Migration Guide](MIGRATION.md)** – Move from legacy commands to `create` with before/after examples
+- **[Deprecation Policy](DEPRECATION_POLICY.md)** – Legacy CLI retirement stages and rollout guidance
 - **[Core Concepts](CONCEPTS.md)** – Generator, diagram types, templates, attribution
 - **[Diagram Types](DIAGRAM_TYPES.md)** – Decision tree plus visual reference
 - **[Common Use Cases](USE_CASES.md)** – Real-world patterns you can reuse

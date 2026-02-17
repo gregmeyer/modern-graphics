@@ -180,6 +180,8 @@ Current implementation status (checkpoint):
 - Added migration reference doc with before/after command examples:
   - `docs/MIGRATION.md`
 - CI workflow now runs validator + Phase 1-5 smoke tests with pytest on Python 3.11.
+- Added deprecation timeline policy:
+  - `docs/DEPRECATION_POLICY.md`
 
 ## 5) Visual System Contract (Phase 1)
 
