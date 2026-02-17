@@ -41,6 +41,10 @@ For legacy command migration, see `docs/MIGRATION.md`.
 | Chronology | `timeline` | `--events` |
 | Stage conversion | `funnel` | `--stages` (optional `--values`) |
 | Numbered concept grid | `grid` | `--items` |
+| Legacy transformation layout | `before-after` (CLI command) | `--before` + `--after` |
+| Multi-card transformation strip | `slide-cards` (CLI command) | `--cards` JSON |
+| Card-vs-card comparison | `slide-compare` (CLI command) | `--left` JSON + `--right` JSON |
+| Stacked hero/detail card | `premium-card` (CLI command) | `--config` JSON |
 
 ## Fast Recipes
 
@@ -107,6 +111,52 @@ Tracked social preset examples:
 - `examples/output/showcase/create-first/social-preset-linkedin.png`
 - `examples/output/showcase/create-first/social-preset-x.png`
 - `examples/output/showcase/create-first/social-preset-substack-hero.png`
+
+## CLI-Only Layouts (Outside `create`)
+
+These layouts are currently available as dedicated commands instead of `create` layouts.
+
+### Before/After
+
+```bash
+modern-graphics before-after \
+  --title "Support Workflow Shift" \
+  --before "Manual triage,Long queues,Status uncertainty" \
+  --after "Inline help,Faster routing,Visible status" \
+  --png \
+  --output ./output/before-after.png
+```
+
+### Slide Cards
+
+```bash
+modern-graphics slide-cards \
+  --title "Execution Shift" \
+  --cards '[{"title":"Prompting","tagline":"Step 1","subtext":"Generate options"},{"title":"Constrainting","tagline":"Step 2","subtext":"Set boundaries"},{"title":"Decision gates","tagline":"Step 3","subtext":"Filter what ships"}]' \
+  --png \
+  --output ./output/slide-cards.png
+```
+
+### Slide Compare
+
+```bash
+modern-graphics slide-compare \
+  --title "Operating Modes" \
+  --left '{"title":"Motion","tagline":"Ship more","subtext":"High output, noisy relevance"}' \
+  --right '{"title":"Judgment","tagline":"Ship fewer","subtext":"Lower volume, higher signal"}' \
+  --png \
+  --output ./output/slide-compare.png
+```
+
+### Premium Card
+
+```bash
+modern-graphics premium-card \
+  --title "Ops Guardrail Premium Card" \
+  --config examples/ops_guardrail_premium_card.json \
+  --png \
+  --output ./output/premium-card.png
+```
 
 ## Error Hints
 

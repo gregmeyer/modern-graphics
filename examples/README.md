@@ -56,6 +56,43 @@ Tracked social preset references:
 - `examples/output/showcase/create-first/social-preset-x.png`
 - `examples/output/showcase/create-first/social-preset-substack-hero.png`
 
+### I need a wireframe scene I can reuse in insight graphics
+
+Run:
+
+```bash
+modern-graphics wireframe-scene \
+  --preset after \
+  --output examples/output/generated/after-scene.svg
+```
+
+Expected output: `examples/output/generated/after-scene.svg`
+
+Then pair with an insight card:
+
+```bash
+modern-graphics create \
+  --layout insight-card \
+  --text "Inline support reduced escalations." \
+  --svg-file examples/output/generated/after-scene.svg \
+  --png \
+  --output examples/output/generated/insight-card-wireframe.png
+```
+
+### I need a premium stacked card
+
+Run:
+
+```bash
+modern-graphics premium-card \
+  --title "Ops Guardrail Premium Card" \
+  --config examples/ops_guardrail_premium_card.json \
+  --png \
+  --output examples/output/generated/ops-guardrail-card.png
+```
+
+Expected output: `examples/output/generated/ops-guardrail-card.png`
+
 ### I need the full showcase set
 
 Run:

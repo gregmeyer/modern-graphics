@@ -112,6 +112,41 @@ modern-graphics wireframe-scene --preset after --theme apple --png --output afte
 modern-graphics wireframe-scene --spec my_scene.json --output scene.svg
 ```
 
+## Insight + Wireframe Workflows
+
+### 1) Scene Spec -> SVG -> Insight Card
+
+```bash
+modern-graphics wireframe-scene \
+  --preset after \
+  --output ./output/after-scene.svg
+
+modern-graphics create \
+  --layout insight-card \
+  --text "Inline guidance reduced ticket escalations." \
+  --svg-file ./output/after-scene.svg \
+  --png \
+  --output ./output/insight-card-wireframe.png
+```
+
+### 2) Insight Story With Auto-Generated Wireframes
+
+```bash
+modern-graphics insight-story \
+  --title "Support System Shift" \
+  --headline "From queue management to in-flow resolution" \
+  --insight-text "Embedding help in context cut wait time and increased completion." \
+  --generate-wireframes \
+  --png \
+  --output ./output/insight-story-wireframe.png
+```
+
+Related tracked references:
+- `examples/output/showcase/insight-graphics/04-insight-card.png`
+- `examples/output/showcase/insight-graphics/05-insight-story.png`
+- `examples/output/showcase/insight-graphics/06-wireframe-before.svg`
+- `examples/output/showcase/insight-graphics/07-wireframe-after.svg`
+
 ## Related
 
 - **wireframe-svg**: Single-type wireframes (before, after, chat-panel, modal-form, ticket-flow) with CLI options for messages, fields, etc. Use when you want one layout and CLI-driven content.

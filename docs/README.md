@@ -12,6 +12,7 @@ Task-first map of the docs in this repository.
 ## Build Graphics
 
 - [Diagram Types](DIAGRAM_TYPES.md) – choose the right layout + visual references
+- [Create Command Guide](CREATE_COMMAND.md#cli-only-layouts-outside-create) – before-after, slide-cards, slide-compare, premium-card
 - [Hero Slides Guide](HERO_SLIDES.md) – hero composition patterns
 - [Common Use Cases](USE_CASES.md) – scenario-based examples
 - [Core Concepts](CONCEPTS.md) – generator, templates, attribution, diagram families
