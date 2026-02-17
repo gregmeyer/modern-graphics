@@ -157,6 +157,7 @@ Current implementation status (checkpoint):
   - fixtures: `tests/smoke/fixtures_export_phase4.json`
   - snapshots: `reports/export-fixtures/`
   - report: `reports/phase4-export-fixtures.md`
+- Phase 1 quality harness currently reports full fixture pass on core layouts (current summary: pass=8, warn=0, fail=0).
 
 ## Phase 5: Migration + adoption
 

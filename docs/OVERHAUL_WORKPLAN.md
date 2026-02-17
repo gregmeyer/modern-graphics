@@ -84,9 +84,9 @@ Outputs:
 ## Phase 1 Gate Baseline (Current)
 
 From `reports/phase1-quality.md`:
-- pass: 2
-- warn: 2
-- fail: 4
+- pass: 8
+- warn: 0
+- fail: 0
 
 Hard fail gates:
 - `min_text_size`
@@ -96,6 +96,9 @@ Hard fail gates:
 Soft warn gates:
 - `focal_point_budget`
 - `density_budget`
+
+Current warn-only layouts:
+- none (all core Phase 1 fixtures are passing)
 
 From `reports/phase1-token-debt.md`:
 - files scanned: 28
@@ -125,8 +128,8 @@ Work items:
 - Keep canvas + embedded SVG composition paths intact.
 
 Success targets for slice 1:
-- `hero` and `insight-card` remain pass.
-- `comparison` moves from fail to pass.
+- Keep all core Phase 1 fixture layouts at pass.
+- Treat any future warn/fail as regressions to be addressed before phase close.
 - total findings reduced by >= 20% in slice files.
 - no regression in feature-flagged `create` scaffold.
 
