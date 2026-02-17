@@ -9,11 +9,23 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
+          python-version: '3.11'
       - name: Install dependencies
         run: |
           pip install -e .
+          pip install pytest
           playwright install chromium
       - name: Run basic test
         run: |
           python3 -c "from modern_graphics import ModernGraphicsGenerator, Attribution; print('✓ Import successful')"
+      - name: Run overhaul validator
+        run: |
+          python3 scripts/validate_overhaul_phase1.py
+      - name: Run smoke tests (Phase 1-5)
+        run: |
+          pytest -q \
+            tests/smoke/test_overhaul_phase1_smoke.py \
+            tests/smoke/test_layout_strategy_smoke.py \
+            tests/smoke/test_create_cli_phase3_smoke.py \
+            tests/smoke/test_export_phase4_smoke.py \
+            tests/smoke/test_cli_migration_phase5_smoke.py

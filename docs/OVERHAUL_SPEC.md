@@ -179,6 +179,7 @@ Current implementation status (checkpoint):
 - Legacy command executions now emit migration-oriented deprecation hints toward `create`.
 - Added migration reference doc with before/after command examples:
   - `docs/MIGRATION.md`
+- CI workflow now runs validator + Phase 1-5 smoke tests with pytest on Python 3.11.
 
 ## 5) Visual System Contract (Phase 1)
 
