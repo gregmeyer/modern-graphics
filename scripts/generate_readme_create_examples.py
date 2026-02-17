@@ -14,7 +14,6 @@ OUT = ROOT / "examples" / "output" / "showcase" / "create-first"
 
 def _run(args: list[str]) -> None:
     env = dict(os.environ)
-    env["MODERN_GRAPHICS_ENABLE_CREATE"] = "1"
     env["PYTHONPATH"] = str(ROOT)
     cmd = [sys.executable, "-m", "modern_graphics.cli", *args]
     result = subprocess.run(cmd, cwd=str(ROOT), env=env, capture_output=True, text=True)

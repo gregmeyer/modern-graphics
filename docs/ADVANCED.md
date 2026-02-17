@@ -235,7 +235,7 @@ For new workflows, use the unified `create` command. Keep legacy command syntax 
 
 **Hero:**
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment does not." \
   --png \
@@ -244,7 +244,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 
 **Comparison Diagram:**
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout comparison \
   --left "Left Title:Item1,Item2:Outcome" \
   --right "Right Title:Item3,Item4:Outcome" \
@@ -254,7 +254,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 
 **Timeline Diagram:**
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout timeline \
   --events "2024 Q1|Event1,2024 Q2|Event2,2024 Q3|Event3" \
   --orientation horizontal \
@@ -264,7 +264,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 
 **Story Narrative:**
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout story \
   --title "Revenue Shift" \
   --what-changed "One-time → Recurring" \

@@ -99,7 +99,7 @@ generator.export_to_png(html, "insight-card.png", padding=10)
 **CLI support with themes (`create` first):**
 ```bash
 # Standalone key insight with Apple theme
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout key-insight \
   --text "The key insight with <span class=\"highlight\">highlights</span>" \
   --variant bold \
@@ -108,7 +108,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output insight.png
 
 # Insight card with arcade theme and auto-generated wireframe
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "The insight text..." \
   --svg-label "Inline control surface" \
@@ -117,7 +117,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output card.png
 
 # Full insight story with Nike theme
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-story \
   --headline "Chat is a Dynamic Control Surface" \
   --insight-text "The key insight..." \
@@ -162,12 +162,12 @@ That's it! No complex setup needed.
 Use the unified `create` command as your default workflow:
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment does not." \
   --output ./output/hero.html
 
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "Constrained execution makes quality repeatable." \
   --png \
@@ -742,7 +742,7 @@ Use `create` as the default CLI path for insight graphics:
 
 ```bash
 # Key Insight with theme
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout key-insight \
   --text "The insight text with <span class=\"highlight\">highlights</span>" \
   --variant bold \
@@ -751,7 +751,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output insight.png
 
 # Insight Card with theme and auto-generated wireframe
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "The insight text..." \
   --svg-label "Inline control surface" \
@@ -760,7 +760,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output card.png
 
 # Insight Card with custom SVG file
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "The insight text..." \
   --svg-file my-wireframe.svg \
@@ -769,7 +769,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output card.png
 
 # Insight Story with theme and auto-generated wireframes
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-story \
   --headline "Chat is a Dynamic Control Surface" \
   --subtitle "When conversations stay stateful..." \
@@ -806,10 +806,10 @@ All insight graphics respect the ColorScheme system. Use themes via CLI or Pytho
 **CLI (recommended for quick generation):**
 ```bash
 # Use any of the 8 built-in themes
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout key-insight --text "Your insight" --theme apple --png --output insight.png
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout insight-card --text "Your insight" --theme arcade --png --output card.png
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout insight-story --headline "Title" --insight-text "Why this matters" --theme nike --png --output story.png
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout hero --headline "Judgment is the bottleneck" --theme corporate --png --output hero.png
+modern-graphics create --layout key-insight --text "Your insight" --theme apple --png --output insight.png
+modern-graphics create --layout insight-card --text "Your insight" --theme arcade --png --output card.png
+modern-graphics create --layout insight-story --headline "Title" --insight-text "Why this matters" --theme nike --png --output story.png
+modern-graphics create --layout hero --headline "Judgment is the bottleneck" --theme corporate --png --output hero.png
 ```
 
 **Python (for custom themes or programmatic use):**
@@ -974,7 +974,7 @@ python scripts/run_insight_fixture_harness.py
 Clarity-first `create` workflow (feature-flagged):
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment stays scarce." \
   --output ./output/clarity-hero.html

@@ -29,7 +29,7 @@ Branch: `feat/overhaul-clarity-system-v1`
 
 4. Export and CLI checkpoint behavior
 - Export defaults now policy-driven (`minimal` padding path + crop modes `none|safe|tight`)
-- Experimental `create` command scaffold in CLI behind `MODERN_GRAPHICS_ENABLE_CREATE=1`
+- Experimental `create` command scaffold in CLI (now default-enabled in current mainline)
 
 ## Baseline quality results
 

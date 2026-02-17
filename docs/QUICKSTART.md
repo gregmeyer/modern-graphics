@@ -16,7 +16,7 @@ That's it! No complex setup needed.
 Use the unified `create` command first:
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment does not." \
   --output ./output/hero.html
@@ -25,7 +25,7 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
 Then export directly to PNG:
 
 ```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "One-page artifacts force explicit decisions." \
   --png \

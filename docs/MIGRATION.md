@@ -32,7 +32,7 @@ modern-graphics comparison \
   --output comparison.html
 
 # After (recommended)
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout comparison \
   --left "Before:Manual triage:Slow" \
   --right "After:Agentic triage:Faster" \
@@ -49,7 +49,7 @@ modern-graphics timeline \
   --output timeline.html
 
 # After (recommended)
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout timeline \
   --events "Q1|Baseline,Q2|Adoption,Q3|Scale" \
   --output timeline.html
@@ -64,7 +64,7 @@ modern-graphics insight-card \
   --output insight-card.png --png
 
 # After (recommended)
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout insight-card \
   --text "Constrained execution makes quality repeatable." \
   --png \
@@ -83,7 +83,7 @@ modern-graphics story-slide \
   --output story.html
 
 # After (recommended)
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+modern-graphics create \
   --layout story \
   --title "What changed" \
   --what-changed "Execution became cheap" \
