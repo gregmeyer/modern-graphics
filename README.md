@@ -65,8 +65,11 @@ Create compelling insight graphics for articles and presentations—from standal
 
 | Key Insight | Insight Card | Insight Story |
 |-------------|--------------|---------------|
-| ![Key Insight](examples/output/showcase/insight-graphics/02-key-insight-bold.png) | ![Insight Card](examples/output/showcase/insight-graphics/04-insight-card.png) | ![Insight Story](examples/output/showcase/insight-graphics/05-insight-story.png) |
+| ![Key Insight](examples/output/showcase/create-first/key-insight-bold.png) | ![Insight Card](examples/output/showcase/create-first/insight-card.png) | ![Insight Story](examples/output/showcase/create-first/insight-story.png) |
 | Standalone pull quote with variants | Insight + SVG illustration | Full before/after with stats |
+
+Rebuild these README preview assets with:
+`python scripts/generate_readme_create_examples.py`
 
 **The workflow:** Create wireframe → Generate SVG → Present as insight graphic
 
@@ -93,35 +96,36 @@ html = generate_insight_card(
 generator.export_to_png(html, "insight-card.png", padding=10)
 ```
 
-**CLI support with themes:**
+**CLI support with themes (`create` first):**
 ```bash
 # Standalone key insight with Apple theme
-modern-graphics key-insight \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout key-insight \
   --text "The key insight with <span class=\"highlight\">highlights</span>" \
   --variant bold \
   --theme apple \
-  --output insight.png --png
+  --png \
+  --output insight.png
 
 # Insight card with arcade theme and auto-generated wireframe
-modern-graphics insight-card \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
   --text "The insight text..." \
-  --svg-type after \
   --svg-label "Inline control surface" \
   --theme arcade \
-  --output card.png --png
+  --png \
+  --output card.png
 
 # Full insight story with Nike theme
-modern-graphics insight-story \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-story \
   --headline "Chat is a Dynamic Control Surface" \
-  --generate-wireframes \
-  --before-status "-Context interrupted" \
-  --after-status "+Context preserved" \
   --insight-text "The key insight..." \
   --theme nike \
-  --output story.png --png
+  --png \
+  --output story.png
 
-# Wireframe PNG with theme
-modern-graphics wireframe-svg --type after --theme apple --png --output wireframe.png
+# Legacy command examples are preserved in docs/MIGRATION.md
 ```
 
 **Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`, `operator-clarity-v2`
@@ -153,7 +157,29 @@ That's it! No complex setup needed.
 
 **Note:** Most features work **without an OpenAI API key**. Only prompt-based generation (optional) requires OpenAI. See [Working Without OpenAI](#working-without-openai) below.
 
-### Your First Graphic
+### Fastest Path (CLI, Recommended)
+
+Use the unified `create` command as your default workflow:
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --output ./output/hero.html
+
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
+  --text "Constrained execution makes quality repeatable." \
+  --png \
+  --output ./output/insight-card.png
+```
+
+Then use these references:
+- [Create Command Guide](docs/CREATE_COMMAND.md)
+- [Export Guide](docs/EXPORT.md)
+- [Migration Guide](docs/MIGRATION.md)
+
+### Programmatic Path (Python API)
 
 Copy and paste this code:
 
@@ -576,7 +602,7 @@ A standalone insight/pull quote with multiple style variants.
 
 | Default | Bold | Quote |
 |---------|------|-------|
-| ![Default](examples/output/showcase/insight-graphics/01-key-insight-default.png) | ![Bold](examples/output/showcase/insight-graphics/02-key-insight-bold.png) | ![Quote](examples/output/showcase/insight-graphics/03-key-insight-quote.png) |
+| ![Default](examples/output/showcase/create-first/key-insight-default.png) | ![Bold](examples/output/showcase/create-first/key-insight-bold.png) | ![Quote](examples/output/showcase/create-first/key-insight-quote.png) |
 
 ```python
 from modern_graphics.diagrams.insight import generate_key_insight
@@ -602,7 +628,7 @@ html = generate_key_insight(
 
 Combines a key insight with an illustrative SVG wireframe.
 
-![Insight Card](examples/output/showcase/insight-graphics/04-insight-card.png)
+![Insight Card](examples/output/showcase/create-first/insight-card.png)
 
 ```python
 from modern_graphics.diagrams.insight import generate_insight_card
@@ -628,7 +654,7 @@ html = generate_insight_card(
 
 Complete insight graphic with before/after comparison, shift indicators, and stats.
 
-![Insight Story](examples/output/showcase/insight-graphics/05-insight-story.png)
+![Insight Story](examples/output/showcase/create-first/insight-story.png)
 
 ```python
 from modern_graphics.diagrams.insight import generate_insight_story
@@ -712,59 +738,48 @@ after_svg = generate_after_wireframe_svg(config)    # App with chat panel
 
 ### CLI Commands
 
-All insight graphics are available via CLI with theme support:
+Use `create` as the default CLI path for insight graphics:
 
 ```bash
 # Key Insight with theme
-modern-graphics key-insight \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout key-insight \
   --text "The insight text with <span class=\"highlight\">highlights</span>" \
   --variant bold \
-  --icon lightning \
   --theme apple \
-  --output insight.png --png --padding 10
+  --png \
+  --output insight.png
 
 # Insight Card with theme and auto-generated wireframe
-modern-graphics insight-card \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
   --text "The insight text..." \
-  --svg-type after \
   --svg-label "Inline control surface" \
-  --layout side-by-side \
   --theme apple \
-  --output card.png --png
+  --png \
+  --output card.png
 
 # Insight Card with custom SVG file
-modern-graphics insight-card \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
   --text "The insight text..." \
   --svg-file my-wireframe.svg \
   --theme corporate \
-  --output card.png --png
+  --png \
+  --output card.png
 
 # Insight Story with theme and auto-generated wireframes
-modern-graphics insight-story \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-story \
   --headline "Chat is a Dynamic Control Surface" \
   --subtitle "When conversations stay stateful..." \
   --eyebrow "The Interface Shift" \
-  --generate-wireframes \
-  --before-label "Ticketed Support" \
-  --before-status "-Context interrupted" \
-  --after-label "Inline Chat" \
-  --after-status "+Context preserved" \
-  --shift-from "Tickets" \
-  --shift-to "Control" \
   --insight-text "The key insight..." \
-  --stats "Old Model:Declare → Queue,New Model:Intent → Action" \
   --theme apple \
-  --output story.png --png
-
-# Generate standalone SVG wireframes (with optional PNG export)
-modern-graphics wireframe-svg --type before --theme apple --output before.svg
-modern-graphics wireframe-svg --type after --theme arcade --png --output after.png
-modern-graphics wireframe-svg --type chat-panel \
-  --messages '[{"role":"user","text":"Help me"},{"role":"assistant","text":"Sure!"}]' \
-  --inline-card '{"title":"Plan","progress":75}' \
-  --theme nike \
   --png \
-  --output chat.png
+  --output story.png
+
+# Legacy CLI syntax is kept in docs/MIGRATION.md.
 ```
 
 **Available themes:** `apple`, `corporate`, `dark`, `warm`, `green`, `arcade`, `nike`, `operator-clarity-v2`
@@ -791,10 +806,10 @@ All insight graphics respect the ColorScheme system. Use themes via CLI or Pytho
 **CLI (recommended for quick generation):**
 ```bash
 # Use any of the 8 built-in themes
-modern-graphics key-insight --text "Your insight" --theme apple --png --output insight.png
-modern-graphics wireframe-svg --type after --theme arcade --png --output wireframe.png
-modern-graphics insight-story --headline "Title" --generate-wireframes --theme nike --png --output story.png
-modern-graphics modern-hero --title "Ops" --headline "Judgment is the bottleneck" --theme operator-clarity-v2 --png --output hero.png
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout key-insight --text "Your insight" --theme apple --png --output insight.png
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout insight-card --text "Your insight" --theme arcade --png --output card.png
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout insight-story --headline "Title" --insight-text "Why this matters" --theme nike --png --output story.png
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create --layout hero --headline "Judgment is the bottleneck" --theme corporate --png --output hero.png
 ```
 
 **Python (for custom themes or programmatic use):**

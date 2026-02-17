@@ -231,47 +231,47 @@ generator = ModernGraphicsGenerator("My Diagram", template=dark_template)
 
 ## Command Line Interface
 
-The CLI provides commands for all diagram types. Use `--png` flag to export as PNG instead of HTML.
+For new workflows, use the unified `create` command. Keep legacy command syntax only for migration/compatibility.
 
-**Cycle Diagram:**
+**Hero:**
 ```bash
-modern-graphics cycle \
-  --title "My Cycle" \
-  --steps "Step1,Step2,Step3" \
-  --output output.png --png
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --png \
+  --output hero.png
 ```
 
 **Comparison Diagram:**
 ```bash
-modern-graphics comparison \
-  --title "Comparison" \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout comparison \
   --left "Left Title:Item1,Item2:Outcome" \
   --right "Right Title:Item3,Item4:Outcome" \
-  --output comparison.png --png
+  --png \
+  --output comparison.png
 ```
 
 **Timeline Diagram:**
 ```bash
-modern-graphics timeline \
-  --title "Timeline" \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout timeline \
   --events "2024 Q1|Event1,2024 Q2|Event2,2024 Q3|Event3" \
   --orientation horizontal \
-  --output timeline.png --png
+  --png \
+  --output timeline.png
 ```
 
-**Story Slide:**
+**Story Narrative:**
 ```bash
-modern-graphics story-slide \
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout story \
   --title "Revenue Shift" \
   --what-changed "One-time → Recurring" \
   --time-period "Q2-Q4 2025" \
   --what-it-means "Predictable revenue" \
-  --output slide.png --png
+  --png \
+  --output story.png
 ```
 
-**Common Options:**
-- `--copyright "Text"` - Custom copyright text
-- `--context "Text"` - Optional context line for attribution
-- `--png` - Export as PNG instead of HTML
-
-See [API Reference](API.md) for complete CLI documentation.
+See [Create Command Guide](CREATE_COMMAND.md) for layout-specific recipes, and [Migration Guide](MIGRATION.md) for legacy command mappings.

@@ -11,7 +11,34 @@ playwright install chromium
 
 That's it! No complex setup needed.
 
-## Your First Graphic
+## Fastest Path (CLI)
+
+Use the unified `create` command first:
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --output ./output/hero.html
+```
+
+Then export directly to PNG:
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
+  --text "One-page artifacts force explicit decisions." \
+  --png \
+  --output ./output/insight-card.png
+```
+
+Defaults are clarity-first (`density=clarity`, `crop-mode=safe`, `padding-mode=minimal`).
+
+For layout recipes and options:
+- **[Create Command Guide](./CREATE_COMMAND.md)**
+- **[Export Guide](./EXPORT.md)**
+
+## Programmatic Path (Python)
 
 Copy and paste this code:
 
@@ -35,32 +62,6 @@ print("✓ Generated output.png")
 ```
 
 Run it and you'll have your first graphic!
-
-## Quick CLI Path (New)
-
-Use the unified `create` command for a fast path:
-
-```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
-  --layout hero \
-  --headline "Execution scales. Judgment does not." \
-  --output ./output/hero.html
-```
-
-Then export directly to PNG if needed:
-
-```bash
-MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
-  --layout insight-card \
-  --text "One-page artifacts force explicit decisions." \
-  --png \
-  --output ./output/insight-card.png
-```
-
-Defaults are clarity-first (`density=clarity`, `crop-mode=safe`, `padding-mode=minimal`).
-
-For layout selection and complete command recipes, use:
-- **[Create Command Guide](./CREATE_COMMAND.md)**
 
 ## What's Included
 
