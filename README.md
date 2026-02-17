@@ -969,6 +969,8 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output ./output/clarity-hero.png
 ```
 
+Current `create --layout` options: `hero`, `insight`, `comparison`, `story`, `timeline`, `funnel`, `grid`.
+
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
 - `tests/smoke/test_overhaul_phase1_smoke.py`

@@ -85,8 +85,8 @@
       "status": "warn",
       "hard_fail_gates": [],
       "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
+        "density_budget",
+        "focal_point_budget"
       ],
       "results": [
         {
@@ -155,12 +155,12 @@
       "target": "timeline",
       "status": "fail",
       "hard_fail_gates": [
-        "min_text_size",
-        "contrast_ratio"
+        "contrast_ratio",
+        "min_text_size"
       ],
       "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
+        "density_budget",
+        "focal_point_budget"
       ],
       "results": [
         {
@@ -194,8 +194,8 @@
       "target": "funnel",
       "status": "fail",
       "hard_fail_gates": [
-        "min_text_size",
-        "whitespace_guard"
+        "whitespace_guard",
+        "min_text_size"
       ],
       "soft_warn_gates": [],
       "results": [
@@ -231,8 +231,8 @@
       "status": "warn",
       "hard_fail_gates": [],
       "soft_warn_gates": [
-        "focal_point_budget",
-        "density_budget"
+        "density_budget",
+        "focal_point_budget"
       ],
       "results": [
         {

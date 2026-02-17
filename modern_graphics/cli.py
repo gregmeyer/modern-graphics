@@ -331,7 +331,7 @@ def main():
 
     # Clarity-first create scaffold (feature-flagged)
     create_parser = subparsers.add_parser('create', help='[Experimental] clarity-first creation surface')
-    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'comparison', 'story'], help='Layout family to generate')
+    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
     create_parser.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
     create_parser.add_argument('--headline', help='Headline (hero/story)')
     create_parser.add_argument('--subheadline', help='Subheadline (hero/story)')
@@ -340,6 +340,15 @@ def main():
     create_parser.add_argument('--text', help='Insight text (insight)')
     create_parser.add_argument('--left', help='Left column payload for comparison: \"Title:Step1,Step2:Outcome\"')
     create_parser.add_argument('--right', help='Right column payload for comparison: \"Title:Step1,Step2:Outcome\"')
+    create_parser.add_argument('--events', help='Timeline events: \"Date|Event,Date|Event\"')
+    create_parser.add_argument('--orientation', choices=['horizontal', 'vertical'], default='horizontal', help='Timeline orientation (default: horizontal)')
+    create_parser.add_argument('--stages', help='Funnel stages: \"Stage1,Stage2,Stage3\"')
+    create_parser.add_argument('--values', help='Funnel values: \"100,70,30\"')
+    create_parser.add_argument('--percentages', action='store_true', help='Show funnel percentages')
+    create_parser.add_argument('--items', help='Grid items: \"Item1,Item2,Item3\"')
+    create_parser.add_argument('--columns', type=int, default=5, help='Grid column count (default: 5)')
+    create_parser.add_argument('--goal', help='Grid convergence goal (optional)')
+    create_parser.add_argument('--outcome', help='Grid convergence outcome (optional)')
     create_parser.add_argument('--what-changed', help='Story field: what changed')
     create_parser.add_argument('--time-period', help='Story field: over what period')
     create_parser.add_argument('--what-it-means', help='Story field: why it matters')
@@ -870,57 +879,93 @@ def main():
         density = normalize_density(getattr(args, "density", "clarity"))
         color_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
 
-        if args.layout == 'hero':
-            highlights = parse_highlights_arg(getattr(args, 'highlights', None))
+        layout_type = args.layout
+        if layout_type == "insight":
+            layout_type = "key-insight"
+
+        payload = {}
+        if args.layout == "hero":
+            highlights = parse_highlights_arg(getattr(args, "highlights", None))
             if density == "clarity" and highlights:
                 highlights = highlights[:3]
-            html = generate_modern_hero(
-                title=args.title,
-                headline=args.headline or "Execution scales. Judgment stays scarce.",
-                subheadline=getattr(args, 'subheadline', None),
-                eyebrow=getattr(args, 'eyebrow', None),
-                highlights=highlights,
-                background_variant="light",
-                attribution=attribution,
-            )
-        elif args.layout == 'insight':
-            if not getattr(args, 'text', None):
+            payload = {
+                "headline": args.headline or "Execution scales. Judgment stays scarce.",
+                "subheadline": getattr(args, "subheadline", None),
+                "eyebrow": getattr(args, "eyebrow", None),
+                "highlights": highlights,
+                "background_variant": "light",
+                "color_scheme": color_scheme,
+            }
+        elif args.layout == "insight":
+            if not getattr(args, "text", None):
                 print("Error: --text is required for --layout insight")
                 return 1
-            html = generate_key_insight(
-                generator,
-                text=args.text,
-                label="Key Insight",
-                variant="bold" if density != "dense" else "default",
-                icon="lightning",
-                color_scheme=color_scheme,
-            )
-        elif args.layout == 'comparison':
-            if not getattr(args, 'left', None) or not getattr(args, 'right', None):
+            payload = {
+                "text": args.text,
+                "label": "Key Insight",
+                "variant": "bold" if density != "dense" else "default",
+                "icon": "lightning",
+                "color_scheme": color_scheme,
+            }
+        elif args.layout == "comparison":
+            if not getattr(args, "left", None) or not getattr(args, "right", None):
                 print("Error: --left and --right are required for --layout comparison")
                 return 1
-            html = generate_comparison_diagram(
-                title=args.title,
-                left_column=parse_column(args.left),
-                right_column=parse_column(args.right),
-                vs_text="vs",
-                attribution=attribution,
-                color_scheme=color_scheme,
-            )
-        elif args.layout == 'story':
-            html = generate_story_slide(
-                title=args.title,
-                what_changed=getattr(args, 'what_changed', None) or "Execution capacity increased",
-                time_period=getattr(args, 'time_period', None) or "this quarter",
-                what_it_means=getattr(args, 'what_it_means', None) or "Decision quality now drives outcomes",
-                insight=getattr(args, 'headline', None),
-                attribution=attribution,
-            )
+            payload = {
+                "left_column": parse_column(args.left),
+                "right_column": parse_column(args.right),
+                "vs_text": "vs",
+                "color_scheme": color_scheme,
+            }
+        elif args.layout == "story":
+            payload = {
+                "title": args.title,
+                "what_changed": getattr(args, "what_changed", None) or "Execution capacity increased",
+                "time_period": getattr(args, "time_period", None) or "this quarter",
+                "what_it_means": getattr(args, "what_it_means", None) or "Decision quality now drives outcomes",
+                "insight": getattr(args, "headline", None),
+            }
+        elif args.layout == "timeline":
+            if not getattr(args, "events", None):
+                print("Error: --events is required for --layout timeline")
+                return 1
+            payload = {
+                "events": parse_timeline_events(args.events),
+                "orientation": getattr(args, "orientation", "horizontal"),
+                "color_scheme": color_scheme,
+            }
+        elif args.layout == "funnel":
+            if not getattr(args, "stages", None):
+                print("Error: --stages is required for --layout funnel")
+                return 1
+            payload = {
+                "stages": parse_funnel_stages(args.stages, getattr(args, "values", None)),
+                "show_percentages": bool(getattr(args, "percentages", False)),
+                "color_scheme": color_scheme,
+            }
+        elif args.layout == "grid":
+            if not getattr(args, "items", None):
+                print("Error: --items is required for --layout grid")
+                return 1
+            convergence = None
+            if getattr(args, "goal", None) or getattr(args, "outcome", None):
+                convergence = {
+                    "goal": getattr(args, "goal", None) or "",
+                    "outcome": getattr(args, "outcome", None) or "",
+                }
+            payload = {
+                "items": parse_items(args.items),
+                "columns": getattr(args, "columns", 5),
+                "convergence": convergence,
+                "color_scheme": color_scheme,
+            }
         else:
             print(f"Error: unsupported layout {args.layout}")
             return 1
 
-        if color_scheme is not None and args.layout in {"hero", "story"}:
+        html = generator.generate_layout(layout_type, **payload)
+
+        if color_scheme is not None and args.layout in {"story"}:
             html = color_scheme.apply_to_html(html)
 
         if getattr(args, 'png', False):
