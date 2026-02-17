@@ -182,6 +182,8 @@ Current implementation status (checkpoint):
 - CI workflow now runs validator + Phase 1-5 smoke tests with pytest on Python 3.11.
 - Added deprecation timeline policy:
   - `docs/DEPRECATION_POLICY.md`
+- Added create-default docs guard:
+  - `scripts/check_create_default_refs.py` enforces no feature-flag references outside migration/archive docs.
 
 ## 5) Visual System Contract (Phase 1)
 

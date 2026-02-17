@@ -18,6 +18,9 @@ jobs:
       - name: Run basic test
         run: |
           python3 -c "from modern_graphics import ModernGraphicsGenerator, Attribution; print('✓ Import successful')"
+      - name: Enforce create-default references
+        run: |
+          python3 scripts/check_create_default_refs.py
       - name: Run overhaul validator
         run: |
           python3 scripts/validate_overhaul_phase1.py
