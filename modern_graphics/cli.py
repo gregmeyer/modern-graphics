@@ -283,6 +283,51 @@ def parse_highlights_arg(highlights_str: Optional[str]) -> Optional[list]:
     return [item.strip() for item in highlights_str.split(',') if item.strip()]
 
 
+def shape_story_fields_for_density(
+    what_changed: str,
+    time_period: str,
+    what_it_means: str,
+    density: str,
+) -> tuple[str, str, str]:
+    """Apply density-specific shaping to story text fields."""
+    if density != "clarity":
+        return what_changed, time_period, what_it_means
+    return (
+        textwrap.shorten(what_changed, width=56, placeholder="..."),
+        textwrap.shorten(time_period, width=32, placeholder="..."),
+        textwrap.shorten(what_it_means, width=64, placeholder="..."),
+    )
+
+
+def shape_timeline_events_for_density(events: list, density: str) -> list:
+    """Apply density-specific shaping to timeline events."""
+    if density != "clarity":
+        return events
+    shaped = []
+    for event in events[:4]:
+        item = dict(event)
+        item["text"] = textwrap.shorten(str(item.get("text", "")), width=42, placeholder="...")
+        if item.get("description"):
+            item["description"] = textwrap.shorten(str(item["description"]), width=72, placeholder="...")
+        shaped.append(item)
+    return shaped
+
+
+def shape_grid_for_density(items: list, columns: int, density: str) -> tuple[list, int]:
+    """Apply density-specific shaping to grid items and column count."""
+    if density != "clarity":
+        return items, columns
+    shaped_items = []
+    for item in items[:6]:
+        shaped_items.append(
+            {
+                "number": item.get("number"),
+                "text": textwrap.shorten(str(item.get("text", "")), width=34, placeholder="..."),
+            }
+        )
+    return shaped_items, min(columns, 3)
+
+
 def get_wireframe_config_from_theme(theme_name: Optional[str], width: int = 400, height: int = 300, accent_color: str = "#0071e3") -> WireframeSVGConfig:
     """Create WireframeSVGConfig from theme name or defaults."""
     if theme_name:
@@ -512,6 +557,7 @@ def main():
     grid_parser.add_argument('--context', help='Optional context line for attribution')
     grid_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     grid_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
+    grid_parser.add_argument('--density', choices=['clarity', 'balanced', 'dense'], default=CREATE_DEFAULTS.density, help=f'Density mode (default: {CREATE_DEFAULTS.density})')
     
     # Flywheel diagram
     flywheel_parser = subparsers.add_parser('flywheel', help='Generate flywheel diagram')
@@ -537,6 +583,7 @@ def main():
     timeline_parser.add_argument('--context', help='Optional context line for attribution')
     timeline_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML (high-resolution, tight cropping)')
     timeline_parser.add_argument('--theme', help='Theme name (apple, corporate, dark, warm, green, arcade, nike)')
+    timeline_parser.add_argument('--density', choices=['clarity', 'balanced', 'dense'], default=CREATE_DEFAULTS.density, help=f'Density mode (default: {CREATE_DEFAULTS.density})')
 
     # Pyramid diagram
     pyramid_parser = subparsers.add_parser('pyramid', help='Generate pyramid diagram')
@@ -624,6 +671,7 @@ def main():
     story_slide_parser.add_argument('--copyright', default=None, help='Override attribution line (default: © --person YEAR • --website)')
     story_slide_parser.add_argument('--context', help='Optional context line for attribution')
     story_slide_parser.add_argument('--png', action='store_true', help='Export as PNG instead of HTML')
+    story_slide_parser.add_argument('--density', choices=['clarity', 'balanced', 'dense'], default=CREATE_DEFAULTS.density, help=f'Density mode (default: {CREATE_DEFAULTS.density})')
 
     # Modern hero (open)
     modern_hero_parser = subparsers.add_parser('modern-hero', help='Generate modern open hero layout')
@@ -1103,13 +1151,12 @@ def main():
             except ValueError as exc:
                 return _emit_create_error(args.layout, str(exc))
         elif args.layout == "story":
-            story_what_changed = getattr(args, "what_changed", None) or "Execution capacity increased"
-            story_time_period = getattr(args, "time_period", None) or "this quarter"
-            story_what_it_means = getattr(args, "what_it_means", None) or "Decision quality now drives outcomes"
-            if density == "clarity":
-                story_what_changed = textwrap.shorten(story_what_changed, width=56, placeholder="...")
-                story_time_period = textwrap.shorten(story_time_period, width=32, placeholder="...")
-                story_what_it_means = textwrap.shorten(story_what_it_means, width=64, placeholder="...")
+            story_what_changed, story_time_period, story_what_it_means = shape_story_fields_for_density(
+                getattr(args, "what_changed", None) or "Execution capacity increased",
+                getattr(args, "time_period", None) or "this quarter",
+                getattr(args, "what_it_means", None) or "Decision quality now drives outcomes",
+                density,
+            )
             payload = {
                 "title": args.title,
                 "what_changed": story_what_changed,
@@ -1121,14 +1168,10 @@ def main():
             if not getattr(args, "events", None):
                 return _emit_create_error(args.layout, "--events is required for this layout")
             try:
-                timeline_events = parse_timeline_events(args.events)
-                if density == "clarity":
-                    timeline_events = timeline_events[:4]
-                    for event in timeline_events:
-                        event_text = event.get("text", "")
-                        event["text"] = textwrap.shorten(str(event_text), width=42, placeholder="...")
-                        if event.get("description"):
-                            event["description"] = textwrap.shorten(str(event["description"]), width=72, placeholder="...")
+                timeline_events = shape_timeline_events_for_density(
+                    parse_timeline_events(args.events),
+                    density,
+                )
                 payload = TimelinePayload(
                     events=timeline_events,
                     orientation=getattr(args, "orientation", "horizontal"),
@@ -1150,14 +1193,11 @@ def main():
         elif args.layout == "grid":
             if not getattr(args, "items", None):
                 return _emit_create_error(args.layout, "--items is required for this layout")
-            grid_items = parse_items(args.items)
-            grid_columns = getattr(args, "columns", 5)
-            if density == "clarity":
-                grid_columns = min(grid_columns, 3)
-                grid_items = [
-                    {"text": textwrap.shorten(str(item.get("text", "")), width=34, placeholder="...")}
-                    for item in grid_items[:6]
-                ]
+            grid_items, grid_columns = shape_grid_for_density(
+                parse_items(args.items),
+                getattr(args, "columns", 5),
+                density,
+            )
             convergence = None
             if getattr(args, "goal", None) or getattr(args, "outcome", None):
                 convergence = {
@@ -1284,12 +1324,13 @@ def main():
             print(f"Generated comparison diagram: {output_path}")
     
     elif args.command == 'grid':
-        items = parse_items(args.items)
+        density = normalize_density(getattr(args, "density", CREATE_DEFAULTS.density))
+        items, grid_columns = shape_grid_for_density(parse_items(args.items), args.columns, density)
         convergence = None
         if args.goal or args.outcome:
             convergence = {
-                'goal': args.goal or '',
-                'outcome': args.outcome or ''
+                'goal': textwrap.shorten(args.goal or '', width=44, placeholder='...') if density == "clarity" else (args.goal or ''),
+                'outcome': textwrap.shorten(args.outcome or '', width=44, placeholder='...') if density == "clarity" else (args.outcome or '')
             }
         # Get color scheme if theme specified
         color_scheme = None
@@ -1298,7 +1339,7 @@ def main():
         html = generate_grid_diagram(
             title=args.title,
             items=items,
-            columns=args.columns,
+            columns=grid_columns,
             convergence=convergence,
             attribution=attribution,
             color_scheme=color_scheme,
@@ -1332,7 +1373,11 @@ def main():
             print(f"Generated flywheel diagram: {output_path}")
     
     elif args.command == 'timeline':
-        events = parse_timeline_events(args.events, getattr(args, 'colors', None))
+        density = normalize_density(getattr(args, "density", CREATE_DEFAULTS.density))
+        events = shape_timeline_events_for_density(
+            parse_timeline_events(args.events, getattr(args, 'colors', None)),
+            density,
+        )
         # Get color scheme if theme specified
         color_scheme = None
         if getattr(args, 'theme', None):
@@ -1624,15 +1669,23 @@ def main():
 
     elif args.command == 'story-slide':
         evolution_data = None
+        density = normalize_density(getattr(args, "density", CREATE_DEFAULTS.density))
         
         if getattr(args, 'evolution_data', None):
             evolution_data = json.loads(args.evolution_data)
         
+        what_changed, time_period, what_it_means = shape_story_fields_for_density(
+            args.what_changed,
+            args.time_period,
+            args.what_it_means,
+            density,
+        )
+
         html = generate_story_slide(
             title=args.title,
-            what_changed=args.what_changed,
-            time_period=args.time_period,
-            what_it_means=args.what_it_means,
+            what_changed=what_changed,
+            time_period=time_period,
+            what_it_means=what_it_means,
             insight=getattr(args, 'insight', None),
             evolution_data=evolution_data,
             attribution=attribution,

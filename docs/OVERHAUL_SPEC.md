@@ -129,6 +129,9 @@ Current implementation status (checkpoint):
   - story fields are shortened for faster scanability.
   - timeline event count/text is capped for readability.
   - grid defaults limit columns/items for lower cognitive load.
+- Legacy non-create commands now support density parity for `story-slide`, `timeline`, and `grid`:
+  - new `--density {clarity|balanced|dense}` flags.
+  - shared shaping helpers are used by both create and legacy paths for consistent behavior.
 
 ## Phase 4: Export determinism + reliability
 

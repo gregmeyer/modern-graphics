@@ -134,6 +134,10 @@ Current checkpoint:
   - timeline events are capped to 4 with shorter event text.
   - grid defaults cap to 3 columns and 6 concise items in clarity mode.
 - Story slide hero variant logic now safely handles missing template background color.
+- Legacy command parity now implemented:
+  - `story-slide`, `timeline`, and `grid` support `--density`.
+  - Shared density shaping helpers are reused across create + legacy flows.
+  - Phase 3 before/after artifacts captured under `reports/layout-clarity-phase3/`.
 
 Success targets for slice 1:
 - Keep all core Phase 1 fixture layouts at pass.
