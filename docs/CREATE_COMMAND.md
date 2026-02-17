@@ -41,7 +41,7 @@ For legacy command migration, see `docs/MIGRATION.md`.
 | Chronology | `timeline` | `--events` |
 | Stage conversion | `funnel` | `--stages` (optional `--values`) |
 | Numbered concept grid | `grid` | `--items` |
-| Legacy transformation layout | `before-after` (CLI command) | `--before` + `--after` |
+| Legacy transformation layout | `before-after` (CLI command) | `--before` + `--after` (currently blocked by stub) |
 | Multi-card transformation strip | `slide-cards` (CLI command) | `--cards` JSON |
 | Card-vs-card comparison | `slide-compare` (CLI command) | `--left` JSON + `--right` JSON |
 | Stacked hero/detail card | `premium-card` (CLI command) | `--config` JSON |
@@ -127,6 +127,8 @@ modern-graphics before-after \
   --output ./output/before-after.png
 ```
 
+Note: `before-after` is currently wired to a stub implementation and raises `NotImplementedError`.
+
 ### Slide Cards
 
 ```bash
@@ -157,6 +159,12 @@ modern-graphics premium-card \
   --png \
   --output ./output/premium-card.png
 ```
+
+Tracked Slice 2 examples:
+
+| Slide Cards | Slide Compare | Premium Card |
+|---|---|---|
+| ![Slide Cards](../examples/output/showcase/cli-layouts/01-slide-cards.png) | ![Slide Compare](../examples/output/showcase/cli-layouts/02-slide-compare.png) | ![Premium Card](../examples/output/showcase/cli-layouts/03-premium-card.png) |
 
 ## Error Hints
 

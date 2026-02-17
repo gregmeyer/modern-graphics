@@ -146,6 +146,15 @@ Related tracked references:
 - `examples/output/showcase/insight-graphics/05-insight-story.png`
 - `examples/output/showcase/insight-graphics/06-wireframe-before.svg`
 - `examples/output/showcase/insight-graphics/07-wireframe-after.svg`
+- `examples/output/showcase/cli-layouts/04-wireframe-scene.svg`
+- `examples/output/showcase/cli-layouts/05-wireframe-insight-card.png`
+- `examples/output/showcase/cli-layouts/06-wireframe-insight-story.png`
+
+Slice 2 tracked previews:
+
+| Wireframe Scene (SVG source) | Insight Card + Wireframe | Insight Story + Auto Wireframes |
+|---|---|---|
+| `examples/output/showcase/cli-layouts/04-wireframe-scene.svg` | ![Wireframe Insight Card](../examples/output/showcase/cli-layouts/05-wireframe-insight-card.png) | ![Wireframe Insight Story](../examples/output/showcase/cli-layouts/06-wireframe-insight-story.png) |
 
 ## Related
 

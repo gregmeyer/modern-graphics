@@ -59,6 +59,7 @@ scripts/test_*.py
 scripts/generate_*.py
 **/generate_*.py
 !scripts/generate_readme_create_examples.py
+!scripts/generate_cli_layout_showcase.py
 
 # Output files (generated graphics)
 *.html
