@@ -127,6 +127,14 @@ Work items:
 - Normalize spacing/radius usage to token contract.
 - Keep canvas + embedded SVG composition paths intact.
 
+Current checkpoint:
+- `create` now instantiates `ModernGraphicsGenerator` with explicit `attribution=` to avoid positional template misbinding.
+- Clarity defaults now reduce story/timeline/grid payload density in `create`:
+  - story text fields are shortened in clarity mode.
+  - timeline events are capped to 4 with shorter event text.
+  - grid defaults cap to 3 columns and 6 concise items in clarity mode.
+- Story slide hero variant logic now safely handles missing template background color.
+
 Success targets for slice 1:
 - Keep all core Phase 1 fixture layouts at pass.
 - Treat any future warn/fail as regressions to be addressed before phase close.

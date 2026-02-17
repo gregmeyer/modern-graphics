@@ -2,7 +2,7 @@
   "summary": {
     "files_scanned": 28,
     "files_with_findings": 25,
-    "total_findings": 1973
+    "total_findings": 1974
   },
   "findings": {
     "/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/color_scheme.py": [
@@ -1575,6 +1575,7 @@
       "px:24px"
     ],
     "/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/story_slide.py": [
+      "hex:#FFFFFF",
       "hex:#FFFFFF",
       "hex:#007AFF",
       "hex:#007AFF",
