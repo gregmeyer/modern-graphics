@@ -17,6 +17,7 @@ from modern_graphics.critique_gates import run_clarity_gates, overall_status
 from modern_graphics.export_policy import DEFAULT_EXPORT_POLICY
 from modern_graphics.export import _normalize_crop_mode, _effective_padding, _calculate_crop_box
 from modern_graphics.cli_clarity import normalize_density, CREATE_DEFAULTS
+from modern_graphics.cli import _adapt_legacy_command_aliases
 from modern_graphics.template_lint import run_template_lint
 
 
@@ -60,6 +61,9 @@ def main() -> int:
     assert CREATE_DEFAULTS.density == "clarity"
     assert CREATE_DEFAULTS.crop_mode == "safe"
     assert CREATE_DEFAULTS.padding_mode == "minimal"
+    adapted, warning = _adapt_legacy_command_aliases(["modern-graphics", "slide-comparison", "--title", "x"])
+    assert adapted[1] == "slide-compare"
+    assert warning is not None
 
     strict_paths = [
         Path(__file__).resolve().parents[1] / "modern_graphics" / "layout_models.py",

@@ -171,6 +171,15 @@ Requirements:
 Acceptance criteria:
 - Existing projects can migrate with clear path and low risk.
 
+Current implementation status (checkpoint):
+- Added legacy command alias adapter in CLI for known renamed commands:
+  - `slide-comparison` -> `slide-compare`
+  - `from-prompt` -> `from-prompt-file`
+  - underscore variants for insight/before-after commands.
+- Legacy command executions now emit migration-oriented deprecation hints toward `create`.
+- Added migration reference doc with before/after command examples:
+  - `docs/MIGRATION.md`
+
 ## 5) Visual System Contract (Phase 1)
 
 Required token groups:

@@ -26,6 +26,7 @@ Use `modern-graphics create` when you want one command path with clarity-first d
 - padding mode: `minimal`
 
 For full PNG/export behavior details, see `docs/EXPORT.md`.
+For legacy command migration, see `docs/MIGRATION.md`.
 
 ## Layout Decision Table
 

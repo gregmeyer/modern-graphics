@@ -51,6 +51,7 @@ Usage:
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -101,6 +102,58 @@ from .layout_models import (
     InsightCardPayload,
     InsightStoryPayload,
 )
+
+LEGACY_COMMAND_ALIASES = {
+    "slide-comparison": "slide-compare",
+    "from-prompt": "from-prompt-file",
+    "key_insight": "key-insight",
+    "insight_card": "insight-card",
+    "insight_story": "insight-story",
+    "before_after": "before-after",
+}
+
+LEGACY_CREATE_HINTS = {
+    "cycle": 'modern-graphics create --layout story --what-changed "System shifts" --output graphic.html',
+    "comparison": 'modern-graphics create --layout comparison --left "Before:Manual:Slow" --right "After:Agentic:Faster" --output graphic.html',
+    "grid": 'modern-graphics create --layout grid --items "A,B,C" --columns 3 --output graphic.html',
+    "timeline": 'modern-graphics create --layout timeline --events "Q1|Baseline,Q2|Adoption" --output graphic.html',
+    "funnel": 'modern-graphics create --layout funnel --stages "Visit,Trial,Paid" --values "100,40,12" --output graphic.html',
+    "story-slide": 'modern-graphics create --layout story --what-changed "Execution changed" --time-period "this quarter" --what-it-means "Judgment quality now differentiates" --output graphic.html',
+    "key-insight": 'modern-graphics create --layout key-insight --text "Key takeaway" --output insight.html',
+    "insight-card": 'modern-graphics create --layout insight-card --text "Key takeaway" --output insight-card.html',
+    "insight-story": 'modern-graphics create --layout insight-story --headline "When shipping gets easy" --insight-text "Use checklist gates" --output insight-story.html',
+}
+
+
+def _adapt_legacy_command_aliases(argv: list[str]) -> tuple[list[str], Optional[str]]:
+    """Map known legacy command aliases to canonical commands."""
+    if len(argv) < 2:
+        return argv, None
+
+    command = argv[1]
+    canonical = LEGACY_COMMAND_ALIASES.get(command)
+    if not canonical:
+        return argv, None
+
+    adapted = list(argv)
+    adapted[1] = canonical
+    warning = (
+        f"Deprecation warning: `{command}` is deprecated; use `{canonical}` instead. "
+        "See docs/MIGRATION.md for canonical create workflows."
+    )
+    return adapted, warning
+
+
+def _emit_legacy_command_warning(command: str) -> None:
+    hint = LEGACY_CREATE_HINTS.get(command)
+    if not hint:
+        return
+    print(
+        f"Deprecation warning: `{command}` remains supported but is now considered legacy. "
+        "Prefer `create` for new workflows.",
+        file=sys.stderr,
+    )
+    print(f"Migration hint: {hint}", file=sys.stderr)
 
 
 def parse_steps(steps_str: str) -> list:
@@ -811,11 +864,15 @@ def main():
         help='Do not prepend a date to the note',
     )
     
-    args = parser.parse_args()
+    adapted_argv, alias_warning = _adapt_legacy_command_aliases(list(sys.argv))
+    args = parser.parse_args(adapted_argv[1:])
     
     if not args.command:
         parser.print_help()
         return 1
+
+    if alias_warning:
+        print(alias_warning, file=sys.stderr)
 
     if args.command == 'ideas':
         from .graphic_ideas_interview import run_graphic_ideas_interview
@@ -834,7 +891,6 @@ def main():
             return 1
         note = getattr(args, 'note', None)
         if note is None or note.strip() == "":
-            import sys
             note = sys.stdin.read().strip()
         if not note:
             print("Error: no note provided (pass as argument or via stdin)")
@@ -857,7 +913,6 @@ def main():
     if args.command == 'from-prompt-file':
         import re
         import subprocess
-        import sys
         from datetime import date
         prompt_path = Path(args.prompt_file).resolve()
         if not prompt_path.exists():
@@ -1120,6 +1175,8 @@ def main():
             generator.save(html, output_path)
             print(f"Generated create/{args.layout}: {output_path}")
         return 0
+
+    _emit_legacy_command_warning(args.command)
     
     output_path = Path(args.output)
     
@@ -1885,7 +1942,6 @@ def main():
 
     elif args.command == 'mermaid':
         import re
-        import sys
         inp = getattr(args, 'input', None)
         if inp == '-':
             mermaid_source = sys.stdin.read()
