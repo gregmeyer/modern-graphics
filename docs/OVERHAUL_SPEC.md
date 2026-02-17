@@ -142,6 +142,18 @@ Acceptance criteria:
 - Reduced miscrop/gutter regressions in fixture corpus.
 - Export behavior documented and test-covered.
 
+Current implementation status (checkpoint):
+- Export pipeline now uses deterministic crop flow:
+  - crop mode normalization (`none|safe|tight`, invalid values fallback to `safe`).
+  - single content-bounds detector with explicit root selectors + generic fallback.
+  - unified crop-box math path with bounds clamping.
+- Tight mode now applies a consistent reduced-padding rule from the configured base padding.
+- Phase validator now checks export mode normalization and crop-box math invariants.
+- Added smoke tests for export helper behavior:
+  - mode normalization
+  - padding behavior (`safe` vs `tight`)
+  - crop-box bounds clamping
+
 ## Phase 5: Migration + adoption
 
 Objective:

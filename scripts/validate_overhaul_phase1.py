@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from modern_graphics.visual_system import CLARITY_TOKENS, token_lint
 from modern_graphics.critique_gates import run_clarity_gates, overall_status
 from modern_graphics.export_policy import DEFAULT_EXPORT_POLICY
+from modern_graphics.export import _normalize_crop_mode, _effective_padding, _calculate_crop_box
 from modern_graphics.cli_clarity import normalize_density, CREATE_DEFAULTS
 from modern_graphics.template_lint import run_template_lint
 
@@ -46,6 +47,15 @@ def main() -> int:
 
     assert DEFAULT_EXPORT_POLICY.padding_mode == "minimal"
     assert DEFAULT_EXPORT_POLICY.resolve_padding() == 8
+    assert _normalize_crop_mode("weird") == "safe"
+    assert _effective_padding("tight", 8) == 4
+    assert _calculate_crop_box(
+        {"x": 10, "y": 10, "width": 20, "height": 10},
+        image_width=200,
+        image_height=100,
+        device_scale_factor=2,
+        padding=8,
+    ) == (4, 4, 76, 56)
     assert normalize_density("weird") == "clarity"
     assert CREATE_DEFAULTS.density == "clarity"
     assert CREATE_DEFAULTS.crop_mode == "safe"
