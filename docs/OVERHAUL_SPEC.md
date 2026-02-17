@@ -124,6 +124,11 @@ Current implementation status (checkpoint):
   - density=`clarity`, crop=`safe`, padding=`minimal`, theme=`corporate`.
 - Create error handling now returns layout-specific actionable hints with example commands.
 - Validator includes create success/failure smoke checks for UX guardrails.
+- `create` now uses explicit generator attribution wiring (avoids positional template/attribution mix-ups).
+- Clarity-mode payload shaping now applies to story/timeline/grid:
+  - story fields are shortened for faster scanability.
+  - timeline event count/text is capped for readability.
+  - grid defaults limit columns/items for lower cognitive load.
 
 ## Phase 4: Export determinism + reliability
 

@@ -2,7 +2,7 @@
 
 - files scanned: **28**
 - files with findings: **25**
-- total findings: **1973**
+- total findings: **1974**
 
 ## Top Files By Finding Count
 
@@ -11,7 +11,7 @@
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/color_scheme.py`: 195
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/editorial_story_slide.py`: 177
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/intelligent_story_slide.py`: 170
-- `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/story_slide.py`: 151
+- `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/story_slide.py`: 152
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/slide_cards.py`: 108
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/unified_story_slide.py`: 103
 - `/Users/grmeyer/playground/writing/utils/modern-graphics/modern_graphics/diagrams/creative_story_slide.py`: 88

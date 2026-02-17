@@ -8,8 +8,9 @@ from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
 
 
-def _hex_to_rgb(hex_color: str) -> Tuple[int, int, int]:
-    hex_color = hex_color.lstrip('#')
+def _hex_to_rgb(hex_color: Optional[str]) -> Tuple[int, int, int]:
+    # Some templates do not define background_color; fall back to white.
+    hex_color = (hex_color or "#FFFFFF").lstrip('#')
     if len(hex_color) == 3:
         hex_color = ''.join(ch * 2 for ch in hex_color)
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
@@ -24,7 +25,7 @@ def _determine_hero_variant(requested_variant: str, template) -> str:
     variant = (requested_variant or "auto").lower()
     if variant in ("light", "dark"):
         return variant
-    template_bg = getattr(template, 'background_color', '#FFFFFF')
+    template_bg = getattr(template, 'background_color', None) or '#FFFFFF'
     luminance = _calculate_luminance(template_bg)
     # Use dark hero on brighter templates for contrast, light hero otherwise
     return "dark" if luminance > 0.65 else "light"
@@ -487,7 +488,7 @@ def generate_story_slide(
         tile_card_shadow = "0 20px 40px rgba(0, 0, 0, 0.45)"
         hero_box_shadow = "0 28px 60px rgba(0, 0, 0, 0.45)"
     else:
-        body_background = getattr(template, 'background_color', '#F5F5F5')
+        body_background = getattr(template, 'background_color', None) or '#F5F5F5'
         hero_section_background = "#FFFFFF"
         hero_border_color = "rgba(0, 0, 0, 0.06)"
         hero_text_primary = "#1D1D1F"

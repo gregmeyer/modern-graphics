@@ -52,6 +52,7 @@ import argparse
 import json
 import os
 import sys
+import textwrap
 from pathlib import Path
 from typing import Optional
 
@@ -988,7 +989,10 @@ def main():
         if getattr(args, 'png', False) and output_path.suffix != '.png':
             output_path = output_path.with_suffix('.png')
 
-        generator = ModernGraphicsGenerator(getattr(args, 'title', 'Modern Graphic'), attribution)
+        generator = ModernGraphicsGenerator(
+            getattr(args, 'title', 'Modern Graphic'),
+            attribution=attribution,
+        )
         density = normalize_density(getattr(args, "density", "clarity"))
         color_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
 
@@ -1099,19 +1103,34 @@ def main():
             except ValueError as exc:
                 return _emit_create_error(args.layout, str(exc))
         elif args.layout == "story":
+            story_what_changed = getattr(args, "what_changed", None) or "Execution capacity increased"
+            story_time_period = getattr(args, "time_period", None) or "this quarter"
+            story_what_it_means = getattr(args, "what_it_means", None) or "Decision quality now drives outcomes"
+            if density == "clarity":
+                story_what_changed = textwrap.shorten(story_what_changed, width=56, placeholder="...")
+                story_time_period = textwrap.shorten(story_time_period, width=32, placeholder="...")
+                story_what_it_means = textwrap.shorten(story_what_it_means, width=64, placeholder="...")
             payload = {
                 "title": args.title,
-                "what_changed": getattr(args, "what_changed", None) or "Execution capacity increased",
-                "time_period": getattr(args, "time_period", None) or "this quarter",
-                "what_it_means": getattr(args, "what_it_means", None) or "Decision quality now drives outcomes",
+                "what_changed": story_what_changed,
+                "time_period": story_time_period,
+                "what_it_means": story_what_it_means,
                 "insight": getattr(args, "headline", None),
             }
         elif args.layout == "timeline":
             if not getattr(args, "events", None):
                 return _emit_create_error(args.layout, "--events is required for this layout")
             try:
+                timeline_events = parse_timeline_events(args.events)
+                if density == "clarity":
+                    timeline_events = timeline_events[:4]
+                    for event in timeline_events:
+                        event_text = event.get("text", "")
+                        event["text"] = textwrap.shorten(str(event_text), width=42, placeholder="...")
+                        if event.get("description"):
+                            event["description"] = textwrap.shorten(str(event["description"]), width=72, placeholder="...")
                 payload = TimelinePayload(
-                    events=parse_timeline_events(args.events),
+                    events=timeline_events,
                     orientation=getattr(args, "orientation", "horizontal"),
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
@@ -1131,16 +1150,24 @@ def main():
         elif args.layout == "grid":
             if not getattr(args, "items", None):
                 return _emit_create_error(args.layout, "--items is required for this layout")
+            grid_items = parse_items(args.items)
+            grid_columns = getattr(args, "columns", 5)
+            if density == "clarity":
+                grid_columns = min(grid_columns, 3)
+                grid_items = [
+                    {"text": textwrap.shorten(str(item.get("text", "")), width=34, placeholder="...")}
+                    for item in grid_items[:6]
+                ]
             convergence = None
             if getattr(args, "goal", None) or getattr(args, "outcome", None):
                 convergence = {
-                    "goal": getattr(args, "goal", None) or "",
-                    "outcome": getattr(args, "outcome", None) or "",
+                    "goal": textwrap.shorten(getattr(args, "goal", None) or "", width=44, placeholder="..."),
+                    "outcome": textwrap.shorten(getattr(args, "outcome", None) or "", width=44, placeholder="..."),
                 }
             try:
                 payload = GridPayload(
-                    items=parse_items(args.items),
-                    columns=getattr(args, "columns", 5),
+                    items=grid_items,
+                    columns=grid_columns,
                     convergence=convergence,
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
