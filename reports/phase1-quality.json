@@ -155,8 +155,8 @@
       "target": "timeline",
       "status": "fail",
       "hard_fail_gates": [
-        "min_text_size",
-        "contrast_ratio"
+        "contrast_ratio",
+        "min_text_size"
       ],
       "soft_warn_gates": [
         "focal_point_budget",

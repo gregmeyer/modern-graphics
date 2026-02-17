@@ -37,7 +37,7 @@
 - `whitespace_guard`: **pass** - OK
 
 ### timeline - FAIL
-- hard fails: `min_text_size, contrast_ratio`
+- hard fails: `contrast_ratio, min_text_size`
 - soft warns: `focal_point_budget, density_budget`
 - `min_text_size`: **fail** - Observed 11px below minimum 13px
 - `focal_point_budget`: **warn** - Observed 3 focal points above target 2
