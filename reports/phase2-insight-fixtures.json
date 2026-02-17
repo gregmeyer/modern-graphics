@@ -1,0 +1,29 @@
+{
+  "fixtures": [
+    {
+      "fixture": "key_insight",
+      "layout": "key-insight",
+      "path": "reports/insight-fixtures/01-key_insight.html",
+      "sha256": "d62fceddea38adef48992b4e42dc6d84c8bd2f8f1af75cea7aa0c070b1f1f403",
+      "chars": 4896
+    },
+    {
+      "fixture": "insight_card",
+      "layout": "insight-card",
+      "path": "reports/insight-fixtures/02-insight_card.html",
+      "sha256": "9b6da1dd6304635711bd4675ca2896dd03309d3ed8bacab935a32915e759c0c6",
+      "chars": 6504
+    },
+    {
+      "fixture": "insight_story",
+      "layout": "insight-story",
+      "path": "reports/insight-fixtures/03-insight_story.html",
+      "sha256": "b4661ff268ae485c9b3273911c57fe36160f0e64398c6dfe11e8c54dfb6ea769",
+      "chars": 10923
+    }
+  ],
+  "summary": {
+    "count": 3,
+    "snapshot_dir": "reports/insight-fixtures"
+  }
+}

@@ -11,6 +11,7 @@ Outputs:
 from __future__ import annotations
 
 import json
+import subprocess
 from dataclasses import asdict
 from pathlib import Path
 from typing import Dict, List
@@ -25,6 +26,7 @@ from modern_graphics.critique_gates import (  # noqa: E402
     overall_status,
 )
 from modern_graphics.visual_system import scan_files_for_ad_hoc_literals  # noqa: E402
+from modern_graphics.template_lint import run_template_lint  # noqa: E402
 
 FIXTURE_PATH = ROOT / "tests" / "smoke" / "fixtures_phase1.json"
 REPORT_DIR = ROOT / "reports"
@@ -57,13 +59,27 @@ def _quality_reports(fixtures: List[Dict]) -> Dict:
             min_contrast_ratio=fx.get("min_contrast_ratio", 4.5),
             whitespace_ratio=fx.get("whitespace_ratio", 0.0),
             max_whitespace_ratio=fx.get("max_whitespace_ratio", 0.35),
+            min_whitespace_ratio=fx.get("min_whitespace_ratio", 0.10),
+            headline_text_px=fx.get("headline_text_px", 0),
+            body_text_px=fx.get("body_text_px", 0),
+            min_headline_to_body_ratio=fx.get("min_headline_to_body_ratio", 1.35),
+            panel_density_items=fx.get("panel_density_items", fx.get("density_items", 0)),
+            max_panel_density_items=fx.get("max_panel_density_items", 6),
+            panel_balance_ratio=fx.get("panel_balance_ratio", 1.0),
+            min_panel_balance_ratio=fx.get("min_panel_balance_ratio", 0.70),
+            max_panel_balance_ratio=fx.get("max_panel_balance_ratio", 1.30),
         )
 
         gate_status = {r.gate: r.status for r in report.results}
         hard_fails = [g for g in HARD_FAIL_GATES if gate_status.get(g) == "fail"]
         soft_warns = [g for g in SOFT_WARN_GATES if gate_status.get(g) == "warn"]
+        insight_warns = [
+            g
+            for g in {"headline_hierarchy", "panel_density_budget", "panel_balance", "whitespace_floor"}
+            if gate_status.get(g) == "warn"
+        ]
 
-        status = "fail" if hard_fails else ("warn" if soft_warns else overall_status(report))
+        status = "fail" if hard_fails else ("warn" if (soft_warns or insight_warns) else overall_status(report))
         summary[status] += 1
         reports.append(
             {
@@ -71,6 +87,7 @@ def _quality_reports(fixtures: List[Dict]) -> Dict:
                 "status": status,
                 "hard_fail_gates": hard_fails,
                 "soft_warn_gates": soft_warns,
+                "insight_warn_gates": insight_warns,
                 "results": [asdict(r) for r in report.results],
             }
         )
@@ -93,6 +110,8 @@ def _quality_markdown(payload: Dict) -> str:
             lines.append(f"- hard fails: `{', '.join(report['hard_fail_gates'])}`")
         if report["soft_warn_gates"]:
             lines.append(f"- soft warns: `{', '.join(report['soft_warn_gates'])}`")
+        if report.get("insight_warn_gates"):
+            lines.append(f"- insight warns: `{', '.join(report['insight_warn_gates'])}`")
         for item in report["results"]:
             lines.append(f"- `{item['gate']}`: **{item['status']}** - {item['detail']}")
         lines.append("")
@@ -151,10 +170,41 @@ def main() -> int:
     debt_json.write_text(json.dumps(debt, indent=2), encoding="utf-8")
     debt_md.write_text(_token_debt_markdown(debt), encoding="utf-8")
 
+    strict_paths = [
+        ROOT / "modern_graphics" / "layout_models.py",
+        ROOT / "modern_graphics" / "layouts.py",
+        ROOT / "modern_graphics" / "generator.py",
+        ROOT / "modern_graphics" / "template_lint.py",
+    ]
+    strict_lint = run_template_lint(strict_paths, mode="strict")
+    strict_json = REPORT_DIR / "phase2-strict-lint.json"
+    strict_md = REPORT_DIR / "phase2-strict-lint.md"
+    strict_json.write_text(json.dumps(strict_lint, indent=2), encoding="utf-8")
+    strict_md.write_text(
+        "\n".join(
+            [
+                "# Phase 2 Strict Template Lint",
+                "",
+                f"- mode: **{strict_lint['mode']}**",
+                f"- status: **{strict_lint['status']}**",
+                f"- files scanned: **{strict_lint['summary']['files_scanned']}**",
+                f"- files with findings: **{strict_lint['summary']['files_with_findings']}**",
+                f"- total findings: **{strict_lint['summary']['total_findings']}**",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    insight_harness_script = ROOT / "scripts" / "run_insight_fixture_harness.py"
+    subprocess.run([sys.executable, str(insight_harness_script)], check=True, cwd=str(ROOT))
+
     print(f"wrote {quality_json}")
     print(f"wrote {quality_md}")
     print(f"wrote {debt_json}")
     print(f"wrote {debt_md}")
+    print(f"wrote {strict_json}")
+    print(f"wrote {strict_md}")
 
     return 0
 

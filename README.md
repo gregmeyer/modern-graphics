@@ -944,7 +944,7 @@ generator.export_to_png(html, Path('output.png'))
 
 ## Documentation
 
-### Overhaul (Phase 1 Checkpoint)
+### Overhaul Checkpoint (Phase 1 + 2)
 - **[Overhaul Spec](docs/OVERHAUL_SPEC.md)** - Phase plan, quality gates, and locked decisions
 - **[Overhaul Workplan](docs/OVERHAUL_WORKPLAN.md)** - Active workstreams and milestone tracking
 
@@ -953,6 +953,7 @@ Run current checkpoint validation:
 ```bash
 python scripts/validate_overhaul_phase1.py
 python scripts/run_phase1_quality_harness.py
+python scripts/run_insight_fixture_harness.py
 ```
 
 Experimental clarity CLI scaffold (feature-flagged):
@@ -969,15 +970,43 @@ MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --output ./output/clarity-hero.png
 ```
 
+Current `create --layout` options: `hero`, `insight`, `key-insight`, `insight-card`, `insight-story`, `comparison`, `story`, `timeline`, `funnel`, `grid`.
+
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
 - `tests/smoke/test_overhaul_phase1_smoke.py`
+- `tests/smoke/test_layout_strategy_smoke.py`
 
 Generated Phase 1 reports:
 - `reports/phase1-quality.json`
 - `reports/phase1-quality.md`
 - `reports/phase1-token-debt.json`
 - `reports/phase1-token-debt.md`
+- `reports/phase2-strict-lint.json`
+- `reports/phase2-strict-lint.md`
+- `reports/phase2-insight-fixtures.json`
+- `reports/phase2-insight-fixtures.md`
+
+Phase 2 scaffolding (in progress):
+- Layout strategy registry: `modern_graphics/layouts.py`
+  - Programmatic entrypoint: `ModernGraphicsGenerator.generate_layout(layout_type, **kwargs)`
+  - Built-ins: `hero`, `hero-triptych`, `insight-story`, `key-insight`, `insight-card`
+- Typed layout payloads: `modern_graphics/layout_models.py`
+  - `HeroPayload`, `ComparisonPayload`, `TimelinePayload`, `FunnelPayload`, `GridPayload`
+  - `KeyInsightPayload`, `InsightCardPayload`, `InsightStoryPayload`
+  - CLI `create` validates these payloads before strategy render.
+- Strict template lint gate: `modern_graphics/template_lint.py`
+  - Report outputs:
+    - `reports/phase2-strict-lint.json`
+    - `reports/phase2-strict-lint.md`
+- Insight fixture regression harness:
+  - script: `scripts/run_insight_fixture_harness.py`
+  - outputs:
+    - `reports/phase2-insight-fixtures.json`
+    - `reports/phase2-insight-fixtures.md`
+    - `reports/insight-fixtures/01-key_insight.html`
+    - `reports/insight-fixtures/02-insight_card.html`
+    - `reports/insight-fixtures/03-insight_story.html`
 
 ### Getting Started
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes
@@ -987,6 +1016,7 @@ Generated Phase 1 reports:
 ### Guides
 - **[Use Cases](docs/USE_CASES.md)** - Real-world examples and patterns
 - **[Hero Slides Guide](docs/HERO_SLIDES.md)** - Modern hero slide layouts
+- **[Strategy Extension](docs/STRATEGY_EXTENSION.md)** - Add a new layout strategy with payload + gates
 - **[Prompts Guide](docs/PROMPTS.md)** - Prompt-based generation
 - **[Export Guide](docs/EXPORT.md)** - PNG export options and settings
 

@@ -84,6 +84,16 @@ Acceptance criteria:
 - New layout can be added via documented extension interface.
 - Legacy feature parity reached for core generation paths.
 
+Current implementation status (checkpoint):
+- Strategy registry is active and `create --layout` routes through strategy dispatch.
+- Strategy coverage includes: hero, hero-triptych, key-insight, insight-story, insight-card, comparison, timeline, funnel, grid, story.
+- Typed layout payload models now validate core create inputs before render:
+  - `HeroPayload`, `ComparisonPayload`, `TimelinePayload`, `FunnelPayload`, `GridPayload`.
+  - `KeyInsightPayload`, `InsightCardPayload`, `InsightStoryPayload`.
+- Smoke fixtures now include insight-card patterns (key insight/pull quote, data-story card, checklist-style insight story).
+- Insight fixture regression harness now snapshots deterministic outputs under `reports/insight-fixtures/`.
+- Strategy extension contract is documented in `docs/STRATEGY_EXTENSION.md`.
+
 ## Phase 3: UX surface redesign (CLI + prompt)
 
 Objective:

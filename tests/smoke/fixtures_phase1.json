@@ -13,7 +13,11 @@
     "focal_points": 2,
     "density_items": 7,
     "contrast_ratio": 5.4,
-    "whitespace_ratio": 0.26
+    "whitespace_ratio": 0.26,
+    "headline_text_px": 34,
+    "body_text_px": 20,
+    "panel_density_items": 5,
+    "panel_balance_ratio": 1.08
   },
   {
     "target": "story-slide",
@@ -21,7 +25,11 @@
     "focal_points": 3,
     "density_items": 10,
     "contrast_ratio": 4.9,
-    "whitespace_ratio": 0.31
+    "whitespace_ratio": 0.31,
+    "headline_text_px": 42,
+    "body_text_px": 22,
+    "panel_density_items": 7,
+    "panel_balance_ratio": 1.34
   },
   {
     "target": "comparison",

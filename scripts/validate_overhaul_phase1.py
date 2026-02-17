@@ -13,6 +13,7 @@ from modern_graphics.visual_system import CLARITY_TOKENS, token_lint
 from modern_graphics.critique_gates import run_clarity_gates, overall_status
 from modern_graphics.export_policy import DEFAULT_EXPORT_POLICY
 from modern_graphics.cli_clarity import normalize_density
+from modern_graphics.template_lint import run_template_lint
 
 
 def main() -> int:
@@ -43,6 +44,15 @@ def main() -> int:
     assert DEFAULT_EXPORT_POLICY.padding_mode == "minimal"
     assert DEFAULT_EXPORT_POLICY.resolve_padding() == 8
     assert normalize_density("weird") == "clarity"
+
+    strict_paths = [
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "layout_models.py",
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "layouts.py",
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "generator.py",
+        Path(__file__).resolve().parents[1] / "modern_graphics" / "template_lint.py",
+    ]
+    strict_report = run_template_lint(strict_paths, mode="strict")
+    assert strict_report["status"] == "pass"
 
     print("Phase 1 scaffold validation passed")
     return 0

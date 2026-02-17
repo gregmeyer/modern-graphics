@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insight Fixture Harness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            
+            
+            padding: 60px 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        
+            background: #FFFFFF;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 40px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 24px 16px;
+            }
+        }
+    
+        
+        :root {
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --accent: #0071e3;
+            --accent-soft: rgba(0, 113, 227, 0.15);
+            --accent-glow: rgba(0, 113, 227, 0.4);
+            --success: #34c759;
+            --success-soft: rgba(52, 199, 89, 0.15);
+            --error: #ff3b30;
+            --surface-1: #ffffff;
+            --surface-2: #f5f5f7;
+            --surface-3: #e8e8ed;
+            --text-1: #1d1d1f;
+            --text-2: #6e6e73;
+            --text-3: #86868b;
+            --border: rgba(0, 0, 0, 0.06);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font);
+            background: linear-gradient(180deg, #f5f5f7 0%, #e8e8ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .insight-card {
+            width: 1200px;
+            background: var(--surface-1);
+            border-radius: 32px;
+            box-shadow: 0 0 0 1px var(--border), 0 40px 120px rgba(0,0,0,0.12), 0 20px 60px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent), #5856d6, var(--success));
+        }
+        
+        .card-inner { padding: 56px; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+        
+        .header-text { flex: 1; max-width: 600px; }
+        
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+        
+        .eyebrow::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+        
+        h1 {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--text-1);
+            margin-bottom: 16px;
+        }
+        
+        .subtitle {
+            font-family: var(--font-body);
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-2);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+        }
+        
+        .shift-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        
+        .shift-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--surface-2);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-2);
+        }
+        
+        .shift-badge .arrow { color: var(--accent); font-size: 18px; }
+        .shift-badge.positive { background: var(--success-soft); color: var(--success); }
+        
+        .visual-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .showcase-panel {
+            background: var(--surface-2);
+            border-radius: 18px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .showcase-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        
+        .showcase-panel.before::before { background: var(--text-3); }
+        .showcase-panel.after::before { background: var(--success); }
+        
+        .panel-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .panel-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .panel-label.before .dot { background: var(--text-3); }
+        .panel-label.after .dot { background: var(--success); }
+        
+        .panel-label span {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-2);
+            letter-spacing: -0.01em;
+        }
+        
+        .panel-svg {
+            background: var(--surface-1);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+        
+        .panel-svg svg { width: 100%; height: auto; display: block; }
+        
+        .panel-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 10px 16px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .panel-status.negative { background: rgba(255, 59, 48, 0.08); color: var(--error); }
+        .panel-status.positive { background: var(--success-soft); color: var(--success); }
+        .panel-status svg { width: 16px; height: 16px; }
+        
+        .key-insight {
+            background: linear-gradient(135deg, var(--surface-2) 0%, rgba(0, 113, 227, 0.04) 100%);
+            border-radius: 18px;
+            padding: 32px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+        
+        .insight-icon {
+            position: absolute;
+            top: -16px;
+            left: 32px;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px var(--accent-glow);
+        }
+        
+        .insight-icon svg { width: 20px; height: 20px; color: white; }
+        
+        .insight-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+        
+        .insight-text {
+            font-family: var(--font-body);
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            line-height: 1.5;
+            color: var(--text-1);
+        }
+        
+        .insight-text strong { font-weight: 700; }
+        .insight-text .highlight { color: var(--accent); font-weight: 600; }
+        
+        .footer-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .stat { text-align: center; padding: 20px; }
+        
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-1);
+            letter-spacing: -0.01em;
+        }
+    
+    </style>
+</head>
+<body>
+
+    <div class="insight-card">
+        <div class="card-inner">
+            <div class="header">
+                <div class="header-text">
+                    
+                    <h1>When shipping gets easy, choosing gets hard.</h1>
+                    
+                </div>
+                
+            </div>
+            
+            
+        <div class="visual-showcase">
+            
+        <div class="showcase-panel before">
+            <div class="panel-label before">
+                <div class="dot"></div>
+                <span>Before</span>
+            </div>
+            <div class="panel-svg">
+                <svg viewBox='0 0 240 140'><rect x='8' y='8' width='224' height='124' rx='16' fill='#f3f4f6' /></svg>
+            </div>
+            
+        </div>
+        
+            
+        <div class="showcase-panel after">
+            <div class="panel-label after">
+                <div class="dot"></div>
+                <span>After</span>
+            </div>
+            <div class="panel-svg">
+                <svg viewBox='0 0 240 140'><rect x='8' y='8' width='224' height='124' rx='16' fill='#ecfdf5' /></svg>
+            </div>
+            
+        </div>
+        
+        </div>
+        
+            
+        <div class="key-insight">
+            <div class="insight-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <div class="insight-label">Key Insight</div>
+            <p class="insight-text">Use a short PM checklist before shipping each AI-generated option.</p>
+        </div>
+        
+            
+        </div>
+    </div>
+    
+</body>
+</html>

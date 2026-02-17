@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, List, Dict, Optional, Any
 
 from .base import BaseGenerator
 from .theme_utils import extract_theme_colors, inject_google_fonts
+from ..visual_system import CLARITY_TOKENS
 
 if TYPE_CHECKING:
     from ..color_scheme import ColorScheme
@@ -296,6 +297,17 @@ def generate_modern_hero(
                           If None, uses headline_align. Default: None
         graphic_position: Position of hero graphic ('left', 'center', 'right'). Default: 'center'
     """
+    tokens = CLARITY_TOKENS
+    body_pad = tokens.spacing.xxl + tokens.spacing.xl
+    hero_radius = tokens.radius["xl"] * 2
+    hero_pad = tokens.spacing.xxl + tokens.spacing.xl - tokens.spacing.xs
+    eyebrow_size = max(tokens.typography.caption, 13)
+    headline_size = max(tokens.typography.display + tokens.spacing.xs, 64)
+    subhead_size = max(tokens.typography.h3, 24)
+    hero_body_margin = tokens.spacing.xl + tokens.spacing.xxs
+    stats_gap = tokens.spacing.md
+    stats_margin = tokens.spacing.xxl
+
     background_class = "hero-light" if background_variant == "light" else "hero-dark"
     visual_desc = (visual_description or "").lower()
     curved_flow = "hero-flow-curved" if "curved arrow" in visual_desc or "curved flow" in visual_desc else ""
@@ -495,6 +507,16 @@ def generate_modern_hero(
         .stat strong { display: block; margin-top: 6px; font-size: 24px; font-weight: 600; letter-spacing: -0.015em; }
         .hero-warm .stat strong { color: #6a2a00; }
     """
+    css = css.replace("padding: 80px;", f"padding: {body_pad}px;", 1)
+    css = css.replace("border-radius: 48px;", f"border-radius: {hero_radius}px;", 1)
+    css = css.replace("padding: 72px;", f"padding: {hero_pad}px;", 1)
+    css = css.replace("font-size: 13px;", f"font-size: {eyebrow_size}px;", 1)
+    css = css.replace("font-size: 64px;", f"font-size: {headline_size}px;", 1)
+    css = css.replace("font-size: 24px;", f"font-size: {subhead_size}px;", 1)
+    css = css.replace("margin-top: 36px;", f"margin-top: {hero_body_margin}px;", 1)
+    css = css.replace("margin-top: 48px; display: grid;", f"margin-top: {stats_margin}px; display: grid;", 1)
+    css = css.replace("gap: 16px;", f"gap: {stats_gap}px;", 1)
+
     if color_scheme is not None:
         theme = extract_theme_colors(color_scheme)
         css += f"""
@@ -526,6 +548,16 @@ def generate_modern_hero_triptych(
     """
     if len(columns) < 3:
         raise ValueError("modern hero triptych requires at least 3 columns")
+
+    tokens = CLARITY_TOKENS
+    body_pad = tokens.spacing.xxl + tokens.spacing.xl
+    hero_radius = tokens.radius["xl"] * 2
+    hero_pad = tokens.spacing.xxl + tokens.spacing.xl - tokens.spacing.xs
+    headline_size = max(tokens.typography.display + tokens.spacing.xxs, 60)
+    subhead_size = max(tokens.typography.h2 - tokens.spacing.xs, 22)
+    panel_gap = tokens.spacing.lg
+    panel_radius = tokens.radius["xl"] + tokens.spacing.xs
+    stats_gap = tokens.spacing.lg - tokens.spacing.xs
     
     # Normalize alignment values
     headline_align = headline_align.lower() if headline_align else "left"
@@ -599,4 +631,13 @@ def generate_modern_hero_triptych(
         .stat span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: #9D9FB5; }
         .stat strong { display: block; margin-top: 6px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; color: #2C2F3C; }
     """
+    css = css.replace("padding: 80px;", f"padding: {body_pad}px;", 1)
+    css = css.replace("border-radius: 48px;", f"border-radius: {hero_radius}px;", 1)
+    css = css.replace("padding: 72px;", f"padding: {hero_pad}px;", 1)
+    css = css.replace("font-size: 60px;", f"font-size: {headline_size}px;", 1)
+    css = css.replace("font-size: 22px;", f"font-size: {subhead_size}px;", 1)
+    css = css.replace("gap: 24px;", f"gap: {panel_gap}px;", 1)
+    css = css.replace("border-radius: 32px;", f"border-radius: {panel_radius}px;", 1)
+    css = css.replace("gap: 18px;", f"gap: {stats_gap}px;", 1)
+
     return generator._wrap_html(html, css)

@@ -7,6 +7,7 @@ Provides two main functions:
 
 from typing import Optional, List, Dict, Any, TYPE_CHECKING
 from html import escape
+from ..visual_system import CLARITY_TOKENS
 
 if TYPE_CHECKING:
     from ..base import BaseGenerator
@@ -68,6 +69,13 @@ def generate_insight_story(
         HTML string
     """
     # Apply color scheme if provided
+    tokens = CLARITY_TOKENS
+    pad_outer = tokens.spacing.xxl
+    card_radius = tokens.radius["xl"] + 8
+    card_inner_pad = tokens.spacing.xxl + tokens.spacing.xs
+    section_gap = tokens.spacing.xl + tokens.spacing.xs
+    panel_radius = tokens.radius["lg"]
+    panel_pad = tokens.spacing.lg
     if color_scheme:
         accent_color = color_scheme.primary
         success_color = color_scheme.success or success_color
@@ -225,14 +233,14 @@ def generate_insight_story(
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 60px;
+            padding: {pad_outer}px;
             -webkit-font-smoothing: antialiased;
         }}
         
         .insight-card {{
             width: 1200px;
             background: var(--surface-1);
-            border-radius: 40px;
+            border-radius: {card_radius}px;
             box-shadow: 0 0 0 1px var(--border), 0 40px 120px rgba(0,0,0,0.12), 0 20px 60px rgba(0,0,0,0.08);
             overflow: hidden;
             position: relative;
@@ -246,13 +254,13 @@ def generate_insight_story(
             background: linear-gradient(90deg, var(--accent), #5856d6, var(--success));
         }}
         
-        .card-inner {{ padding: 56px; }}
+        .card-inner {{ padding: {card_inner_pad}px; }}
         
         .header {{
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 40px;
+            margin-bottom: {section_gap}px;
         }}
         
         .header-text {{ flex: 1; max-width: 600px; }}
@@ -262,7 +270,7 @@ def generate_insight_story(
             align-items: center;
             gap: 8px;
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: {max(tokens.typography.micro, 11)}px;
             font-weight: 600;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -280,7 +288,7 @@ def generate_insight_story(
         
         h1 {{
             font-family: var(--font-display);
-            font-size: 48px;
+            font-size: {max(tokens.typography.h1, 42)}px;
             font-weight: 700;
             letter-spacing: -0.03em;
             line-height: 1.1;
@@ -290,7 +298,7 @@ def generate_insight_story(
         
         .subtitle {{
             font-family: var(--font-body);
-            font-size: 20px;
+            font-size: {max(tokens.typography.body_l, 20)}px;
             font-weight: 400;
             color: var(--text-2);
             line-height: 1.5;
@@ -301,17 +309,17 @@ def generate_insight_story(
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 12px;
+            gap: {tokens.spacing.sm}px;
         }}
         
         .shift-badge {{
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
+            gap: {tokens.spacing.sm}px;
+            padding: {tokens.spacing.sm}px {tokens.spacing.lg - tokens.spacing.xs}px;
             background: var(--surface-2);
             border-radius: 100px;
-            font-size: 14px;
+            font-size: {max(tokens.typography.caption, 13)}px;
             font-weight: 600;
             color: var(--text-2);
         }}
@@ -322,14 +330,14 @@ def generate_insight_story(
         .visual-showcase {{
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
-            margin-bottom: 40px;
+            gap: {tokens.spacing.lg}px;
+            margin-bottom: {section_gap}px;
         }}
         
         .showcase-panel {{
             background: var(--surface-2);
-            border-radius: 24px;
-            padding: 24px;
+            border-radius: {panel_radius}px;
+            padding: {panel_pad}px;
             position: relative;
             overflow: hidden;
         }}
@@ -356,7 +364,7 @@ def generate_insight_story(
         .panel-label.after .dot {{ background: var(--success); }}
         
         .panel-label span {{
-            font-size: 13px;
+            font-size: {max(tokens.typography.caption, 13)}px;
             font-weight: 600;
             color: var(--text-2);
             letter-spacing: -0.01em;
@@ -388,8 +396,8 @@ def generate_insight_story(
         
         .key-insight {{
             background: linear-gradient(135deg, var(--surface-2) 0%, {_with_alpha(accent_color, 0.04)} 100%);
-            border-radius: 24px;
-            padding: 32px;
+            border-radius: {panel_radius}px;
+            padding: {tokens.spacing.xl}px;
             border-left: 4px solid var(--accent);
             position: relative;
         }}
@@ -422,7 +430,7 @@ def generate_insight_story(
         
         .insight-text {{
             font-family: var(--font-body);
-            font-size: 22px;
+            font-size: {max(tokens.typography.body_l + 2, 22)}px;
             font-weight: 500;
             letter-spacing: -0.02em;
             line-height: 1.5;
@@ -435,9 +443,9 @@ def generate_insight_story(
         .footer-stats {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 32px;
-            padding-top: 32px;
+            gap: {tokens.spacing.md}px;
+            margin-top: {tokens.spacing.xl}px;
+            padding-top: {tokens.spacing.xl}px;
             border-top: 1px solid var(--border);
         }}
         
@@ -453,7 +461,7 @@ def generate_insight_story(
         }}
         
         .stat-value {{
-            font-size: 15px;
+            font-size: {max(tokens.typography.caption, 13)}px;
             font-weight: 600;
             color: var(--text-1);
             letter-spacing: -0.01em;
@@ -503,6 +511,15 @@ def generate_key_insight(
         HTML string
     """
     # Apply color scheme if provided
+    tokens = CLARITY_TOKENS
+    card_pad_y = tokens.spacing.xl + tokens.spacing.sm
+    card_pad_x = tokens.spacing.xxl + tokens.spacing.xs
+    card_radius = tokens.radius["xl"] + tokens.spacing.xs
+    icon_size = tokens.spacing.xxl
+    icon_top_offset = tokens.spacing.lg - tokens.spacing.xs
+    icon_left_offset = tokens.spacing.xxl
+    content_top_pad = tokens.spacing.xs
+    body_pad = tokens.spacing.xl + tokens.spacing.xs
     is_arcade = False
     effects = {}
     if color_scheme:
@@ -725,27 +742,27 @@ def generate_key_insight(
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+            padding: {body_pad}px;
             -webkit-font-smoothing: antialiased;
         }}
         
         .key-insight-card {{
             max-width: 800px;
             background: var(--surface-1);
-            border-radius: 32px;
-            padding: 48px 56px;
+            border-radius: {card_radius}px;
+            padding: {card_pad_y}px {card_pad_x}px;
             position: relative;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.1);
         }}
         
         .insight-icon {{
             position: absolute;
-            top: -20px;
-            left: 48px;
-            width: 48px;
-            height: 48px;
+            top: -{icon_top_offset}px;
+            left: {icon_left_offset}px;
+            width: {icon_size}px;
+            height: {icon_size}px;
             background: var(--accent);
-            border-radius: 14px;
+            border-radius: {tokens.radius["md"] + tokens.spacing.xxs}px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -758,7 +775,7 @@ def generate_key_insight(
             color: white;
         }}
         
-        .content {{ padding-top: 8px; position: relative; z-index: 1; }}
+        .content {{ padding-top: {content_top_pad}px; position: relative; z-index: 1; }}
         
         .eyebrow {{
             font-size: 11px;
@@ -779,7 +796,7 @@ def generate_key_insight(
         }}
         
         .text {{
-            font-size: 28px;
+            font-size: {max(tokens.typography.h2 - tokens.spacing.xxs, 28)}px;
             font-weight: 500;
             letter-spacing: -0.02em;
             line-height: 1.45;
@@ -791,8 +808,8 @@ def generate_key_insight(
         .text em {{ font-style: italic; }}
         
         .context {{
-            margin-top: 20px;
-            font-size: 14px;
+            margin-top: {tokens.spacing.md + tokens.spacing.xxs}px;
+            font-size: {max(tokens.typography.caption + 1, 14)}px;
             color: var(--text-3);
             font-weight: 500;
         }}
@@ -896,6 +913,13 @@ def generate_insight_card(
         HTML string
     """
     # Apply color scheme
+    tokens = CLARITY_TOKENS
+    body_pad = tokens.spacing.xl + tokens.spacing.xs
+    card_pad = tokens.spacing.xl + tokens.spacing.xs
+    card_radius = tokens.radius["xl"] + tokens.spacing.xs
+    content_radius = tokens.radius["xl"]
+    svg_radius = tokens.radius["lg"] + tokens.spacing.xs
+    icon_size = tokens.spacing.xl + tokens.spacing.xs
     is_arcade = False
     effects = {}
     if color_scheme:
@@ -971,10 +995,10 @@ def generate_insight_card(
     
     # Arrange based on layout
     if layout == "stacked":
-        grid_style = "grid-template-columns: 1fr; gap: 32px;"
+        grid_style = f"grid-template-columns: 1fr; gap: {tokens.spacing.xl}px;"
         content_order = f"{insight_html}{svg_html}"
     else:
-        grid_style = "grid-template-columns: 1fr 1fr; gap: 40px;"
+        grid_style = f"grid-template-columns: 1fr 1fr; gap: {tokens.spacing.xl + tokens.spacing.xs}px;"
         if svg_position == "left":
             content_order = f"{svg_html}{insight_html}"
         else:
@@ -1158,7 +1182,7 @@ def generate_insight_card(
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            padding: {body_pad}px;
             -webkit-font-smoothing: antialiased;
         }}
         
@@ -1167,16 +1191,16 @@ def generate_insight_card(
             align-items: center;
             max-width: 900px;
             background: var(--surface-1);
-            border-radius: 32px;
-            padding: 40px;
+            border-radius: {card_radius}px;
+            padding: {card_pad}px;
             box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.1);
             position: relative;
         }}
         
         .insight-content {{
             position: relative;
-            padding: 28px 32px;
-            border-radius: 24px;
+            padding: {tokens.spacing.xl - tokens.spacing.xxs}px {tokens.spacing.xl}px;
+            border-radius: {content_radius}px;
         }}
         
         .insight-content.default {{
@@ -1185,12 +1209,12 @@ def generate_insight_card(
         
         .insight-icon {{
             position: absolute;
-            top: -16px;
-            left: 28px;
-            width: 40px;
-            height: 40px;
+            top: -{tokens.spacing.md}px;
+            left: {tokens.spacing.xl - tokens.spacing.xxs}px;
+            width: {icon_size}px;
+            height: {icon_size}px;
             background: linear-gradient(135deg, var(--accent) 0%, var(--accent) 100%);
-            border-radius: 12px;
+            border-radius: {tokens.radius["md"]}px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1223,7 +1247,7 @@ def generate_insight_card(
         }}
         
         .text {{
-            font-size: 20px;
+            font-size: {tokens.typography.body_l}px;
             font-weight: 500;
             letter-spacing: -0.02em;
             line-height: 1.4;
@@ -1235,8 +1259,8 @@ def generate_insight_card(
         .text em {{ font-style: normal; color: var(--accent); }}
         
         .context {{
-            margin-top: 14px;
-            font-size: 12px;
+            margin-top: {tokens.spacing.sm + tokens.spacing.xxs}px;
+            font-size: {max(tokens.typography.caption - 1, 12)}px;
             color: var(--text-3);
             font-weight: 500;
         }}
@@ -1269,7 +1293,7 @@ def generate_insight_card(
         }}
         
         .svg-wrapper {{
-            border-radius: 20px;
+            border-radius: {svg_radius}px;
             overflow: hidden;
             box-shadow: 0 12px 40px rgba(0,0,0,0.1);
         }}
