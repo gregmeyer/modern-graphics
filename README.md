@@ -165,13 +165,35 @@ Use the unified `create` command as your default workflow:
 modern-graphics create \
   --layout hero \
   --headline "Execution scales. Judgment does not." \
+  --density clarity \
   --output ./output/hero.html
 
 modern-graphics create \
   --layout insight-card \
   --text "Constrained execution makes quality repeatable." \
+  --density clarity \
   --png \
   --output ./output/insight-card.png
+```
+
+Need denser output?
+
+```bash
+modern-graphics create \
+  --layout timeline \
+  --events "Q1|Baseline,Q2|Adoption,Q3|Optimization,Q4|Scale,Q5|Expansion" \
+  --density dense \
+  --output ./output/timeline-dense.html
+```
+
+Legacy commands remain feature-compatible but are compatibility-only and emit migration guidance:
+
+```bash
+modern-graphics timeline \
+  --title "Legacy Timeline" \
+  --events "Q1|Baseline,Q2|Adoption,Q3|Optimization,Q4|Scale" \
+  --density clarity \
+  --output ./output/legacy-timeline.html
 ```
 
 ### Social Export Examples
