@@ -216,7 +216,23 @@ Use this checklist before approving implementation start:
 - Compatibility policy accepted.
 - Success metrics accepted.
 
-## 11) Locked Decisions
+## 11) Documentation Gate (Required Every Phase)
+
+Each phase is not complete until documentation updates ship with code updates.
+
+Required phase docs:
+- Update `docs/OVERHAUL_SPEC.md` with what changed and what is next.
+- Update `docs/OVERHAUL_WORKPLAN.md` status for impacted workstreams.
+- Update user-facing docs (`README.md` and relevant files under `docs/`).
+- Add migration notes when CLI/API behavior changes.
+- Update or add runnable examples for the new default path.
+
+Acceptance criteria:
+- Reviewer can run the documented commands as written.
+- Docs describe default behavior and any feature-flag/legacy behavior.
+- New quality checks are documented with pass/fail interpretation.
+
+## 12) Locked Decisions
 
 1. Compatibility window length:
 - two releases.
@@ -227,7 +243,7 @@ Use this checklist before approving implementation start:
 4. Decorative effects in `clarity` mode:
 - disabled by default, opt-in for decorative chrome.
 
-## 12) Phase 1 Initial Execution Scope
+## 13) Phase 1 Initial Execution Scope
 
 Workstream A: visual system + token contract.
 - Deliver token definitions and token-lint checks for core templates.

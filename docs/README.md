@@ -3,6 +3,8 @@
 Use this directory as the reference library for everything outside the main README.
 
 ## Start here
+- **[Overhaul Spec](OVERHAUL_SPEC.md)** – Active overhaul phases and required quality/documentation gates
+- **[Overhaul Workplan](OVERHAUL_WORKPLAN.md)** – Current execution status and workstreams
 - **[Quick Start Guide](QUICKSTART.md)** – Install, run your first script, and export PNGs
 - **[Core Concepts](CONCEPTS.md)** – Generator, diagram types, templates, attribution
 - **[Diagram Types](DIAGRAM_TYPES.md)** – Decision tree plus visual reference

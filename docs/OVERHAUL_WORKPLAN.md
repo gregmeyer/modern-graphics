@@ -10,6 +10,7 @@ Phase 1 done when:
 - Critique gates run against fixture corpus and output machine/human reports.
 - Export policy defaults are deterministic (minimal padding by default).
 - CLI clarity contract is documented and scaffolded behind a feature flag.
+- Documentation gate passes for this phase (`OVERHAUL_SPEC`, `OVERHAUL_WORKPLAN`, `README`, relevant docs).
 
 ## Parallel Workstreams
 

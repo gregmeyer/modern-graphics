@@ -944,6 +944,20 @@ generator.export_to_png(html, Path('output.png'))
 
 ## Documentation
 
+### Overhaul (Phase 1 Checkpoint)
+- **[Overhaul Spec](docs/OVERHAUL_SPEC.md)** - Phase plan, quality gates, and locked decisions
+- **[Overhaul Workplan](docs/OVERHAUL_WORKPLAN.md)** - Active workstreams and milestone tracking
+
+Run current checkpoint validation:
+
+```bash
+python scripts/validate_overhaul_phase1.py
+```
+
+Smoke fixtures and checks live in:
+- `tests/smoke/fixtures_phase1.json`
+- `tests/smoke/test_overhaul_phase1_smoke.py`
+
 ### Getting Started
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes
 - **[Core Concepts](docs/CONCEPTS.md)** - Learn the four essential concepts
