@@ -16,7 +16,7 @@ Use `modern-graphics create` when you want one command path with clarity-first d
 - content inputs that depend on `--layout` (for example `--headline`, `--left/--right`, `--events`)
 
 3. `expert`
-- density and export controls (`--density`, `--png`, `--crop-mode`, `--padding-mode`)
+- density and export controls (`--density`, `--png`, `--export-preset`, `--crop-mode`, `--padding-mode`)
 
 ## Defaults
 
@@ -84,6 +84,24 @@ modern-graphics create \
   --padding-mode minimal \
   --output ./output/insight-story.png
 ```
+
+### Social Presets
+
+Use fixed channel presets when you need share-ready dimensions:
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --png \
+  --export-preset linkedin \
+  --output ./output/hero-linkedin.png
+```
+
+Available presets:
+- `linkedin` (1200x627)
+- `x` (1600x900)
+- `substack-hero` (1400x700)
 
 ## Error Hints
 
