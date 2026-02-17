@@ -226,3 +226,4 @@ The following supported layouts are currently exposed as dedicated CLI commands 
 - `premium-card`
 
 See [Create Command Guide](CREATE_COMMAND.md#cli-only-layouts-outside-create) for copy/paste command recipes.
+Note: `before-after` is currently blocked by a stub implementation and documented as such in the command guide.

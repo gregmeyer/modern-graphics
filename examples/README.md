@@ -93,6 +93,11 @@ modern-graphics premium-card \
 
 Expected output: `examples/output/generated/ops-guardrail-card.png`
 
+Tracked Slice 2 references:
+- `examples/output/showcase/cli-layouts/01-slide-cards.png`
+- `examples/output/showcase/cli-layouts/02-slide-compare.png`
+- `examples/output/showcase/cli-layouts/03-premium-card.png`
+
 ### I need the full showcase set
 
 Run:
@@ -134,6 +139,7 @@ These are useful when you are extending behavior or testing specific surfaces:
 - `examples/hero_mermaid_diagrams.py` (mermaid + hero composition)
 - `examples/radar_example.py` (radar chart examples)
 - `examples/transaction_card_demo.py` (transaction card composition)
+- `scripts/generate_cli_layout_showcase.py` (slice-2 CLI layout showcase asset generator)
 - `scripts/export_options.py` (crop/padding/export tuning)
 - `scripts/attribution_examples.py` (attribution variants)
 - `scripts/run_phase1_quality_harness.py` (quality harness)

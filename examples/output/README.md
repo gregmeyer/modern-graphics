@@ -19,6 +19,7 @@ Use these folders when linking examples in docs:
 
 - `showcase/create-first/` (first-run `create` command references)
 - `showcase/diagram-types/` (core diagram set)
+- `showcase/cli-layouts/` (underrepresented CLI layout references)
 - `showcase/insight-graphics/` (insight/key-insight/card/story references)
 - `showcase/hero-slides/` (hero variants)
 - `showcase/attribution/` (attribution display references)
