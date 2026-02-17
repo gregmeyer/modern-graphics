@@ -67,7 +67,7 @@ print(DEFAULT_DIAGRAM_PROMPTS["cycle"])
 
 ```bash
 modern-graphics ideas
-modern-graphics ideas --name cy-graphic --save-dir ./my_prompts
+modern-graphics ideas --name launch-graphic --save-dir ./my_prompts
 modern-graphics ideas --no-save
 ```
 
@@ -76,9 +76,13 @@ Builds a single reusable prompt from a guided interview and saves it under `./pr
 ### 2) Generate From Prompt File
 
 ```bash
-modern-graphics from-prompt-file raw/cy-example/cy-graphic-prompt-revised.md
-modern-graphics from-prompt-file path/to/prompt.md --output-dir path/to/graphics
+modern-graphics from-prompt-file path/to/prompt.md --output prompt-story.html
+modern-graphics from-prompt-file path/to/prompt.md --output prompt-story.png --png
 ```
+
+Notes:
+- `from-prompt-file` reads prompt markdown text and generates a story slide.
+- Requires OpenAI credentials, same as other prompt workflows.
 
 ### 3) Hero From Prompt JSON
 

@@ -1,0 +1,1 @@
+Generate a story slide about onboarding acceleration from Q1 to Q4, highlighting drop in time-to-value.
