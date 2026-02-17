@@ -1,0 +1,58 @@
+[
+  {
+    "target": "hero",
+    "observed_min_text_px": 16,
+    "focal_points": 2,
+    "contrast_ratio": 6.1,
+    "whitespace_ratio": 0.22
+  },
+  {
+    "target": "insight-card",
+    "observed_min_text_px": 14,
+    "focal_points": 2,
+    "contrast_ratio": 5.4,
+    "whitespace_ratio": 0.26
+  },
+  {
+    "target": "story-slide",
+    "observed_min_text_px": 13,
+    "focal_points": 3,
+    "contrast_ratio": 4.9,
+    "whitespace_ratio": 0.31
+  },
+  {
+    "target": "comparison",
+    "observed_min_text_px": 12,
+    "focal_points": 2,
+    "contrast_ratio": 4.7,
+    "whitespace_ratio": 0.18
+  },
+  {
+    "target": "timeline",
+    "observed_min_text_px": 11,
+    "focal_points": 3,
+    "contrast_ratio": 4.2,
+    "whitespace_ratio": 0.29
+  },
+  {
+    "target": "funnel",
+    "observed_min_text_px": 12,
+    "focal_points": 2,
+    "contrast_ratio": 4.8,
+    "whitespace_ratio": 0.37
+  },
+  {
+    "target": "grid",
+    "observed_min_text_px": 13,
+    "focal_points": 4,
+    "contrast_ratio": 5.0,
+    "whitespace_ratio": 0.24
+  },
+  {
+    "target": "pyramid",
+    "observed_min_text_px": 12,
+    "focal_points": 2,
+    "contrast_ratio": 4.6,
+    "whitespace_ratio": 0.19
+  }
+]

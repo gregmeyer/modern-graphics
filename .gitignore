@@ -114,6 +114,12 @@ examples/output/template_tests/
 /tests/
 /tests/**
 
+# Allow a narrow smoke-test lane
+!/tests/
+!/tests/smoke/
+!/tests/smoke/test_*.py
+!/tests/smoke/*.json
+
 # Internal checklists
 SHARING_CHECKLIST.md
 
