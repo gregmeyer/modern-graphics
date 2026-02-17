@@ -215,3 +215,14 @@ Want variations beyond the default PNGs? Run `python examples/generate_complete_
 
 ### Radar Diagram
 Need radial comparison views? See [Radar Diagram Guide](RADAR_DIAGRAM.md) for usage and examples.
+
+### Additional CLI Layouts
+
+The following supported layouts are currently exposed as dedicated CLI commands (not `create` layouts):
+
+- `before-after`
+- `slide-cards`
+- `slide-compare`
+- `premium-card`
+
+See [Create Command Guide](CREATE_COMMAND.md#cli-only-layouts-outside-create) for copy/paste command recipes.
