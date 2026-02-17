@@ -126,8 +126,8 @@
         "focal_point_budget"
       ],
       "insight_warn_gates": [
-        "panel_density_budget",
-        "panel_balance"
+        "panel_balance",
+        "panel_density_budget"
       ],
       "results": [
         {
@@ -234,8 +234,8 @@
       "target": "timeline",
       "status": "fail",
       "hard_fail_gates": [
-        "min_text_size",
-        "contrast_ratio"
+        "contrast_ratio",
+        "min_text_size"
       ],
       "soft_warn_gates": [
         "density_budget",

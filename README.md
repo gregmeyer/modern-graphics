@@ -944,7 +944,7 @@ generator.export_to_png(html, Path('output.png'))
 
 ## Documentation
 
-### Overhaul (Phase 1 Checkpoint)
+### Overhaul Checkpoint (Phase 1 + 2)
 - **[Overhaul Spec](docs/OVERHAUL_SPEC.md)** - Phase plan, quality gates, and locked decisions
 - **[Overhaul Workplan](docs/OVERHAUL_WORKPLAN.md)** - Active workstreams and milestone tracking
 
@@ -982,6 +982,10 @@ Generated Phase 1 reports:
 - `reports/phase1-quality.md`
 - `reports/phase1-token-debt.json`
 - `reports/phase1-token-debt.md`
+- `reports/phase2-strict-lint.json`
+- `reports/phase2-strict-lint.md`
+- `reports/phase2-insight-fixtures.json`
+- `reports/phase2-insight-fixtures.md`
 
 Phase 2 scaffolding (in progress):
 - Layout strategy registry: `modern_graphics/layouts.py`
@@ -1000,7 +1004,9 @@ Phase 2 scaffolding (in progress):
   - outputs:
     - `reports/phase2-insight-fixtures.json`
     - `reports/phase2-insight-fixtures.md`
-    - `reports/insight-fixtures/*.html`
+    - `reports/insight-fixtures/01-key_insight.html`
+    - `reports/insight-fixtures/02-insight_card.html`
+    - `reports/insight-fixtures/03-insight_story.html`
 
 ### Getting Started
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes
