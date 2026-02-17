@@ -12,6 +12,9 @@ from typing import Literal
 LayoutType = Literal[
     "hero",
     "insight",
+    "key-insight",
+    "insight-card",
+    "insight-story",
     "story",
     "comparison",
     "timeline",
@@ -30,8 +33,19 @@ class CreateCommand:
     output: str = "output.png"
 
 
+@dataclass(frozen=True)
+class CreateDefaults:
+    density: DensityMode = "clarity"
+    theme: str = "corporate"
+    crop_mode: Literal["none", "safe", "tight"] = "safe"
+    padding_mode: Literal["none", "minimal", "comfortable"] = "minimal"
+
+
+CREATE_DEFAULTS = CreateDefaults()
+
+
 def normalize_density(value: str) -> DensityMode:
-    value = (value or "clarity").strip().lower()
+    value = (value or CREATE_DEFAULTS.density).strip().lower()
     if value not in {"clarity", "balanced", "dense"}:
-        return "clarity"
+        return CREATE_DEFAULTS.density
     return value  # type: ignore[return-value]

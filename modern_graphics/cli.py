@@ -51,6 +51,7 @@ Usage:
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -89,7 +90,7 @@ from .diagrams.wireframe_scene import render_scene, list_presets, SCENE_PRESETS
 from .diagrams.wireframe_elements.config import WireframeConfig
 from .diagrams.mermaid_svg import mermaid_to_svg
 from .color_scheme import get_scheme, list_schemes, ColorScheme
-from .cli_clarity import normalize_density
+from .cli_clarity import normalize_density, CREATE_DEFAULTS
 from .export_policy import ExportPolicy
 from .layout_models import (
     HeroPayload,
@@ -101,6 +102,58 @@ from .layout_models import (
     InsightCardPayload,
     InsightStoryPayload,
 )
+
+LEGACY_COMMAND_ALIASES = {
+    "slide-comparison": "slide-compare",
+    "from-prompt": "from-prompt-file",
+    "key_insight": "key-insight",
+    "insight_card": "insight-card",
+    "insight_story": "insight-story",
+    "before_after": "before-after",
+}
+
+LEGACY_CREATE_HINTS = {
+    "cycle": 'modern-graphics create --layout story --what-changed "System shifts" --output graphic.html',
+    "comparison": 'modern-graphics create --layout comparison --left "Before:Manual:Slow" --right "After:Agentic:Faster" --output graphic.html',
+    "grid": 'modern-graphics create --layout grid --items "A,B,C" --columns 3 --output graphic.html',
+    "timeline": 'modern-graphics create --layout timeline --events "Q1|Baseline,Q2|Adoption" --output graphic.html',
+    "funnel": 'modern-graphics create --layout funnel --stages "Visit,Trial,Paid" --values "100,40,12" --output graphic.html',
+    "story-slide": 'modern-graphics create --layout story --what-changed "Execution changed" --time-period "this quarter" --what-it-means "Judgment quality now differentiates" --output graphic.html',
+    "key-insight": 'modern-graphics create --layout key-insight --text "Key takeaway" --output insight.html',
+    "insight-card": 'modern-graphics create --layout insight-card --text "Key takeaway" --output insight-card.html',
+    "insight-story": 'modern-graphics create --layout insight-story --headline "When shipping gets easy" --insight-text "Use checklist gates" --output insight-story.html',
+}
+
+
+def _adapt_legacy_command_aliases(argv: list[str]) -> tuple[list[str], Optional[str]]:
+    """Map known legacy command aliases to canonical commands."""
+    if len(argv) < 2:
+        return argv, None
+
+    command = argv[1]
+    canonical = LEGACY_COMMAND_ALIASES.get(command)
+    if not canonical:
+        return argv, None
+
+    adapted = list(argv)
+    adapted[1] = canonical
+    warning = (
+        f"Deprecation warning: `{command}` is deprecated; use `{canonical}` instead. "
+        "See docs/MIGRATION.md for canonical create workflows."
+    )
+    return adapted, warning
+
+
+def _emit_legacy_command_warning(command: str) -> None:
+    hint = LEGACY_CREATE_HINTS.get(command)
+    if not hint:
+        return
+    print(
+        f"Deprecation warning: `{command}` remains supported but is now considered legacy. "
+        "Prefer `create` for new workflows.",
+        file=sys.stderr,
+    )
+    print(f"Migration hint: {hint}", file=sys.stderr)
 
 
 def parse_steps(steps_str: str) -> list:
@@ -333,6 +386,28 @@ def parse_stats_arg(stats_str: Optional[str]) -> Optional[list]:
     return stats
 
 
+CREATE_EXAMPLES = {
+    "hero": 'modern-graphics create --layout hero --headline "Execution scales" --output hero.html',
+    "insight": 'modern-graphics create --layout insight --text "Key takeaway" --output insight.html',
+    "key-insight": 'modern-graphics create --layout key-insight --text "Key takeaway" --output insight.html',
+    "insight-card": 'modern-graphics create --layout insight-card --text "Key takeaway" --output insight-card.html',
+    "insight-story": 'modern-graphics create --layout insight-story --headline "When shipping gets easy" --insight-text "Use checklist gates" --output insight-story.html',
+    "comparison": 'modern-graphics create --layout comparison --left "Before:Manual:Slow" --right "After:Agentic:Faster" --output comparison.html',
+    "story": 'modern-graphics create --layout story --what-changed "Execution accelerated" --output story.html',
+    "timeline": 'modern-graphics create --layout timeline --events "Q1|Baseline,Q2|Adoption" --output timeline.html',
+    "funnel": 'modern-graphics create --layout funnel --stages "Visit,Trial,Paid" --values "100,40,12" --output funnel.html',
+    "grid": 'modern-graphics create --layout grid --items "A,B,C" --columns 3 --output grid.html',
+}
+
+
+def _emit_create_error(layout: str, message: str) -> int:
+    print(f"Error: {message}")
+    example = CREATE_EXAMPLES.get(layout)
+    if example:
+        print(f"Hint: try `{example}`")
+    return 1
+
+
 def main():
     parser = argparse.ArgumentParser(description='Generate modern HTML/CSS graphics')
     parser.add_argument('--person', default='Greg Meyer', help='Attribution person name (default: Greg Meyer)')
@@ -340,46 +415,62 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='Diagram type')
 
     # Clarity-first create scaffold (feature-flagged)
-    create_parser = subparsers.add_parser('create', help='[Experimental] clarity-first creation surface')
-    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
-    create_parser.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
-    create_parser.add_argument('--headline', help='Headline (hero/story)')
-    create_parser.add_argument('--subheadline', help='Subheadline (hero/story)')
-    create_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
-    create_parser.add_argument('--highlights', help='Comma-separated highlights (hero)')
-    create_parser.add_argument('--text', help='Insight text (insight)')
-    create_parser.add_argument('--label', default='Key Insight', help='Insight label (key-insight/insight-card)')
-    create_parser.add_argument('--variant', default='bold', help='Insight variant (key-insight: default|minimal|bold|quote, insight-card: default|bold)')
-    create_parser.add_argument('--icon', default='lightning', help='Insight icon (lightning|lightbulb|quote|star|none)')
-    create_parser.add_argument('--svg-file', help='Path to SVG file (insight-card or insight-story panels)')
-    create_parser.add_argument('--svg-label', help='SVG label (insight-card)')
-    create_parser.add_argument('--svg-layout', default='side-by-side', choices=['side-by-side', 'stacked'], help='Insight card layout (default: side-by-side)')
-    create_parser.add_argument('--svg-position', default='right', choices=['left', 'right'], help='Insight card SVG position (default: right)')
-    create_parser.add_argument('--before-svg', help='Path to before SVG (insight-story)')
-    create_parser.add_argument('--after-svg', help='Path to after SVG (insight-story)')
-    create_parser.add_argument('--insight-text', help='Insight story key insight text')
-    create_parser.add_argument('--before-label', default='Before', help='Insight story before label')
-    create_parser.add_argument('--after-label', default='After', help='Insight story after label')
-    create_parser.add_argument('--left', help='Left column payload for comparison: \"Title:Step1,Step2:Outcome\"')
-    create_parser.add_argument('--right', help='Right column payload for comparison: \"Title:Step1,Step2:Outcome\"')
-    create_parser.add_argument('--events', help='Timeline events: \"Date|Event,Date|Event\"')
-    create_parser.add_argument('--orientation', choices=['horizontal', 'vertical'], default='horizontal', help='Timeline orientation (default: horizontal)')
-    create_parser.add_argument('--stages', help='Funnel stages: \"Stage1,Stage2,Stage3\"')
-    create_parser.add_argument('--values', help='Funnel values: \"100,70,30\"')
-    create_parser.add_argument('--percentages', action='store_true', help='Show funnel percentages')
-    create_parser.add_argument('--items', help='Grid items: \"Item1,Item2,Item3\"')
-    create_parser.add_argument('--columns', type=int, default=5, help='Grid column count (default: 5)')
-    create_parser.add_argument('--goal', help='Grid convergence goal (optional)')
-    create_parser.add_argument('--outcome', help='Grid convergence outcome (optional)')
-    create_parser.add_argument('--what-changed', help='Story field: what changed')
-    create_parser.add_argument('--time-period', help='Story field: over what period')
-    create_parser.add_argument('--what-it-means', help='Story field: why it matters')
-    create_parser.add_argument('--density', default='clarity', choices=['clarity', 'balanced', 'dense'], help='Density mode (default: clarity)')
-    create_parser.add_argument('--theme', choices=list_schemes(), default='corporate', help=f'Color theme: {", ".join(list_schemes())}')
-    create_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
-    create_parser.add_argument('--png', action='store_true', help='Export as PNG')
-    create_parser.add_argument('--crop-mode', choices=['none', 'safe', 'tight'], default='safe', help='PNG crop mode (default: safe)')
-    create_parser.add_argument('--padding-mode', choices=['none', 'minimal', 'comfortable'], default='minimal', help='PNG padding mode (default: minimal)')
+    create_parser = subparsers.add_parser(
+        'create',
+        help='[Experimental] unified clarity-first creation surface',
+        epilog=(
+            "Examples:\n"
+            "  modern-graphics create --layout hero --headline \"Execution scales\" --output hero.html\n"
+            "  modern-graphics create --layout comparison --left \"Before:Manual:Slow\" --right \"After:Agentic:Faster\" --output cmp.html\n"
+            "  modern-graphics create --layout insight-card --text \"Key point\" --output card.html"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    create_core = create_parser.add_argument_group('core')
+    create_layout = create_parser.add_argument_group('layout-specific')
+    create_expert = create_parser.add_argument_group('expert')
+
+    create_core.add_argument('--layout', required=True, choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
+    create_core.add_argument('--output', required=True, help='Output HTML/PNG path')
+    create_core.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
+    create_core.add_argument('--theme', choices=list_schemes(), default=CREATE_DEFAULTS.theme, help=f'Color theme (default: {CREATE_DEFAULTS.theme})')
+
+    create_layout.add_argument('--headline', help='Headline (hero/story/insight-story)')
+    create_layout.add_argument('--subheadline', help='Subheadline (hero/story/insight-story)')
+    create_layout.add_argument('--eyebrow', help='Eyebrow/tagline')
+    create_layout.add_argument('--highlights', help='Comma-separated highlights (hero)')
+    create_layout.add_argument('--text', help='Insight text (key-insight/insight-card)')
+    create_layout.add_argument('--label', default='Key Insight', help='Insight label (key-insight/insight-card/insight-story)')
+    create_layout.add_argument('--variant', default='bold', help='Insight variant (key-insight: default|minimal|bold|quote, insight-card: default|bold)')
+    create_layout.add_argument('--icon', default='lightning', help='Insight icon (lightning|lightbulb|quote|star|none)')
+    create_layout.add_argument('--svg-file', help='Path to SVG file (insight-card or insight-story panels)')
+    create_layout.add_argument('--svg-label', help='SVG label (insight-card)')
+    create_layout.add_argument('--svg-layout', default='side-by-side', choices=['side-by-side', 'stacked'], help='Insight card layout (default: side-by-side)')
+    create_layout.add_argument('--svg-position', default='right', choices=['left', 'right'], help='Insight card SVG position (default: right)')
+    create_layout.add_argument('--before-svg', help='Path to before SVG (insight-story)')
+    create_layout.add_argument('--after-svg', help='Path to after SVG (insight-story)')
+    create_layout.add_argument('--insight-text', help='Insight story key insight text')
+    create_layout.add_argument('--before-label', default='Before', help='Insight story before label')
+    create_layout.add_argument('--after-label', default='After', help='Insight story after label')
+    create_layout.add_argument('--left', help='Left column payload for comparison: \"Title:Step1,Step2:Outcome\"')
+    create_layout.add_argument('--right', help='Right column payload for comparison: \"Title:Step1,Step2:Outcome\"')
+    create_layout.add_argument('--events', help='Timeline events: \"Date|Event,Date|Event\"')
+    create_layout.add_argument('--orientation', choices=['horizontal', 'vertical'], default='horizontal', help='Timeline orientation (default: horizontal)')
+    create_layout.add_argument('--stages', help='Funnel stages: \"Stage1,Stage2,Stage3\"')
+    create_layout.add_argument('--values', help='Funnel values: \"100,70,30\"')
+    create_layout.add_argument('--percentages', action='store_true', help='Show funnel percentages')
+    create_layout.add_argument('--items', help='Grid items: \"Item1,Item2,Item3\"')
+    create_layout.add_argument('--columns', type=int, default=5, help='Grid column count (default: 5)')
+    create_layout.add_argument('--goal', help='Grid convergence goal (optional)')
+    create_layout.add_argument('--outcome', help='Grid convergence outcome (optional)')
+    create_layout.add_argument('--what-changed', help='Story field: what changed')
+    create_layout.add_argument('--time-period', help='Story field: over what period')
+    create_layout.add_argument('--what-it-means', help='Story field: why it matters')
+
+    create_expert.add_argument('--density', default=CREATE_DEFAULTS.density, choices=['clarity', 'balanced', 'dense'], help=f'Density mode (default: {CREATE_DEFAULTS.density})')
+    create_expert.add_argument('--png', action='store_true', help='Export as PNG')
+    create_expert.add_argument('--crop-mode', choices=['none', 'safe', 'tight'], default=CREATE_DEFAULTS.crop_mode, help=f'PNG crop mode (default: {CREATE_DEFAULTS.crop_mode})')
+    create_expert.add_argument('--padding-mode', choices=['none', 'minimal', 'comfortable'], default=CREATE_DEFAULTS.padding_mode, help=f'PNG padding mode (default: {CREATE_DEFAULTS.padding_mode})')
 
     # Cycle diagram
     cycle_parser = subparsers.add_parser('cycle', help='Generate cycle diagram')
@@ -773,11 +864,15 @@ def main():
         help='Do not prepend a date to the note',
     )
     
-    args = parser.parse_args()
+    adapted_argv, alias_warning = _adapt_legacy_command_aliases(list(sys.argv))
+    args = parser.parse_args(adapted_argv[1:])
     
     if not args.command:
         parser.print_help()
         return 1
+
+    if alias_warning:
+        print(alias_warning, file=sys.stderr)
 
     if args.command == 'ideas':
         from .graphic_ideas_interview import run_graphic_ideas_interview
@@ -796,7 +891,6 @@ def main():
             return 1
         note = getattr(args, 'note', None)
         if note is None or note.strip() == "":
-            import sys
             note = sys.stdin.read().strip()
         if not note:
             print("Error: no note provided (pass as argument or via stdin)")
@@ -819,7 +913,6 @@ def main():
     if args.command == 'from-prompt-file':
         import re
         import subprocess
-        import sys
         from datetime import date
         prompt_path = Path(args.prompt_file).resolve()
         if not prompt_path.exists():
@@ -920,12 +1013,10 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout in {"insight", "key-insight"}:
             if not getattr(args, "text", None):
-                print("Error: --text is required for --layout insight")
-                return 1
+                return _emit_create_error(args.layout, "--text is required for this layout")
             key_variant = getattr(args, "variant", None) or ("bold" if density != "dense" else "default")
             try:
                 payload = KeyInsightPayload(
@@ -936,18 +1027,15 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "insight-card":
             if not getattr(args, "text", None):
-                print("Error: --text is required for --layout insight-card")
-                return 1
+                return _emit_create_error(args.layout, "--text is required for this layout")
             svg_content = None
             if getattr(args, "svg_file", None):
                 svg_path = Path(args.svg_file)
                 if not svg_path.exists():
-                    print(f"Error: SVG file not found: {svg_path}")
-                    return 1
+                    return _emit_create_error(args.layout, f"SVG file not found: {svg_path}")
                 svg_content = svg_path.read_text(encoding="utf-8")
             else:
                 cfg = get_wireframe_config_from_theme(getattr(args, "theme", None), width=360, height=260)
@@ -966,22 +1054,19 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "insight-story":
             before_svg = None
             after_svg = None
             if getattr(args, "before_svg", None):
                 before_path = Path(args.before_svg)
                 if not before_path.exists():
-                    print(f"Error: before SVG file not found: {before_path}")
-                    return 1
+                    return _emit_create_error(args.layout, f"before SVG file not found: {before_path}")
                 before_svg = before_path.read_text(encoding="utf-8")
             if getattr(args, "after_svg", None):
                 after_path = Path(args.after_svg)
                 if not after_path.exists():
-                    print(f"Error: after SVG file not found: {after_path}")
-                    return 1
+                    return _emit_create_error(args.layout, f"after SVG file not found: {after_path}")
                 after_svg = after_path.read_text(encoding="utf-8")
             if before_svg is None or after_svg is None:
                 cfg = get_wireframe_config_from_theme(getattr(args, "theme", None), width=360, height=260)
@@ -1002,12 +1087,10 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "comparison":
             if not getattr(args, "left", None) or not getattr(args, "right", None):
-                print("Error: --left and --right are required for --layout comparison")
-                return 1
+                return _emit_create_error(args.layout, "--left and --right are required for this layout")
             try:
                 payload = ComparisonPayload(
                     left_column=parse_column(args.left),
@@ -1016,8 +1099,7 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "story":
             payload = {
                 "title": args.title,
@@ -1028,8 +1110,7 @@ def main():
             }
         elif args.layout == "timeline":
             if not getattr(args, "events", None):
-                print("Error: --events is required for --layout timeline")
-                return 1
+                return _emit_create_error(args.layout, "--events is required for this layout")
             try:
                 payload = TimelinePayload(
                     events=parse_timeline_events(args.events),
@@ -1037,12 +1118,10 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "funnel":
             if not getattr(args, "stages", None):
-                print("Error: --stages is required for --layout funnel")
-                return 1
+                return _emit_create_error(args.layout, "--stages is required for this layout")
             try:
                 payload = FunnelPayload(
                     stages=parse_funnel_stages(args.stages, getattr(args, "values", None)),
@@ -1050,12 +1129,10 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         elif args.layout == "grid":
             if not getattr(args, "items", None):
-                print("Error: --items is required for --layout grid")
-                return 1
+                return _emit_create_error(args.layout, "--items is required for this layout")
             convergence = None
             if getattr(args, "goal", None) or getattr(args, "outcome", None):
                 convergence = {
@@ -1070,17 +1147,14 @@ def main():
                     color_scheme=color_scheme,
                 ).to_strategy_kwargs()
             except ValueError as exc:
-                print(f"Error: {exc}")
-                return 1
+                return _emit_create_error(args.layout, str(exc))
         else:
-            print(f"Error: unsupported layout {args.layout}")
-            return 1
+            return _emit_create_error(args.layout, f"unsupported layout '{args.layout}'")
 
         try:
             html = generator.generate_layout(layout_type, **payload)
         except ValueError as exc:
-            print(f"Error: {exc}")
-            return 1
+            return _emit_create_error(args.layout, str(exc))
 
         if color_scheme is not None and args.layout in {"story"}:
             html = color_scheme.apply_to_html(html)
@@ -1101,6 +1175,8 @@ def main():
             generator.save(html, output_path)
             print(f"Generated create/{args.layout}: {output_path}")
         return 0
+
+    _emit_legacy_command_warning(args.command)
     
     output_path = Path(args.output)
     
@@ -1866,7 +1942,6 @@ def main():
 
     elif args.command == 'mermaid':
         import re
-        import sys
         inp = getattr(args, 'input', None)
         if inp == '-':
             mermaid_source = sys.stdin.read()

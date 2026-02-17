@@ -122,12 +122,12 @@
       "status": "warn",
       "hard_fail_gates": [],
       "soft_warn_gates": [
-        "density_budget",
-        "focal_point_budget"
+        "focal_point_budget",
+        "density_budget"
       ],
       "insight_warn_gates": [
-        "panel_balance",
-        "panel_density_budget"
+        "panel_density_budget",
+        "panel_balance"
       ],
       "results": [
         {
@@ -234,12 +234,12 @@
       "target": "timeline",
       "status": "fail",
       "hard_fail_gates": [
-        "contrast_ratio",
-        "min_text_size"
+        "min_text_size",
+        "contrast_ratio"
       ],
       "soft_warn_gates": [
-        "density_budget",
-        "focal_point_budget"
+        "focal_point_budget",
+        "density_budget"
       ],
       "insight_warn_gates": [
         "panel_density_budget"
@@ -291,8 +291,8 @@
       "target": "funnel",
       "status": "fail",
       "hard_fail_gates": [
-        "whitespace_guard",
-        "min_text_size"
+        "min_text_size",
+        "whitespace_guard"
       ],
       "soft_warn_gates": [],
       "insight_warn_gates": [
@@ -346,8 +346,8 @@
       "status": "warn",
       "hard_fail_gates": [],
       "soft_warn_gates": [
-        "density_budget",
-        "focal_point_budget"
+        "focal_point_budget",
+        "density_budget"
       ],
       "insight_warn_gates": [
         "panel_density_budget"

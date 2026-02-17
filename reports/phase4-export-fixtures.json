@@ -1,0 +1,59 @@
+{
+  "fixtures": [
+    {
+      "id": "hero-core-shift",
+      "layout": "hero",
+      "path": "reports/export-fixtures/01-hero-core-shift.html",
+      "chars": 14543,
+      "sha256": "25a2593b7e67bbd5819963dc6a20e183c35cc8c51ad2b1e52ebcde9f2a69d0fd"
+    },
+    {
+      "id": "comparison-decision-gate",
+      "layout": "comparison",
+      "path": "reports/export-fixtures/02-comparison-decision-gate.html",
+      "chars": 9841,
+      "sha256": "90218f0fe30a66955d60923c709acf1f217e5dda198a0322ffd94fdcbdf175f9"
+    },
+    {
+      "id": "timeline-capability-upgrade",
+      "layout": "timeline",
+      "path": "reports/export-fixtures/03-timeline-capability-upgrade.html",
+      "chars": 9307,
+      "sha256": "9e22fe0dfa9047fc3e38ccd8551dcf6598e925bf12b0c14ff3d24819be3a4677"
+    },
+    {
+      "id": "insight-card-constrained-execution",
+      "layout": "insight-card",
+      "path": "reports/export-fixtures/04-insight-card-constrained-execution.html",
+      "chars": 6753,
+      "sha256": "bef20ab2adee8c659f08f8c5274b457ba08119afbde3c3bfd1dc9848133a0199"
+    }
+  ],
+  "summary": {
+    "count": 4,
+    "snapshot_dir": "reports/export-fixtures",
+    "default_crop_mode": "safe",
+    "default_padding_mode": "minimal",
+    "default_padding_px": 8
+  },
+  "export_matrix": [
+    {
+      "crop_mode": "none",
+      "padding_mode": "none",
+      "padding_px": 0,
+      "intent": "Full-page capture, no trim"
+    },
+    {
+      "crop_mode": "safe",
+      "padding_mode": "minimal",
+      "padding_px": 8,
+      "intent": "Default reusable output"
+    },
+    {
+      "crop_mode": "tight",
+      "padding_mode": "minimal",
+      "padding_px": 4,
+      "intent": "Tighter social-style crop"
+    }
+  ]
+}

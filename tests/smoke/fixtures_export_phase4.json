@@ -1,0 +1,53 @@
+[
+  {
+    "id": "hero-core-shift",
+    "layout": "hero",
+    "payload": {
+      "headline": "Execution scales. Judgment does not.",
+      "subheadline": "As shipping gets cheaper, filtering consequence becomes the leverage point.",
+      "eyebrow": "Role shift"
+    }
+  },
+  {
+    "id": "comparison-decision-gate",
+    "layout": "comparison",
+    "payload": {
+      "left_column": {
+        "title": "Execution-first",
+        "subtitle": "More output",
+        "steps": ["Many plausible changes", "Weak consequence filter", "Local optimization"],
+        "outcome": "Motion without relevance"
+      },
+      "right_column": {
+        "title": "Judgment-first",
+        "subtitle": "Better outcomes",
+        "steps": ["Explicit decision gate", "Clear tradeoffs", "System-level relevance"],
+        "outcome": "Fewer, higher-quality decisions"
+      },
+      "vs_text": "shift"
+    }
+  },
+  {
+    "id": "timeline-capability-upgrade",
+    "layout": "timeline",
+    "payload": {
+      "orientation": "horizontal",
+      "events": [
+        {"date": "Now", "title": "Prompting", "description": "Single-thread output"},
+        {"date": "Next", "title": "Constrainting", "description": "Tighter execution boundaries"},
+        {"date": "Later", "title": "Gating", "description": "Consistent decision quality"}
+      ]
+    }
+  },
+  {
+    "id": "insight-card-constrained-execution",
+    "layout": "insight-card",
+    "payload": {
+      "text": "Constrained execution makes quality repeatable.",
+      "label": "Key Insight",
+      "svg_label": "Decision gate",
+      "variant": "bold",
+      "svg_content": "<svg viewBox='0 0 280 170' xmlns='http://www.w3.org/2000/svg'><rect x='16' y='18' width='248' height='132' rx='18' fill='#f8fafc' stroke='#cbd5e1'/><circle cx='52' cy='85' r='10' fill='#2563eb'/><rect x='72' y='77' width='72' height='16' rx='8' fill='#bfdbfe'/><rect x='158' y='77' width='96' height='16' rx='8' fill='#bbf7d0'/><path d='M60 85 H72 M144 85 H158' stroke='#334155' stroke-width='2' stroke-linecap='round'/></svg>"
+    }
+  }
+]

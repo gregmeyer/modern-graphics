@@ -36,6 +36,32 @@ print("✓ Generated output.png")
 
 Run it and you'll have your first graphic!
 
+## Quick CLI Path (New)
+
+Use the unified `create` command for a fast path:
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --output ./output/hero.html
+```
+
+Then export directly to PNG if needed:
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout insight-card \
+  --text "One-page artifacts force explicit decisions." \
+  --png \
+  --output ./output/insight-card.png
+```
+
+Defaults are clarity-first (`density=clarity`, `crop-mode=safe`, `padding-mode=minimal`).
+
+For layout selection and complete command recipes, use:
+- **[Create Command Guide](./CREATE_COMMAND.md)**
+
 ## What's Included
 
 When you install Modern Graphics Generator, you get:

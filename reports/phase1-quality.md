@@ -28,8 +28,8 @@
 - `panel_balance`: **pass** - OK
 
 ### story-slide - WARN
-- soft warns: `density_budget, focal_point_budget`
-- insight warns: `panel_balance, panel_density_budget`
+- soft warns: `focal_point_budget, density_budget`
+- insight warns: `panel_density_budget, panel_balance`
 - `min_text_size`: **pass** - OK
 - `focal_point_budget`: **warn** - Observed 3 focal points above target 2
 - `density_budget`: **warn** - Density items 10 above target 8
@@ -53,8 +53,8 @@
 - `panel_balance`: **pass** - OK
 
 ### timeline - FAIL
-- hard fails: `contrast_ratio, min_text_size`
-- soft warns: `density_budget, focal_point_budget`
+- hard fails: `min_text_size, contrast_ratio`
+- soft warns: `focal_point_budget, density_budget`
 - insight warns: `panel_density_budget`
 - `min_text_size`: **fail** - Observed 11px below minimum 13px
 - `focal_point_budget`: **warn** - Observed 3 focal points above target 2
@@ -66,7 +66,7 @@
 - `panel_balance`: **pass** - OK
 
 ### funnel - FAIL
-- hard fails: `whitespace_guard, min_text_size`
+- hard fails: `min_text_size, whitespace_guard`
 - insight warns: `panel_density_budget`
 - `min_text_size`: **fail** - Observed 12px below minimum 13px
 - `focal_point_budget`: **pass** - OK
@@ -78,7 +78,7 @@
 - `panel_balance`: **pass** - OK
 
 ### grid - WARN
-- soft warns: `density_budget, focal_point_budget`
+- soft warns: `focal_point_budget, density_budget`
 - insight warns: `panel_density_budget`
 - `min_text_size`: **pass** - OK
 - `focal_point_budget`: **warn** - Observed 4 focal points above target 2

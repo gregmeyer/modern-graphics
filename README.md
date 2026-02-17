@@ -944,7 +944,7 @@ generator.export_to_png(html, Path('output.png'))
 
 ## Documentation
 
-### Overhaul Checkpoint (Phase 1 + 2)
+### Overhaul Checkpoint (Phase 1 + 2 + Phase 3 Step 4)
 - **[Overhaul Spec](docs/OVERHAUL_SPEC.md)** - Phase plan, quality gates, and locked decisions
 - **[Overhaul Workplan](docs/OVERHAUL_WORKPLAN.md)** - Active workstreams and milestone tracking
 
@@ -956,21 +956,32 @@ python scripts/run_phase1_quality_harness.py
 python scripts/run_insight_fixture_harness.py
 ```
 
-Experimental clarity CLI scaffold (feature-flagged):
+Clarity-first `create` workflow (feature-flagged):
 
 ```bash
 MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
   --layout hero \
-  --title "Clarity Hero" \
   --headline "Execution scales. Judgment stays scarce." \
-  --subheadline "Use explicit gates to decide what ships." \
-  --highlights "More output,Limited judgment,Better filtering" \
-  --theme corporate \
-  --png --crop-mode safe --padding-mode minimal \
-  --output ./output/clarity-hero.png
+  --output ./output/clarity-hero.html
 ```
 
-Current `create --layout` options: `hero`, `insight`, `key-insight`, `insight-card`, `insight-story`, `comparison`, `story`, `timeline`, `funnel`, `grid`.
+`create` uses progressive disclosure:
+- `core`: `--layout`, `--output`, `--title`, `--theme`
+- `layout-specific`: only the content fields needed for your selected layout
+- `expert`: density/export controls (`--density`, `--png`, `--crop-mode`, `--padding-mode`)
+
+Current `create --layout` options:
+- `hero`, `insight`, `key-insight`, `insight-card`, `insight-story`
+- `comparison`, `story`, `timeline`, `funnel`, `grid`
+
+Create defaults (clarity mode):
+- density: `clarity`
+- crop mode: `safe`
+- padding mode: `minimal`
+- theme: `corporate`
+
+Use the canonical guide for decision table + recipes:
+- **[Create Command Guide](docs/CREATE_COMMAND.md)**
 
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
@@ -1016,6 +1027,7 @@ Phase 2 scaffolding (in progress):
 ### Guides
 - **[Use Cases](docs/USE_CASES.md)** - Real-world examples and patterns
 - **[Hero Slides Guide](docs/HERO_SLIDES.md)** - Modern hero slide layouts
+- **[Create Command Guide](docs/CREATE_COMMAND.md)** - Unified `create` mental model and recipes
 - **[Strategy Extension](docs/STRATEGY_EXTENSION.md)** - Add a new layout strategy with payload + gates
 - **[Prompts Guide](docs/PROMPTS.md)** - Prompt-based generation
 - **[Export Guide](docs/EXPORT.md)** - PNG export options and settings

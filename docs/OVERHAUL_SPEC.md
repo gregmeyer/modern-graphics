@@ -117,6 +117,14 @@ Acceptance criteria:
 - New user can generate production-usable graphics in 1-2 commands.
 - Docs focus on common workflows, not parameter sprawl.
 
+Current implementation status (checkpoint):
+- `create` command now uses progressive disclosure:
+  - `core`, `layout-specific`, and `expert` argument groups.
+- Clarity defaults are centralized (`CREATE_DEFAULTS`) and validated:
+  - density=`clarity`, crop=`safe`, padding=`minimal`, theme=`corporate`.
+- Create error handling now returns layout-specific actionable hints with example commands.
+- Validator includes create success/failure smoke checks for UX guardrails.
+
 ## Phase 4: Export determinism + reliability
 
 Objective:
@@ -134,6 +142,22 @@ Acceptance criteria:
 - Reduced miscrop/gutter regressions in fixture corpus.
 - Export behavior documented and test-covered.
 
+Current implementation status (checkpoint):
+- Export pipeline now uses deterministic crop flow:
+  - crop mode normalization (`none|safe|tight`, invalid values fallback to `safe`).
+  - single content-bounds detector with explicit root selectors + generic fallback.
+  - unified crop-box math path with bounds clamping.
+- Tight mode now applies a consistent reduced-padding rule from the configured base padding.
+- Phase validator now checks export mode normalization and crop-box math invariants.
+- Added smoke tests for export helper behavior:
+  - mode normalization
+  - padding behavior (`safe` vs `tight`)
+  - crop-box bounds clamping
+- Added deterministic export fixture corpus + harness:
+  - fixtures: `tests/smoke/fixtures_export_phase4.json`
+  - snapshots: `reports/export-fixtures/`
+  - report: `reports/phase4-export-fixtures.md`
+
 ## Phase 5: Migration + adoption
 
 Objective:
@@ -146,6 +170,16 @@ Requirements:
 
 Acceptance criteria:
 - Existing projects can migrate with clear path and low risk.
+
+Current implementation status (checkpoint):
+- Added legacy command alias adapter in CLI for known renamed commands:
+  - `slide-comparison` -> `slide-compare`
+  - `from-prompt` -> `from-prompt-file`
+  - underscore variants for insight/before-after commands.
+- Legacy command executions now emit migration-oriented deprecation hints toward `create`.
+- Added migration reference doc with before/after command examples:
+  - `docs/MIGRATION.md`
+- CI workflow now runs validator + Phase 1-5 smoke tests with pytest on Python 3.11.
 
 ## 5) Visual System Contract (Phase 1)
 

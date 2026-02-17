@@ -198,6 +198,8 @@ def main() -> int:
 
     insight_harness_script = ROOT / "scripts" / "run_insight_fixture_harness.py"
     subprocess.run([sys.executable, str(insight_harness_script)], check=True, cwd=str(ROOT))
+    export_harness_script = ROOT / "scripts" / "run_export_fixture_harness.py"
+    subprocess.run([sys.executable, str(export_harness_script)], check=True, cwd=str(ROOT))
 
     print(f"wrote {quality_json}")
     print(f"wrote {quality_md}")
