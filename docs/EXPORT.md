@@ -70,6 +70,11 @@ modern-graphics create \
   --output ./output/hero-linkedin.png
 ```
 
+Tracked example outputs:
+- `examples/output/showcase/create-first/social-preset-linkedin.png`
+- `examples/output/showcase/create-first/social-preset-x.png`
+- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+
 ## Padding Guidance
 
 - `padding=None`: use policy default (`8px` today)

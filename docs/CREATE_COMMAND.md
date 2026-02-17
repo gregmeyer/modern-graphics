@@ -103,6 +103,11 @@ Available presets:
 - `x` (1600x900)
 - `substack-hero` (1400x700)
 
+Tracked social preset examples:
+- `examples/output/showcase/create-first/social-preset-linkedin.png`
+- `examples/output/showcase/create-first/social-preset-x.png`
+- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+
 ## Error Hints
 
 If required inputs are missing, `create` returns:
