@@ -982,6 +982,12 @@ Create defaults (clarity mode):
 
 Use the canonical guide for decision table + recipes:
 - **[Create Command Guide](docs/CREATE_COMMAND.md)**
+- **[Migration Guide](docs/MIGRATION.md)** (legacy -> `create`)
+- **[Deprecation Policy](docs/DEPRECATION_POLICY.md)** (warn/freeze/error/removal stages)
+
+CLI posture:
+- `create` is the default surface for all new workflows.
+- legacy commands are compatibility-only and emit migration guidance.
 
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
