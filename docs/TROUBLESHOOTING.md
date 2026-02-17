@@ -95,4 +95,4 @@ generator = ModernGraphicsGenerator("My Diagram", Attribution(), use_svg_js=True
 - Check [Examples Directory](../examples/) for working examples
 - Review [API Reference](API.md) for method signatures
 - See [Advanced Topics](ADVANCED.md) for complex use cases
-- Check existing [Issues](https://github.com/your-repo/issues) (if applicable)
+- Check existing [Issues](https://github.com/gregmeyer/modern-graphics/issues) (if applicable)

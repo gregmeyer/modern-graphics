@@ -111,6 +111,8 @@ Migration guide: [`docs/MIGRATION.md`](docs/MIGRATION.md)
 - I need hero layout variants:
   - `examples/output/showcase/hero-slides/`
   - docs: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
+- I need Mermaid graphics inside hero/cards:
+  - docs: [`docs/MERMAID.md`](docs/MERMAID.md)
 - I need full themed gallery previews:
   - `examples/output/theme-demo/*.png` (tracked)
   - regenerate gallery HTML: `python examples/generate_complete_theme_demo.py`
@@ -149,8 +151,9 @@ Migration and deprecation policy:
 - Export and crop behavior: [`docs/EXPORT.md`](docs/EXPORT.md)
 - Diagram catalog: [`docs/DIAGRAM_TYPES.md`](docs/DIAGRAM_TYPES.md)
 - Hero patterns: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
+- Mermaid integration: [`docs/MERMAID.md`](docs/MERMAID.md)
 - Advanced customization: [`docs/ADVANCED.md`](docs/ADVANCED.md)
-- Prompting patterns: [`docs/PROMPT_BEST_PRACTICES.md`](docs/PROMPT_BEST_PRACTICES.md)
+- Prompt workflows (canonical): [`docs/PROMPTS.md`](docs/PROMPTS.md)
 - Full docs index: [`docs/README.md`](docs/README.md)
 
 ## Contributing
