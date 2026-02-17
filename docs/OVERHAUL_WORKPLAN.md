@@ -16,7 +16,7 @@ Phase 1 done when:
 
 ## A) Visual System + Tokens
 Owner: TBD
-Status: In progress
+Status: Checkpoint complete (baseline established)
 
 Tasks:
 - Create semantic token model (`modern_graphics/visual_system.py`).
@@ -27,10 +27,11 @@ Tasks:
 Outputs:
 - Token model + helpers
 - Token contract docs
+- Token debt baseline reports (`reports/phase1-token-debt.*`)
 
 ## B) Critique Gates + Quality Harness
 Owner: TBD
-Status: In progress
+Status: Checkpoint complete (baseline established)
 
 Tasks:
 - Add gate runner (`modern_graphics/critique_gates.py`).
@@ -49,7 +50,7 @@ Outputs:
 
 ## C) CLI Clarity Surface (Scaffold)
 Owner: TBD
-Status: In progress
+Status: Checkpoint complete (feature-flagged scaffold)
 
 Tasks:
 - Define new command contract (`create` by layout type).
@@ -62,7 +63,7 @@ Outputs:
 
 ## D) Export Determinism + Policy
 Owner: TBD
-Status: In progress
+Status: Checkpoint complete (policy defaults wired)
 
 Tasks:
 - Add export policy object (`modern_graphics/export_policy.py`).
@@ -79,3 +80,63 @@ Outputs:
 - Keep compatibility: no breaking runtime change in first scaffolding pass.
 - Prefer additive APIs before replacement.
 - Each workstream ships independently, then integrated in a phase gate review.
+
+## Phase 1 Gate Baseline (Current)
+
+From `reports/phase1-quality.md`:
+- pass: 2
+- warn: 2
+- fail: 4
+
+Hard fail gates:
+- `min_text_size`
+- `contrast_ratio`
+- `whitespace_guard`
+
+Soft warn gates:
+- `focal_point_budget`
+- `density_budget`
+
+From `reports/phase1-token-debt.md`:
+- files scanned: 28
+- files with findings: 25
+- total findings: 2033
+
+Top debt files:
+1. `modern_graphics/diagrams/modern_hero.py`
+2. `modern_graphics/diagrams/insight.py`
+3. `modern_graphics/color_scheme.py`
+
+## Phase 2 Slice 1 Plan (Token-Driven Rewrite)
+
+Objective:
+- reduce quality fails and token debt in the highest-leverage layouts first.
+
+Scope (first slice):
+1. `modern_graphics/diagrams/modern_hero.py`
+2. `modern_graphics/diagrams/insight.py`
+3. `modern_graphics/diagrams/comparison.py`
+
+Work items:
+- Replace ad-hoc literals with semantic token references.
+- Enforce min text size >= 13px in default/clarity mode.
+- Reduce focal point overload in default templates.
+- Normalize spacing/radius usage to token contract.
+- Keep canvas + embedded SVG composition paths intact.
+
+Success targets for slice 1:
+- `hero` and `insight-card` remain pass.
+- `comparison` moves from fail to pass.
+- total findings reduced by >= 20% in slice files.
+- no regression in feature-flagged `create` scaffold.
+
+Validation commands:
+```bash
+python scripts/validate_overhaul_phase1.py
+python scripts/run_phase1_quality_harness.py
+```
+
+Exit criteria for Slice 1:
+- reports updated and committed
+- docs updated for any behavior/default changes
+- migration notes added if CLI/API defaults change
