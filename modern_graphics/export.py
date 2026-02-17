@@ -13,7 +13,8 @@ def export_html_to_png(
     viewport_width: int = 2400,
     viewport_height: int = 1600,
     device_scale_factor: int = 2,
-    padding: int = 20,
+    padding: int = 8,
+    crop_mode: str = "safe",
     temp_html_path: Optional[Path] = None,
     omit_background: bool = False
 ) -> Path:
@@ -27,7 +28,8 @@ def export_html_to_png(
         viewport_width: Browser viewport width in CSS pixels (default: 2400)
         viewport_height: Browser viewport height in CSS pixels (default: 1600)
         device_scale_factor: Device scale factor for higher resolution (default: 2)
-        padding: Padding around content in CSS pixels (default: 20)
+        padding: Padding around content in CSS pixels (default: 8)
+        crop_mode: Crop mode (`none`, `safe`, `tight`)
         temp_html_path: Optional path for temporary HTML file (auto-generated if None)
     
     Returns:
@@ -155,6 +157,15 @@ def export_html_to_png(
                 full_page=True,
                 omit_background=omit_background
             )
+
+            if crop_mode == "none":
+                temp_png_path.rename(output_path)
+                browser.close()
+                return output_path
+
+            effective_padding = padding
+            if crop_mode == "tight":
+                effective_padding = max(0, int(round(padding * 0.5)))
             
             # Get bounding box of the main content using JavaScript
             try:
@@ -393,7 +404,7 @@ def export_html_to_png(
                     content_bbox = None
                 
                 if content_bbox:
-                    scaled_padding = padding * device_scale_factor
+                    scaled_padding = effective_padding * device_scale_factor
                     x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
                     y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
                     width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
@@ -495,7 +506,7 @@ def export_html_to_png(
                         }""")
                         
                         if content_bbox:
-                            scaled_padding = padding * device_scale_factor
+                            scaled_padding = effective_padding * device_scale_factor
                             x = max(0, int(content_bbox['x'] * device_scale_factor - scaled_padding))
                             y = max(0, int(content_bbox['y'] * device_scale_factor - scaled_padding))
                             width = int(content_bbox['width'] * device_scale_factor + scaled_padding * 2)
@@ -514,7 +525,7 @@ def export_html_to_png(
                         else:
                             temp_png_path.rename(output_path)
                     elif bbox:
-                        scaled_padding = padding * device_scale_factor
+                        scaled_padding = effective_padding * device_scale_factor
                         x = max(0, int(bbox['x'] * device_scale_factor - scaled_padding))
                         y = max(0, int(bbox['y'] * device_scale_factor - scaled_padding))
                         width = int(bbox['width'] * device_scale_factor + scaled_padding * 2)

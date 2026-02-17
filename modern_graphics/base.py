@@ -147,12 +147,16 @@ class BaseGenerator:
         viewport_width: int = 2400,
         viewport_height: int = 1600,
         device_scale_factor: int = 2,
-        padding: int = 20,
+        padding: Optional[int] = None,
+        crop_mode: Optional[str] = None,
         temp_html_path: Optional[Path] = None,
         transparent_background: bool = False
     ) -> Path:
         """Export HTML to PNG - delegates to export module"""
         from .export import export_html_to_png
+        from .export_policy import DEFAULT_EXPORT_POLICY
+        resolved_padding = DEFAULT_EXPORT_POLICY.resolve_padding() if padding is None else padding
+        resolved_crop_mode = crop_mode or DEFAULT_EXPORT_POLICY.crop_mode
         return export_html_to_png(
             html_content,
             output_path,
@@ -160,7 +164,8 @@ class BaseGenerator:
             viewport_width,
             viewport_height,
             device_scale_factor,
-            padding,
-            temp_html_path,
+            resolved_padding,
+            crop_mode=resolved_crop_mode,
+            temp_html_path=temp_html_path,
             omit_background=transparent_background
         )
