@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from modern_graphics.visual_system import CLARITY_TOKENS, token_lint
-from modern_graphics.critique_gates import run_clarity_gates
+from modern_graphics.critique_gates import run_clarity_gates, overall_status
 from modern_graphics.export_policy import DEFAULT_EXPORT_POLICY
 from modern_graphics.cli_clarity import normalize_density
 
@@ -27,12 +27,18 @@ def main() -> int:
         min_text_px=13,
         observed_min_text_px=11,
         focal_points=3,
+        density_items=9,
+        max_density_items=8,
+        contrast_ratio=4.2,
         whitespace_ratio=0.40,
     )
     statuses = {r.gate: r.status for r in report.results}
     assert statuses["min_text_size"] == "fail"
     assert statuses["focal_point_budget"] == "warn"
+    assert statuses["density_budget"] == "warn"
+    assert statuses["contrast_ratio"] == "fail"
     assert statuses["whitespace_guard"] == "fail"
+    assert overall_status(report) == "fail"
 
     assert DEFAULT_EXPORT_POLICY.padding_mode == "minimal"
     assert DEFAULT_EXPORT_POLICY.resolve_padding() == 8

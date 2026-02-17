@@ -952,11 +952,18 @@ Run current checkpoint validation:
 
 ```bash
 python scripts/validate_overhaul_phase1.py
+python scripts/run_phase1_quality_harness.py
 ```
 
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
 - `tests/smoke/test_overhaul_phase1_smoke.py`
+
+Generated Phase 1 reports:
+- `reports/phase1-quality.json`
+- `reports/phase1-quality.md`
+- `reports/phase1-token-debt.json`
+- `reports/phase1-token-debt.md`
 
 ### Getting Started
 - **[Quick Start Guide](docs/QUICKSTART.md)** - Get your first graphic in 5 minutes

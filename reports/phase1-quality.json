@@ -1,0 +1,301 @@
+{
+  "summary": {
+    "pass": 2,
+    "warn": 2,
+    "fail": 4
+  },
+  "hard_fail_gates": [
+    "contrast_ratio",
+    "min_text_size",
+    "whitespace_guard"
+  ],
+  "soft_warn_gates": [
+    "density_budget",
+    "focal_point_budget"
+  ],
+  "reports": [
+    {
+      "target": "hero",
+      "status": "pass",
+      "hard_fail_gates": [],
+      "soft_warn_gates": [],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "density_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "insight-card",
+      "status": "pass",
+      "hard_fail_gates": [],
+      "soft_warn_gates": [],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "density_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "story-slide",
+      "status": "warn",
+      "hard_fail_gates": [],
+      "soft_warn_gates": [
+        "focal_point_budget",
+        "density_budget"
+      ],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "warn",
+          "detail": "Observed 3 focal points above target 2"
+        },
+        {
+          "gate": "density_budget",
+          "status": "warn",
+          "detail": "Density items 10 above target 8"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "comparison",
+      "status": "fail",
+      "hard_fail_gates": [
+        "min_text_size"
+      ],
+      "soft_warn_gates": [],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "fail",
+          "detail": "Observed 12px below minimum 13px"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "density_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "timeline",
+      "status": "fail",
+      "hard_fail_gates": [
+        "min_text_size",
+        "contrast_ratio"
+      ],
+      "soft_warn_gates": [
+        "focal_point_budget",
+        "density_budget"
+      ],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "fail",
+          "detail": "Observed 11px below minimum 13px"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "warn",
+          "detail": "Observed 3 focal points above target 2"
+        },
+        {
+          "gate": "density_budget",
+          "status": "warn",
+          "detail": "Density items 9 above target 8"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "fail",
+          "detail": "Contrast ratio 4.20 below minimum 4.50"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "funnel",
+      "status": "fail",
+      "hard_fail_gates": [
+        "min_text_size",
+        "whitespace_guard"
+      ],
+      "soft_warn_gates": [],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "fail",
+          "detail": "Observed 12px below minimum 13px"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "density_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "fail",
+          "detail": "Whitespace ratio 0.37 above maximum 0.35"
+        }
+      ]
+    },
+    {
+      "target": "grid",
+      "status": "warn",
+      "hard_fail_gates": [],
+      "soft_warn_gates": [
+        "focal_point_budget",
+        "density_budget"
+      ],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "warn",
+          "detail": "Observed 4 focal points above target 2"
+        },
+        {
+          "gate": "density_budget",
+          "status": "warn",
+          "detail": "Density items 11 above target 8"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    },
+    {
+      "target": "pyramid",
+      "status": "fail",
+      "hard_fail_gates": [
+        "min_text_size"
+      ],
+      "soft_warn_gates": [],
+      "results": [
+        {
+          "gate": "min_text_size",
+          "status": "fail",
+          "detail": "Observed 12px below minimum 13px"
+        },
+        {
+          "gate": "focal_point_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "density_budget",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "contrast_ratio",
+          "status": "pass",
+          "detail": "OK"
+        },
+        {
+          "gate": "whitespace_guard",
+          "status": "pass",
+          "detail": "OK"
+        }
+      ]
+    }
+  ]
+}

@@ -35,6 +35,8 @@ def run_clarity_gates(
     observed_min_text_px: int,
     focal_points: int,
     max_focal_points: int = 2,
+    density_items: int = 0,
+    max_density_items: int = 8,
     contrast_ratio: float = 4.5,
     min_contrast_ratio: float = 4.5,
     whitespace_ratio: float = 0.0,
@@ -68,6 +70,17 @@ def run_clarity_gates(
         )
     else:
         results.append(GateResult(gate="focal_point_budget", status="pass", detail="OK"))
+
+    if density_items > max_density_items:
+        results.append(
+            GateResult(
+                gate="density_budget",
+                status="warn",
+                detail=f"Density items {density_items} above target {max_density_items}",
+            )
+        )
+    else:
+        results.append(GateResult(gate="density_budget", status="pass", detail="OK"))
 
     if contrast_ratio < min_contrast_ratio:
         results.append(

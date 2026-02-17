@@ -80,8 +80,21 @@ from .illustration_review import review_illustration, generate_with_review
 from .illustration_validator import IllustrationValidator
 from .design_review_agent import DesignReviewAgent
 from .svg_element_parser import SVGElementParser
-from .visual_system import VisualSystemTokens, TypographyScale, SpacingScale, CLARITY_TOKENS, token_lint
-from .critique_gates import GateResult, CritiqueReport, run_clarity_gates
+from .visual_system import (
+    VisualSystemTokens,
+    TypographyScale,
+    SpacingScale,
+    CLARITY_TOKENS,
+    token_lint,
+    scan_files_for_ad_hoc_literals,
+)
+from .critique_gates import (
+    GateResult,
+    CritiqueReport,
+    run_clarity_gates,
+    overall_status,
+    report_to_markdown,
+)
 from .export_policy import ExportPolicy, DEFAULT_EXPORT_POLICY
 from .cli_clarity import CreateCommand, normalize_density
 
@@ -194,9 +207,12 @@ __all__ = [
     'SpacingScale',
     'CLARITY_TOKENS',
     'token_lint',
+    'scan_files_for_ad_hoc_literals',
     'GateResult',
     'CritiqueReport',
     'run_clarity_gates',
+    'overall_status',
+    'report_to_markdown',
     'ExportPolicy',
     'DEFAULT_EXPORT_POLICY',
     'CreateCommand',

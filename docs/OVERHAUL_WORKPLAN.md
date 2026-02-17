@@ -44,6 +44,8 @@ Tasks:
 Outputs:
 - Gate runner
 - JSON report schema + markdown summary helper
+- Harness runner script (`scripts/run_phase1_quality_harness.py`)
+- Generated baseline reports under `reports/`
 
 ## C) CLI Clarity Surface (Scaffold)
 Owner: TBD

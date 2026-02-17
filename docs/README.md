@@ -52,3 +52,4 @@ Planning docs live under [`docs/archive/`](archive/):
 - Main README: [../README.md](../README.md)
 - Examples: [../examples/](../examples/)
 - Tests: [../tests/](../tests/)
+- Phase 1 reports (generated): [../reports/](../reports/)
