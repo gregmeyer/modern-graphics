@@ -18,7 +18,8 @@ generator.export_to_png(
     viewport_width=2400,        # Browser viewport width (CSS pixels)
     viewport_height=1600,       # Browser viewport height (CSS pixels)
     device_scale_factor=2,      # Scale factor for resolution (1-4 recommended)
-    padding=20,                  # Padding around content (CSS pixels)
+    padding=None,                # None => policy default (minimal)
+    crop_mode="safe",            # none | safe | tight
     temp_html_path=None          # Optional: custom temp HTML path
 )
 ```
@@ -42,10 +43,25 @@ generator.export_to_png(
 
 ## Automatic Cropping
 
-All PNG exports automatically crop to the content bounding box, removing excess whitespace. Adjust `padding` if content is cut off:
+By default, PNG exports use minimal padding and `crop_mode="safe"` for easier downstream sizing.
+
+Use `crop_mode` to control bounds behavior:
 
 ```python
-# More padding if content is too close to edges
+# No cropping (full page screenshot)
+generator.export_to_png(html, path, crop_mode="none")
+
+# Balanced crop (default)
+generator.export_to_png(html, path, crop_mode="safe")
+
+# Tighter crop around detected content
+generator.export_to_png(html, path, crop_mode="tight")
+```
+
+Adjust `padding` if content is too close to edges:
+
+```python
+# More padding around content
 generator.export_to_png(html, path, padding=40)
 
 # Minimal padding for tight crop

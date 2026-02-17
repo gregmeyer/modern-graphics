@@ -194,8 +194,8 @@
       "target": "funnel",
       "status": "fail",
       "hard_fail_gates": [
-        "min_text_size",
-        "whitespace_guard"
+        "whitespace_guard",
+        "min_text_size"
       ],
       "soft_warn_gates": [],
       "results": [

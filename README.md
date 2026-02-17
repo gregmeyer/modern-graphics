@@ -955,6 +955,20 @@ python scripts/validate_overhaul_phase1.py
 python scripts/run_phase1_quality_harness.py
 ```
 
+Experimental clarity CLI scaffold (feature-flagged):
+
+```bash
+MODERN_GRAPHICS_ENABLE_CREATE=1 modern-graphics create \
+  --layout hero \
+  --title "Clarity Hero" \
+  --headline "Execution scales. Judgment stays scarce." \
+  --subheadline "Use explicit gates to decide what ships." \
+  --highlights "More output,Limited judgment,Better filtering" \
+  --theme corporate \
+  --png --crop-mode safe --padding-mode minimal \
+  --output ./output/clarity-hero.png
+```
+
 Smoke fixtures and checks live in:
 - `tests/smoke/fixtures_phase1.json`
 - `tests/smoke/test_overhaul_phase1_smoke.py`

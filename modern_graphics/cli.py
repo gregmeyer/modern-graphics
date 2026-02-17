@@ -89,6 +89,8 @@ from .diagrams.wireframe_scene import render_scene, list_presets, SCENE_PRESETS
 from .diagrams.wireframe_elements.config import WireframeConfig
 from .diagrams.mermaid_svg import mermaid_to_svg
 from .color_scheme import get_scheme, list_schemes, ColorScheme
+from .cli_clarity import normalize_density
+from .export_policy import ExportPolicy
 
 
 def parse_steps(steps_str: str) -> list:
@@ -326,6 +328,27 @@ def main():
     parser.add_argument('--person', default='Greg Meyer', help='Attribution person name (default: Greg Meyer)')
     parser.add_argument('--website', default='gregmeyer.com', help='Attribution website (default: gregmeyer.com)')
     subparsers = parser.add_subparsers(dest='command', help='Diagram type')
+
+    # Clarity-first create scaffold (feature-flagged)
+    create_parser = subparsers.add_parser('create', help='[Experimental] clarity-first creation surface')
+    create_parser.add_argument('--layout', required=True, choices=['hero', 'insight', 'comparison', 'story'], help='Layout family to generate')
+    create_parser.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
+    create_parser.add_argument('--headline', help='Headline (hero/story)')
+    create_parser.add_argument('--subheadline', help='Subheadline (hero/story)')
+    create_parser.add_argument('--eyebrow', help='Eyebrow/tagline')
+    create_parser.add_argument('--highlights', help='Comma-separated highlights (hero)')
+    create_parser.add_argument('--text', help='Insight text (insight)')
+    create_parser.add_argument('--left', help='Left column payload for comparison: \"Title:Step1,Step2:Outcome\"')
+    create_parser.add_argument('--right', help='Right column payload for comparison: \"Title:Step1,Step2:Outcome\"')
+    create_parser.add_argument('--what-changed', help='Story field: what changed')
+    create_parser.add_argument('--time-period', help='Story field: over what period')
+    create_parser.add_argument('--what-it-means', help='Story field: why it matters')
+    create_parser.add_argument('--density', default='clarity', choices=['clarity', 'balanced', 'dense'], help='Density mode (default: clarity)')
+    create_parser.add_argument('--theme', choices=list_schemes(), default='corporate', help=f'Color theme: {", ".join(list_schemes())}')
+    create_parser.add_argument('--output', required=True, help='Output HTML/PNG path')
+    create_parser.add_argument('--png', action='store_true', help='Export as PNG')
+    create_parser.add_argument('--crop-mode', choices=['none', 'safe', 'tight'], default='safe', help='PNG crop mode (default: safe)')
+    create_parser.add_argument('--padding-mode', choices=['none', 'minimal', 'comfortable'], default='minimal', help='PNG padding mode (default: minimal)')
 
     # Cycle diagram
     cycle_parser = subparsers.add_parser('cycle', help='Generate cycle diagram')
@@ -828,6 +851,93 @@ def main():
             print(f"Generator script exited with code {result.returncode}")
             return result.returncode
         print(f"Graphic generated in: {script_path.parent}")
+        return 0
+
+    if args.command == 'create':
+        if os.environ.get("MODERN_GRAPHICS_ENABLE_CREATE", "").lower() not in {"1", "true", "yes"}:
+            print("Error: 'create' is experimental. Enable with MODERN_GRAPHICS_ENABLE_CREATE=1")
+            return 1
+
+        output_path = Path(args.output)
+        attribution = Attribution(
+            person=getattr(args, 'person', 'Greg Meyer'),
+            website=getattr(args, 'website', 'gregmeyer.com'),
+        )
+        if getattr(args, 'png', False) and output_path.suffix != '.png':
+            output_path = output_path.with_suffix('.png')
+
+        generator = ModernGraphicsGenerator(getattr(args, 'title', 'Modern Graphic'), attribution)
+        density = normalize_density(getattr(args, "density", "clarity"))
+        color_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None
+
+        if args.layout == 'hero':
+            highlights = parse_highlights_arg(getattr(args, 'highlights', None))
+            if density == "clarity" and highlights:
+                highlights = highlights[:3]
+            html = generate_modern_hero(
+                title=args.title,
+                headline=args.headline or "Execution scales. Judgment stays scarce.",
+                subheadline=getattr(args, 'subheadline', None),
+                eyebrow=getattr(args, 'eyebrow', None),
+                highlights=highlights,
+                background_variant="light",
+                attribution=attribution,
+            )
+        elif args.layout == 'insight':
+            if not getattr(args, 'text', None):
+                print("Error: --text is required for --layout insight")
+                return 1
+            html = generate_key_insight(
+                generator,
+                text=args.text,
+                label="Key Insight",
+                variant="bold" if density != "dense" else "default",
+                icon="lightning",
+                color_scheme=color_scheme,
+            )
+        elif args.layout == 'comparison':
+            if not getattr(args, 'left', None) or not getattr(args, 'right', None):
+                print("Error: --left and --right are required for --layout comparison")
+                return 1
+            html = generate_comparison_diagram(
+                title=args.title,
+                left_column=parse_column(args.left),
+                right_column=parse_column(args.right),
+                vs_text="vs",
+                attribution=attribution,
+                color_scheme=color_scheme,
+            )
+        elif args.layout == 'story':
+            html = generate_story_slide(
+                title=args.title,
+                what_changed=getattr(args, 'what_changed', None) or "Execution capacity increased",
+                time_period=getattr(args, 'time_period', None) or "this quarter",
+                what_it_means=getattr(args, 'what_it_means', None) or "Decision quality now drives outcomes",
+                insight=getattr(args, 'headline', None),
+                attribution=attribution,
+            )
+        else:
+            print(f"Error: unsupported layout {args.layout}")
+            return 1
+
+        if color_scheme is not None and args.layout in {"hero", "story"}:
+            html = color_scheme.apply_to_html(html)
+
+        if getattr(args, 'png', False):
+            policy = ExportPolicy(
+                crop_mode=getattr(args, "crop_mode", "safe"),
+                padding_mode=getattr(args, "padding_mode", "minimal"),
+            )
+            generator.export_to_png(
+                html,
+                output_path,
+                padding=policy.resolve_padding(),
+                crop_mode=policy.crop_mode,
+            )
+            print(f"Generated create/{args.layout} PNG: {output_path}")
+        else:
+            generator.save(html, output_path)
+            print(f"Generated create/{args.layout}: {output_path}")
         return 0
     
     output_path = Path(args.output)

@@ -46,7 +46,7 @@
 - `whitespace_guard`: **pass** - OK
 
 ### funnel - FAIL
-- hard fails: `min_text_size, whitespace_guard`
+- hard fails: `whitespace_guard, min_text_size`
 - `min_text_size`: **fail** - Observed 12px below minimum 13px
 - `focal_point_budget`: **pass** - OK
 - `density_budget`: **pass** - OK
