@@ -92,6 +92,7 @@ from .diagrams.mermaid_svg import mermaid_to_svg
 from .color_scheme import get_scheme, list_schemes, ColorScheme
 from .cli_clarity import normalize_density, CREATE_DEFAULTS
 from .export_policy import ExportPolicy
+from .export_presets import list_export_presets, get_export_preset
 from .layout_models import (
     HeroPayload,
     ComparisonPayload,
@@ -414,10 +415,10 @@ def main():
     parser.add_argument('--website', default='gregmeyer.com', help='Attribution website (default: gregmeyer.com)')
     subparsers = parser.add_subparsers(dest='command', help='Diagram type')
 
-    # Clarity-first create scaffold (feature-flagged)
+    # Clarity-first create scaffold
     create_parser = subparsers.add_parser(
         'create',
-        help='[Experimental] unified clarity-first creation surface',
+        help='Unified clarity-first creation surface',
         epilog=(
             "Examples:\n"
             "  modern-graphics create --layout hero --headline \"Execution scales\" --output hero.html\n"
@@ -469,6 +470,7 @@ def main():
 
     create_expert.add_argument('--density', default=CREATE_DEFAULTS.density, choices=['clarity', 'balanced', 'dense'], help=f'Density mode (default: {CREATE_DEFAULTS.density})')
     create_expert.add_argument('--png', action='store_true', help='Export as PNG')
+    create_expert.add_argument('--export-preset', choices=list_export_presets(), help='Channel preset for PNG export (linkedin|x|substack-hero)')
     create_expert.add_argument('--crop-mode', choices=['none', 'safe', 'tight'], default=CREATE_DEFAULTS.crop_mode, help=f'PNG crop mode (default: {CREATE_DEFAULTS.crop_mode})')
     create_expert.add_argument('--padding-mode', choices=['none', 'minimal', 'comfortable'], default=CREATE_DEFAULTS.padding_mode, help=f'PNG padding mode (default: {CREATE_DEFAULTS.padding_mode})')
 
@@ -1156,16 +1158,30 @@ def main():
             html = color_scheme.apply_to_html(html)
 
         if getattr(args, 'png', False):
-            policy = ExportPolicy(
-                crop_mode=getattr(args, "crop_mode", "safe"),
-                padding_mode=getattr(args, "padding_mode", "minimal"),
-            )
-            generator.export_to_png(
-                html,
-                output_path,
-                padding=policy.resolve_padding(),
-                crop_mode=policy.crop_mode,
-            )
+            preset = get_export_preset(getattr(args, "export_preset", None))
+            if preset is not None:
+                policy = ExportPolicy(crop_mode=preset.crop_mode, padding_mode=preset.padding_mode)
+                generator.export_to_png(
+                    html,
+                    output_path,
+                    viewport_width=preset.viewport_width,
+                    viewport_height=preset.viewport_height,
+                    device_scale_factor=preset.device_scale_factor,
+                    padding=policy.resolve_padding(),
+                    crop_mode=policy.crop_mode,
+                )
+                print(f"Applied export preset '{preset.name}' ({preset.viewport_width}x{preset.viewport_height})")
+            else:
+                policy = ExportPolicy(
+                    crop_mode=getattr(args, "crop_mode", "safe"),
+                    padding_mode=getattr(args, "padding_mode", "minimal"),
+                )
+                generator.export_to_png(
+                    html,
+                    output_path,
+                    padding=policy.resolve_padding(),
+                    crop_mode=policy.crop_mode,
+                )
             print(f"Generated create/{args.layout} PNG: {output_path}")
         else:
             generator.save(html, output_path)

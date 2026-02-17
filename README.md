@@ -174,6 +174,18 @@ modern-graphics create \
   --output ./output/insight-card.png
 ```
 
+### Social Export Examples
+
+Concrete social preset PNGs are tracked here:
+
+- `examples/output/showcase/create-first/social-preset-linkedin.png`
+- `examples/output/showcase/create-first/social-preset-x.png`
+- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+
+| LinkedIn preset | X preset | Substack hero preset |
+|---|---|---|
+| ![LinkedIn social preset example](examples/output/showcase/create-first/social-preset-linkedin.png) | ![X social preset example](examples/output/showcase/create-first/social-preset-x.png) | ![Substack social preset example](examples/output/showcase/create-first/social-preset-substack-hero.png) |
+
 Then use these references:
 - [Create Command Guide](docs/CREATE_COMMAND.md)
 - [Export Guide](docs/EXPORT.md)

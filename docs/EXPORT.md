@@ -51,6 +51,30 @@ generator.export_to_png(html, Path("out.png"), crop_mode="safe")
 generator.export_to_png(html, Path("out.png"), crop_mode="tight")
 ```
 
+## Social Presets (CLI)
+
+`modern-graphics create` supports channel presets that apply fixed viewport dimensions plus preset crop/padding defaults:
+
+- `linkedin`: `1200x627`
+- `x`: `1600x900`
+- `substack-hero`: `1400x700`
+
+Example:
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --png \
+  --export-preset linkedin \
+  --output ./output/hero-linkedin.png
+```
+
+Tracked example outputs:
+- `examples/output/showcase/create-first/social-preset-linkedin.png`
+- `examples/output/showcase/create-first/social-preset-x.png`
+- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+
 ## Padding Guidance
 
 - `padding=None`: use policy default (`8px` today)

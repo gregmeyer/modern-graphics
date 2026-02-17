@@ -31,4 +31,5 @@ jobs:
             tests/smoke/test_layout_strategy_smoke.py \
             tests/smoke/test_create_cli_phase3_smoke.py \
             tests/smoke/test_export_phase4_smoke.py \
-            tests/smoke/test_cli_migration_phase5_smoke.py
+            tests/smoke/test_cli_migration_phase5_smoke.py \
+            tests/smoke/test_export_presets_phase6_smoke.py
