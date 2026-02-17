@@ -6,6 +6,7 @@ Use this directory as the reference library for everything outside the main READ
 - **[Overhaul Spec](OVERHAUL_SPEC.md)** – Active overhaul phases and required quality/documentation gates
 - **[Overhaul Workplan](OVERHAUL_WORKPLAN.md)** – Current execution status and workstreams
 - **[Quick Start Guide](QUICKSTART.md)** – Install, run your first script, and export PNGs
+- **[Create Command Guide](CREATE_COMMAND.md)** – Unified CLI workflow, defaults, and layout recipes
 - **[Core Concepts](CONCEPTS.md)** – Generator, diagram types, templates, attribution
 - **[Diagram Types](DIAGRAM_TYPES.md)** – Decision tree plus visual reference
 - **[Common Use Cases](USE_CASES.md)** – Real-world patterns you can reuse
@@ -14,6 +15,7 @@ Use this directory as the reference library for everything outside the main READ
 - **[Advanced Topics](ADVANCED.md)** – Color schemes, SVG.js mockups, custom templates
   - Includes the [Color Scheme Generator](ADVANCED.md#color-scheme-generator) walkthrough
 - **[Hero Slides Guide](HERO_SLIDES.md)** – Open canvas, triptych, and story-slide layouts
+- **[Strategy Extension Contract](STRATEGY_EXTENSION.md)** – Add strategies with payload + fixture + gate coverage
 - **[Export Guide](EXPORT.md)** – PNG settings, cropping behavior, and quality tips
 - **[API Reference](API.md)** – Full API surface for generators and helpers
 

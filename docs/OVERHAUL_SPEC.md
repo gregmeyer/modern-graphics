@@ -117,6 +117,14 @@ Acceptance criteria:
 - New user can generate production-usable graphics in 1-2 commands.
 - Docs focus on common workflows, not parameter sprawl.
 
+Current implementation status (checkpoint):
+- `create` command now uses progressive disclosure:
+  - `core`, `layout-specific`, and `expert` argument groups.
+- Clarity defaults are centralized (`CREATE_DEFAULTS`) and validated:
+  - density=`clarity`, crop=`safe`, padding=`minimal`, theme=`corporate`.
+- Create error handling now returns layout-specific actionable hints with example commands.
+- Validator includes create success/failure smoke checks for UX guardrails.
+
 ## Phase 4: Export determinism + reliability
 
 Objective:
