@@ -22,16 +22,16 @@ html = generator.generate_timeline_diagram(...)
 # ... and more
 ```
 
-**Key Points:**
-- One generator can create multiple graphics
-- All graphics share the same title and attribution settings
-- Generator methods return HTML that you can export to PNG
+Key points:
+- One generator can create multiple graphics.
+- All graphics share the same title and attribution settings.
+- Generator methods return HTML that you can export to PNG.
 
 ## 2. Diagram Types
 
 The library includes 10+ diagram types, each optimized for different use cases.
 
-**Visual Gallery:**
+Visual gallery:
 
 ![Cycle Diagram](../examples/output/showcase/diagram-types/01-cycle.png)
 ![Comparison Diagram](../examples/output/showcase/diagram-types/02-comparison.png)
@@ -42,22 +42,21 @@ The library includes 10+ diagram types, each optimized for different use cases.
 ![Slide Cards](../examples/output/showcase/diagram-types/07-slide-cards.png)
 ![Slide Card Comparison](../examples/output/showcase/diagram-types/08-slide-comparison.png)
 
-**Choosing the Right Type:** See [Diagram Types Guide](./DIAGRAM_TYPES.md) for a decision tree and detailed examples.
+Choosing the right type: see [Diagram Types Guide](./DIAGRAM_TYPES.md).
 
 ## 3. Templates
 
 Templates control the visual style of your graphics: colors, fonts, backgrounds, and overall aesthetic.
 
-**Why Use Templates?**
-- **Consistency**: All graphics match your brand
-- **Speed**: Apply styles instantly
-- **Flexibility**: Switch between styles easily
+Why use templates:
+- Consistency: all graphics match your brand.
+- Speed: apply styles instantly.
+- Flexibility: switch between styles quickly.
 
-**Default Template:**
-Every generator uses a default template (clean, modern style). You can use it as-is or customize it.
+Default template:
+- Every generator uses a clean default style.
 
-**Custom Templates:**
-Create templates to match your brand or use case:
+Custom templates:
 
 ```python
 from modern_graphics import quick_template_from_description
@@ -71,24 +70,25 @@ template = quick_template_from_description(
 generator = ModernGraphicsGenerator("My Diagram", template=template)
 ```
 
-**Template Examples:**
+Template examples:
 
 | Default | Corporate | Tech Startup |
 |---------|-----------|--------------|
 | ![Default Template](../examples/output/showcase/templates/default.png) | ![Corporate Template](../examples/output/showcase/templates/corporate.png) | ![Tech Startup Template](../examples/output/showcase/templates/tech-startup.png) |
 
-**Learn More:** See [Custom Templates](../README.md#custom-templates) in the full documentation.
+Learn more: [Advanced Topics](./ADVANCED.md) and [Create Command Guide](./CREATE_COMMAND.md).
 
 ## 4. Attribution
 
 Attribution adds copyright and context information to your graphics. It appears at the bottom of generated images.
 
-**Default Behavior:**
-- Attribution is included automatically
-- Shows copyright: "© Greg Meyer 2025 • gregmeyer.com"
-- Positioned at bottom-right
+Default behavior:
+- Attribution is included automatically.
+- Shows copyright and optional context.
+- Positioned at bottom-right by default.
 
-**Customize It:**
+Customize it:
+
 ```python
 from modern_graphics import Attribution
 
@@ -102,10 +102,10 @@ attribution = Attribution(
 generator = ModernGraphicsGenerator("My Diagram", attribution=attribution)
 ```
 
-**Attribution Examples:**
+Attribution examples:
 
 | Default | Custom Styled | With Context |
 |---------|---------------|--------------|
 | ![Default Attribution](../examples/output/showcase/attribution/default.png) | ![Custom Styled Attribution](../examples/output/showcase/attribution/custom-styled.png) | ![Attribution with Context](../examples/output/showcase/attribution/with-context.png) |
 
-**Learn More:** See [Attribution System](../README.md#attribution-system) in the full documentation.
+Learn more: [API Reference](./API.md) and [Export Guide](./EXPORT.md).

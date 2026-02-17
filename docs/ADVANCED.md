@@ -2,6 +2,8 @@
 
 Learn these features when you need them.
 
+For wireframe scene schema details, see [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md).
+
 ## SVG.js Integration
 
 Create dynamic, programmatic SVG graphics using the SVG.js library. Perfect for complex diagrams, animations, and interactive elements.

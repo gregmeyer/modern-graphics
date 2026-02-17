@@ -1,31 +1,30 @@
-# Prompt-Based Generation
+# Prompt Workflows (Canonical)
 
-Generate diagrams from natural language prompts using AI. All diagram types support prompt-based generation with default prompts that work out of the box.
+Use this page as the single source of truth for prompt-based generation.
 
-## Basic Usage
+## What Requires OpenAI
+
+Prompt workflows require `OPENAI_API_KEY`.
+
+```bash
+export OPENAI_API_KEY=your_key
+```
+
+Non-prompt `create` and structured-data workflows still work without OpenAI.
+
+## Fast Start
 
 ```python
 from modern_graphics import ModernGraphicsGenerator, Attribution
 from modern_graphics import generate_cycle_diagram_from_prompt
 from pathlib import Path
 
-generator = ModernGraphicsGenerator("My Diagram", Attribution())
-
-# Use default prompt (works automatically)
+generator = ModernGraphicsGenerator("Prompt Demo", Attribution())
 html = generate_cycle_diagram_from_prompt(generator)
-
-# Or provide a custom prompt
-html = generate_cycle_diagram_from_prompt(
-    generator,
-    prompt="Show a marketing funnel: Awareness (red), Interest (blue), Consideration (green), Purchase (purple)"
-)
-
-generator.export_to_png(html, Path('output.png'))
+generator.export_to_png(html, Path("prompt-cycle.png"))
 ```
 
-## Available Prompt Functions
-
-All diagram types have prompt-based generators:
+## Prompt APIs
 
 ```python
 from modern_graphics import (
@@ -36,137 +35,111 @@ from modern_graphics import (
     generate_flywheel_diagram_from_prompt,
     generate_slide_cards_from_prompt,
     generate_slide_card_comparison_from_prompt,
-    DEFAULT_DIAGRAM_PROMPTS
+    DEFAULT_DIAGRAM_PROMPTS,
 )
+```
 
-# Use defaults
-html = generate_cycle_diagram_from_prompt(generator)
+Use default prompts:
 
-# Custom prompt
+```python
+html = generate_timeline_diagram_from_prompt(generator)
+```
+
+Use custom prompts:
+
+```python
 html = generate_timeline_diagram_from_prompt(
     generator,
-    prompt="Show product milestones: Q1 Launch, Q2 Growth, Q3 Scale, Q4 Mature"
+    prompt="Show milestones: Q1 baseline, Q2 adoption, Q3 optimization, Q4 scale"
 )
-
-# View default prompts
-print(DEFAULT_DIAGRAM_PROMPTS['cycle'])
 ```
 
-## When to Use Prompts vs Hardcoded Data
-
-- **Use Prompts**: When you want AI to interpret natural language and extract structure
-- **Use Hardcoded Data**: When you have exact data structures and want precise control
-
-Both approaches work - choose based on your needs!
-
-## Requirements
-
-Prompt-based generation requires `OPENAI_API_KEY` in your `.env` file:
-
-```bash
-OPENAI_API_KEY=your_openai_key_here
-```
-
-## Default Prompts
-
-Each diagram type has a default prompt that works automatically. View them:
+Inspect defaults:
 
 ```python
 from modern_graphics.prompt_to_diagram import DEFAULT_DIAGRAM_PROMPTS
-
-print(DEFAULT_DIAGRAM_PROMPTS['cycle'])
-print(DEFAULT_DIAGRAM_PROMPTS['comparison'])
-print(DEFAULT_DIAGRAM_PROMPTS['timeline'])
-# ... etc
+print(DEFAULT_DIAGRAM_PROMPTS["cycle"])
 ```
 
-## Custom Prompts
+## CLI Prompt Workflows
 
-Provide your own prompt for more control:
-
-```python
-html = generate_cycle_diagram_from_prompt(
-    generator,
-    prompt="Show a customer journey: Discover (blue), Try (green), Buy (purple), Love (orange)"
-)
-```
-
-## Prompt Examples
-
-### Cycle Diagram
-```
-Show a software development cycle with 4 steps: Plan (blue), Build (green), Test (orange), Deploy (purple)
-```
-
-### Comparison Diagram
-```
-Compare Manual Design Approach vs Automated Generation Approach. 
-Manual Approach: Slow, Inconsistent, Time-consuming, Hard to update
-Automated Approach: Fast, Consistent, Efficient, Easy to update
-```
-
-### Timeline Diagram
-```
-Show a product launch timeline from Q1 2024 to Q4 2024 with 4 key milestones:
-Q1: Planning and Research (blue)
-Q2: Development (green)
-Q3: Testing and Refinement (orange)
-Q4: Launch (purple)
-```
-
-### Story Slide
-```
-What changed: Revenue model shifted from upfront licenses to subscriptions
-Time period: Q2-Q4 2025
-What it means: Predictable revenue and 20% higher retention
-```
-
-See [Prompt Best Practices](PROMPT_BEST_PRACTICES.md) and [Prompt Examples](PROMPT_EXAMPLES.md) for more guidance.
-
-## Graphic ideas interview ("I need some ideas")
-
-When you need ideas for a hero or insight-story graphic, run the **ideas** interview. It asks you for format, subject, theme, narrative, before/after panels, layout constraints, and outputs, then builds a single prompt and stores it.
-
-**CLI:**
+### 1) Ideas Interview
 
 ```bash
 modern-graphics ideas
+modern-graphics ideas --name cy-graphic --save-dir ./my_prompts
+modern-graphics ideas --no-save
 ```
 
-- Saves a prompt version under `./prompt_versions/` (or `MODERN_GRAPHICS_PROMPTS_DIR`).
-- Use `--name my-graphic` to name the file (e.g. `graphic_prompt_my-graphic.md`).
-- Use `--save-dir ./my_prompts` to choose the directory.
-- Use `--no-save` to only print the prompt without saving.
+Builds a single reusable prompt from a guided interview and saves it under `./prompt_versions` by default.
 
-**Python:**
+### 2) Generate From Prompt File
 
-```python
-from modern_graphics import run_graphic_ideas_interview
-from pathlib import Path
-
-result = run_graphic_ideas_interview(
-    save_dir=Path("./prompt_versions"),
-    prompt_name="my-graphic",
-    skip_save=False,
-)
-# result["prompt_text"] — built prompt
-# result["saved_path"] — path to saved file, or None
+```bash
+modern-graphics from-prompt-file raw/cy-example/cy-graphic-prompt-revised.md
+modern-graphics from-prompt-file path/to/prompt.md --output-dir path/to/graphics
 ```
 
-The interview uses a generic checklist (format, subject, theme, narrative, before/after, layout, outputs). Use the saved prompt when briefing a human or model to generate the graphic.
+### 3) Hero From Prompt JSON
 
-**Example built prompt (peanut butter and jelly sandwich-making process):**
+```bash
+modern-graphics modern-hero-prompt \
+  --prompt-file hero_prompt.json \
+  --output hero-from-prompt.png --png
+```
+
+## Practical Prompt Checklist
+
+Use this before running prompt generation:
+
+1. State the graphic type (`cycle`, `comparison`, `timeline`, `hero`, `insight-story`).
+2. Include explicit entities/stages and sequence order.
+3. Specify outcome framing (what changed, over what period, why it matters).
+4. Add visual constraints (tone, emphasis, density expectations).
+5. Keep language concrete; avoid vague style-only prompts.
+
+## Top Prompt Patterns (Copy/Adapt)
+
+- Cycle:
+  - `Show a product delivery loop: Discover, Build, Validate, Scale.`
+- Comparison:
+  - `Compare manual release process vs automated release pipeline.`
+- Timeline:
+  - `Show quarterly milestones from pilot through scale.`
+- Grid:
+  - `Show top 5 operating priorities ranked by impact.`
+- Flywheel:
+  - `Show growth loop: acquire, activate, retain, refer.`
+- Slide cards:
+  - `Three cards: current constraint, decision gate, expected outcome.`
+- Slide comparison:
+  - `Before: high motion/low relevance; After: fewer launches/higher relevance.`
+- Story slide:
+  - `What changed, when it changed, and why the shift matters now.`
+- Insight card:
+  - `Single sharp insight with one supporting visual and decision implication.`
+- Hero:
+  - `Executive opener with one thesis, three proof points, and a clear operating move.`
+
+## PB&J Example (Ideas Output)
 
 ```python
 from modern_graphics.prompts import EXAMPLE_ANSWERS_PBJ, EXAMPLE_PROMPT_PBJ
-
-# EXAMPLE_ANSWERS_PBJ is the filled-in checklist (format, subject, theme, etc.)
-# EXAMPLE_PROMPT_PBJ is the single paragraph built from it:
 print(EXAMPLE_PROMPT_PBJ)
 ```
 
-Output:
+## Related Docs
 
-```
-Make a insight-story graphic for peanut butter and jelly sandwich-making process with theme/mood: warm, kitchen-friendly; browns, reds, cream. Narrative: From chaos to lunch: three steps, one sandwich. Key insight: The best PB&J is the one you actually make. Before panel: kitchen chaos: bread everywhere, jars scattered, knife in the wrong place. After panel: Spread peanut butter → Add jelly → Close and slice. Done. Layout: horizontal flow, same baseline for arrows; no post-its; small sandwich icon on the right. Outputs: docs/lunch-graphics/, HTML + PNG, generate_pbj_hero.py.
-```
+- Mermaid integration: [MERMAID.md](MERMAID.md)
+- Create command: [CREATE_COMMAND.md](CREATE_COMMAND.md)
+- API signatures: [API.md](API.md)
+- Troubleshooting: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+## Transitional Notes
+
+The following docs are retained temporarily as lightweight redirects while links migrate:
+
+- `PROMPT_BEST_PRACTICES.md`
+- `PROMPT_EXAMPLES.md`
+- `PROMPT_PATTERNS.md`
+- `AI_TEMPLATE_CREATION.md`

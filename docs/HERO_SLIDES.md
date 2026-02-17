@@ -13,6 +13,7 @@ Modern hero slides render Apple-style layouts with calm gradients, orbit accents
 | ![Hero Dark](../examples/output/showcase/hero-slides/04-dark-variant.png) | ![Hero Triptych](../examples/output/showcase/hero-slides/05-triptych.png) |
 
 **Note:** The Custom SVG Layout example uses a freeform canvas with a custom SVG ribbon illustration. See [Freeform Canvas](#freeform-canvas) section below for complete examples.
+For Mermaid flow/sequence diagrams embedded in hero layouts, see [MERMAID.md](MERMAID.md).
 
 ## 1. Modern Hero (Open Canvas)
 
