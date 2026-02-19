@@ -41,7 +41,6 @@ Task-first map of the docs in this repository, aligned to the main README goals.
 - [Troubleshooting](TROUBLESHOOTING.md) – common operational fixes
 - [Contributing Guide](CONTRIBUTING.md) – development and PR workflow
 - [Strategy Extension Contract](STRATEGY_EXTENSION.md) – adding strategies with gates
-- [Sharing Checklist](SHARING_CHECKLIST.md) – publication checklist
 - [Radar Diagram](RADAR_DIAGRAM.md) – radar layout usage and examples
 
 ## Internal Program Docs
