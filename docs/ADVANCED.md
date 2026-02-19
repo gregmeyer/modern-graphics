@@ -11,6 +11,39 @@ Learn these features when you need them.
 If you only need the default CLI path, use [Create Command Guide](./CREATE_COMMAND.md).
 If you need the fastest first output, use [Quick Start Guide](./QUICKSTART.md).
 
+## Fast Path: Build a Custom Theme (Font + Colors)
+
+Use this when you want a branded look without changing diagram logic.
+
+```python
+from pathlib import Path
+from modern_graphics import TemplateBuilder, register_template, ModernGraphicsGenerator, Attribution
+
+brand_theme = (
+    TemplateBuilder("brand-clean")
+    .add_color("primary", ("#0B1F3A", "#163A6B"), "rgba(22, 58, 107, 0.28)")
+    .add_color("accent", ("#0E7490", "#155E75"), "rgba(14, 116, 144, 0.24)")
+    .set_font_family("'Avenir Next', 'Segoe UI', sans-serif")
+    .set_background_color("#F8FAFC")
+    .build()
+)
+
+register_template(brand_theme)
+generator = ModernGraphicsGenerator("Brand Theme Example", Attribution(), template=brand_theme)
+
+html = generator.generate_cycle_diagram([
+    {"text": "Capture", "color": "primary"},
+    {"text": "Decide", "color": "accent"},
+    {"text": "Ship", "color": "primary"},
+])
+generator.export_to_png(html, Path("output/custom-theme-insight.png"), crop_mode="safe")
+print("Expected output: output/custom-theme-insight.png")
+```
+
+Need crop or padding tuning after theme changes? Use [Export Guide](./EXPORT.md).
+
+## Deep Dive
+
 For wireframe scene schema details, see [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md).
 
 ## SVG.js Integration

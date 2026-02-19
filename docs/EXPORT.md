@@ -1,6 +1,55 @@
 # Export Guide
 
-Use this guide when you care about predictable bounds and reusable PNG output.
+Use this guide when you need predictable bounds, crop behavior, and publish-ready PNGs.
+
+## Use This Doc When
+
+- You need to tune cropping (`none`, `safe`, `tight`) for output framing.
+- You need to control padding around generated content.
+- You need social-ready dimensions from CLI presets.
+
+If you are still choosing layout/content, start with [Create Command Guide](./CREATE_COMMAND.md).
+
+## Fast Path
+
+### I need reliable default cropping
+
+```python
+generator.export_to_png(html, Path("default-safe.png"), crop_mode="safe")
+```
+
+Expected output: `default-safe.png` with minimal clipping risk and policy padding.
+
+### I need denser social framing
+
+```python
+generator.export_to_png(html, Path("tight-social.png"), crop_mode="tight", padding=8)
+```
+
+Expected output: `tight-social.png` with reduced whitespace.
+
+### I need full viewport capture (no crop)
+
+```python
+generator.export_to_png(html, Path("full-viewport.png"), crop_mode="none", padding=0)
+```
+
+Expected output: `full-viewport.png` matching the full viewport.
+
+### I need CLI social presets
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --png \
+  --export-preset linkedin \
+  --output ./output/hero-linkedin.png
+```
+
+Expected output: `./output/hero-linkedin.png`.
+
+## Deep Dive
 
 ## Default Behavior
 
@@ -27,25 +76,25 @@ generator.export_to_png(
 
 ## Crop Modes
 
+| Crop Mode | Behavior | Best For |
+|---|---|---|
+| `none` | Full-page screenshot, no cropping | Exact viewport capture |
+| `safe` | Crop to content bounds + policy padding | Default production export |
+| `tight` | Crop to content bounds with reduced padding | Dense social/share output |
+
 ### `none`
-- Behavior: no cropping, full-page screenshot.
-- Use when you need exact viewport framing.
 
 ```python
 generator.export_to_png(html, Path("out.png"), crop_mode="none", padding=0)
 ```
 
 ### `safe` (default)
-- Behavior: crop to detected content bounds with configured padding.
-- Use for production assets that need reliability.
 
 ```python
 generator.export_to_png(html, Path("out.png"), crop_mode="safe")
 ```
 
 ### `tight`
-- Behavior: same content bounds detection, reduced effective padding.
-- Use for social/share variants where canvas density should be higher.
 
 ```python
 generator.export_to_png(html, Path("out.png"), crop_mode="tight")
@@ -59,21 +108,7 @@ generator.export_to_png(html, Path("out.png"), crop_mode="tight")
 - `x`: `1600x900`
 - `substack-hero`: `1400x700`
 
-Example:
-
-```bash
-modern-graphics create \
-  --layout hero \
-  --headline "Execution scales. Judgment does not." \
-  --png \
-  --export-preset linkedin \
-  --output ./output/hero-linkedin.png
-```
-
-Tracked example outputs:
-- `examples/output/showcase/create-first/social-preset-linkedin.png`
-- `examples/output/showcase/create-first/social-preset-x.png`
-- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+Tracked social preset examples: `examples/output/showcase/create-first/`.
 
 ## Padding Guidance
 
@@ -113,3 +148,9 @@ Fixture snapshots are generated under:
 - `reports/export-fixtures/`
 - `reports/phase4-export-fixtures.md`
 - `reports/phase4-export-fixtures.json`
+
+## Related Docs
+
+- [Create Command Guide](./CREATE_COMMAND.md)
+- [Advanced Topics](./ADVANCED.md)
+- [Examples](../examples/README.md)
