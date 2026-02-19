@@ -12,13 +12,14 @@ MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Docs that must keep the task-first entry criteria language.
+# Docs that must keep task-first entry criteria language and top-level structure.
 REQUIRED_HEADINGS = {
-    "docs/QUICKSTART.md": "## Use This Doc When",
-    "docs/CREATE_COMMAND.md": "## Use This Doc When",
-    "docs/HERO_SLIDES.md": "## Use This Doc When",
-    "docs/ADVANCED.md": "## Use This Doc When",
-    "examples/README.md": "## Use This Page When",
+    "docs/QUICKSTART.md": ["## Use This Doc When"],
+    "docs/CREATE_COMMAND.md": ["## Use This Doc When"],
+    "docs/HERO_SLIDES.md": ["## Use This Doc When"],
+    "docs/ADVANCED.md": ["## Use This Doc When", "## Fast Path"],
+    "docs/EXPORT.md": ["## Use This Doc When", "## Fast Path"],
+    "examples/README.md": ["## Use This Page When"],
 }
 
 # Index pages where repeated links usually indicate navigation drift.
@@ -89,10 +90,11 @@ def check_duplicate_links() -> list[str]:
 
 def check_required_headings() -> list[str]:
     errors: list[str] = []
-    for rel, heading in REQUIRED_HEADINGS.items():
+    for rel, headings in REQUIRED_HEADINGS.items():
         text = _read(ROOT / rel)
-        if heading not in text:
-            errors.append(f"{rel}: missing required heading '{heading}'")
+        for heading in headings:
+            if heading not in text:
+                errors.append(f"{rel}: missing required heading '{heading}'")
     return errors
 
 
