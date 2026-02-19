@@ -1,41 +1,47 @@
 # Documentation
 
-Task-first map of the docs in this repository.
+Task-first map of the docs in this repository, aligned to the main README goals.
 
-## Start
+## 1) Use the package
 
 - [Quick Start Guide](QUICKSTART.md) – first successful graphic in minutes
-- [Create Command Guide](CREATE_COMMAND.md) – canonical CLI workflow and recipes
-- [Export Guide](EXPORT.md) – crop, padding, and social export behavior
-- [Migration Guide](MIGRATION.md) – moving from legacy commands to `create`
+- [API Reference](API.md) – imports, generator APIs, and convenience functions
 
-## Build Graphics
+## 2) Make graphics
 
 - [Diagram Types](DIAGRAM_TYPES.md) – choose the right layout + visual references
-- [Create Command Guide](CREATE_COMMAND.md#cli-only-layouts-outside-create) – before-after, slide-cards, slide-compare, premium-card
-- [Hero Slides Guide](HERO_SLIDES.md) – hero composition patterns
 - [Common Use Cases](USE_CASES.md) – scenario-based examples
-- [Core Concepts](CONCEPTS.md) – generator, templates, attribution, diagram families
+- [Core Concepts](CONCEPTS.md) – generator, templates, attribution, and diagram families
+
+## 3) Build a custom theme
+
+- [Advanced Topics](ADVANCED.md#custom-templates) – templates, styles, and extension paths
+- [Export Guide](EXPORT.md) – crop, padding, and social export behavior
+
+## 4) Build a super custom hero
+
+- [Mermaid Guide](MERMAID.md) – Mermaid to SVG/PNG + hero/insight integration
+- [Hero Slides Guide](HERO_SLIDES.md) – hero composition patterns and freeform usage
+- [Advanced Topics](ADVANCED.md#svgjs-integration) – SVG.js and custom SVG strategies
+- [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md) – scene schema and payload contract
+
+## 5) Call the CLI directly
+
+- [Create Command Guide](CREATE_COMMAND.md) – primary command and recipes
+- [Migration Guide](MIGRATION.md) – moving from legacy commands to `create`
+- [Deprecation Policy](DEPRECATION_POLICY.md) – compatibility expectations
 
 ## Prompt Workflows
 
 - [Prompts Guide](PROMPTS.md) – canonical guide for prompt-based flows (`ideas`, `from-prompt-file`, defaults)
-- [API Reference](API.md) – prompt function signatures and imports
+- Prompt signatures live in the API Reference listed in section 1.
 
-## Mermaid And Wireframes
+## Troubleshooting And Contribution
 
-- [Mermaid Guide](MERMAID.md) – Mermaid to SVG/PNG + hero/insight integration
-- [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md) – scene schema and payload contract
-- [Radar Diagram](RADAR_DIAGRAM.md) – radar layout usage and examples
-- [Advanced Topics](ADVANCED.md) – freeform canvas and custom SVG strategies
-
-## Advanced And Contribution
-
-- [Advanced Topics](ADVANCED.md) – themes, customization, extension paths
-- [Strategy Extension Contract](STRATEGY_EXTENSION.md) – adding strategies with gates
 - [Troubleshooting](TROUBLESHOOTING.md) – common operational fixes
 - [Contributing Guide](CONTRIBUTING.md) – development and PR workflow
-- [Sharing Checklist](SHARING_CHECKLIST.md) – publication checklist
+- [Strategy Extension Contract](STRATEGY_EXTENSION.md) – adding strategies with gates
+- [Radar Diagram](RADAR_DIAGRAM.md) – radar layout usage and examples
 
 ## Internal Program Docs
 

@@ -2,6 +2,14 @@
 
 Get your first graphic in 5 minutes.
 
+## Use This Doc When
+
+- You want the fastest first successful output.
+- You are new to `modern-graphics create`.
+- You have not chosen a custom theme or advanced hero workflow yet.
+
+If you already know your target layout and flags, use [Create Command Guide](./CREATE_COMMAND.md).
+
 ## Installation
 
 ```bash
@@ -97,7 +105,8 @@ In those few lines, you:
 
 ## Next Steps
 
-- **[Core Concepts](./CONCEPTS.md)** - Learn the four essential concepts
-- **[Diagram Types](./DIAGRAM_TYPES.md)** - See all available diagram types
-- **[Common Use Cases](./USE_CASES.md)** - Real-world examples
-- **[Full Documentation](README.md)** - Complete reference
+- **[Create Command Guide](./CREATE_COMMAND.md)** - call the CLI directly with layout recipes
+- **[Diagram Types](./DIAGRAM_TYPES.md)** - choose the right layout for your message
+- **[Advanced Topics](./ADVANCED.md)** - custom themes, SVG.js, and extension paths
+- **[Hero Slides Guide](./HERO_SLIDES.md)** - super custom hero composition
+- **[Full Documentation](README.md)** - complete task-first docs map
