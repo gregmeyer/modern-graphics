@@ -2,6 +2,15 @@
 
 Learn these features when you need them.
 
+## Use This Doc When
+
+- You are building a custom theme (README goal 3).
+- You need SVG.js, custom templates, or custom diagram extensions.
+- You need AI-assisted template generation workflows.
+
+If you only need the default CLI path, use [Create Command Guide](./CREATE_COMMAND.md).
+If you need the fastest first output, use [Quick Start Guide](./QUICKSTART.md).
+
 For wireframe scene schema details, see [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md).
 
 ## SVG.js Integration

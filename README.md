@@ -2,16 +2,32 @@
 
 Build hero slides, insight cards, and diagrams from one CLI with clarity-first defaults.
 
+## What You Can Build
+
+| Insight Card | Key Insight Quote | Insight Story |
+|---|---|---|
+| [![Insight card example](examples/output/showcase/create-first/insight-card.png)](examples/output/showcase/create-first/insight-card.png) | [![Key insight quote example](examples/output/showcase/create-first/key-insight-quote.png)](examples/output/showcase/create-first/key-insight-quote.png) | [![Insight story example](examples/output/showcase/create-first/insight-story.png)](examples/output/showcase/create-first/insight-story.png) |
+
+| Hero | Triptych Hero | Open Canvas Hero |
+|---|---|---|
+| [![Hero example](examples/output/showcase/create-first/hero.png)](examples/output/showcase/create-first/hero.png) | [![Triptych hero example](examples/output/showcase/hero-slides/05-triptych.png)](examples/output/showcase/hero-slides/05-triptych.png) | [![Open canvas hero example](examples/output/showcase/hero-slides/02-open-canvas-flowchart.png)](examples/output/showcase/hero-slides/02-open-canvas-flowchart.png) |
+
+| Cycle Diagram | Timeline Diagram | Slide Cards |
+|---|---|---|
+| [![Cycle diagram example](examples/output/showcase/diagram-types/01-cycle.png)](examples/output/showcase/diagram-types/01-cycle.png) | [![Timeline diagram example](examples/output/showcase/diagram-types/03-timeline.png)](examples/output/showcase/diagram-types/03-timeline.png) | [![Slide cards example](examples/output/showcase/diagram-types/07-slide-cards.png)](examples/output/showcase/diagram-types/07-slide-cards.png) |
+
+Canonical showcase assets live in `examples/output/showcase/`.
+
 ## Start Here
 
-Install the runtime dependencies:
+Install dependencies once:
 
 ```bash
 pip install playwright pillow python-dotenv
 playwright install chromium
 ```
 
-Generate your first PNG in one command:
+Generate a first PNG:
 
 ```bash
 modern-graphics create \
@@ -21,140 +37,45 @@ modern-graphics create \
   --output ./output/hero.png
 ```
 
-Expected output: `./output/hero.png`
+Expected output: `./output/hero.png`.
 
-Default behavior is tuned for immediate usability:
+Defaults (good for most first runs):
 - `theme=corporate`
 - `density=clarity`
 - `crop-mode=safe`
 - `padding-mode=minimal`
 
-## Common Tasks
+## Choose Your Path
 
-### 1) Create a hero opener
+### 1) Use the package
 
-```bash
-modern-graphics create \
-  --layout hero \
-  --headline "When shipping gets easy, choosing gets hard." \
-  --output ./output/hero.html
-```
+- Start here: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
+- API surface: [`docs/API.md`](docs/API.md)
 
-Expected output: `./output/hero.html`
+### 2) Make graphics
 
-### 2) Create an insight card
+- Runnable examples: [`examples/README.md`](examples/README.md)
+- Diagram/layout catalog: [`docs/DIAGRAM_TYPES.md`](docs/DIAGRAM_TYPES.md)
+- Curated tracked outputs: `examples/output/showcase/`
 
-```bash
-modern-graphics create \
-  --layout insight-card \
-  --text "One-page artifacts force explicit decisions." \
-  --png \
-  --output ./output/insight-card.png
-```
+### 3) Build a custom theme
 
-Expected output: `./output/insight-card.png`
+- Theme and template customization: [`docs/ADVANCED.md#custom-templates`](docs/ADVANCED.md#custom-templates)
+- Export/crop/padding tuning: [`docs/EXPORT.md`](docs/EXPORT.md)
 
-### 3) Export a social-ready preset
+### 4) Build a super custom hero
 
-```bash
-modern-graphics create \
-  --layout hero \
-  --headline "Decision quality is the new leverage." \
-  --png \
-  --export-preset linkedin \
-  --output ./output/hero-linkedin.png
-```
+- Hero composition patterns: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
+- Mermaid and SVG embedding: [`docs/MERMAID.md`](docs/MERMAID.md)
+- SVG.js and freeform extension: [`docs/ADVANCED.md#svgjs-integration`](docs/ADVANCED.md#svgjs-integration)
 
-Expected output: `./output/hero-linkedin.png`
+### 5) Call the CLI directly
 
-Presets:
-- `linkedin` (`1200x627`)
-- `x` (`1600x900`)
-- `substack-hero` (`1400x700`)
+- Canonical command + recipes: [`docs/CREATE_COMMAND.md`](docs/CREATE_COMMAND.md)
+- Migration from legacy commands: [`docs/MIGRATION.md`](docs/MIGRATION.md)
+- Deprecation policy: [`docs/DEPRECATION_POLICY.md`](docs/DEPRECATION_POLICY.md)
 
-### 4) Switch density for denser visuals
-
-```bash
-modern-graphics create \
-  --layout timeline \
-  --events "Q1|Baseline,Q2|Adoption,Q3|Optimization,Q4|Scale" \
-  --density dense \
-  --output ./output/timeline-dense.html
-```
-
-Expected output: `./output/timeline-dense.html`
-
-### 5) Migrate from legacy commands
-
-Legacy commands still run, but `create` is the canonical path.
-
-```bash
-modern-graphics timeline \
-  --title "Legacy Timeline" \
-  --events "Q1|Baseline,Q2|Adoption,Q3|Optimization,Q4|Scale" \
-  --output ./output/legacy-timeline.html
-```
-
-Migration guide: [`docs/MIGRATION.md`](docs/MIGRATION.md)
-
-## Examples by Goal
-
-- I need a first-run set of canonical `create` outputs:
-  - `examples/output/showcase/create-first/`
-  - regenerate: `python scripts/generate_readme_create_examples.py`
-- I need one sample for each core diagram type:
-  - `examples/output/showcase/diagram-types/`
-  - regenerate: `python scripts/run_showcase.py`
-- I need insight graphics examples:
-  - `examples/output/showcase/insight-graphics/`
-  - docs: [`docs/DIAGRAM_TYPES.md`](docs/DIAGRAM_TYPES.md)
-- I need hero layout variants:
-  - `examples/output/showcase/hero-slides/`
-  - docs: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
-- I need Mermaid graphics inside hero/cards:
-  - docs: [`docs/MERMAID.md`](docs/MERMAID.md)
-- I need full themed gallery previews:
-  - `examples/output/theme-demo/*.png` (tracked)
-  - regenerate gallery HTML: `python examples/generate_complete_theme_demo.py`
-
-For a guided index of runnable examples, see [`examples/README.md`](examples/README.md).
-
-## CLI Defaults
-
-| Setting | Default | Why |
-|---|---|---|
-| Theme | `corporate` | Neutral baseline for business graphics |
-| Density | `clarity` | Readability-first composition |
-| Crop mode | `safe` | Tight bounds without accidental clipping |
-| Padding mode | `minimal` | Keeps whitespace low for publishing |
-
-Details: [`docs/CREATE_COMMAND.md`](docs/CREATE_COMMAND.md), [`docs/EXPORT.md`](docs/EXPORT.md)
-
-## Legacy Commands
-
-Legacy command family remains available for compatibility and emits migration hints.
-
-Use for new work:
-
-```bash
-modern-graphics create ...
-```
-
-Migration and deprecation policy:
-- [`docs/MIGRATION.md`](docs/MIGRATION.md)
-- [`docs/DEPRECATION_POLICY.md`](docs/DEPRECATION_POLICY.md)
-
-## Where Next
-
-- Quick start walkthrough: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
-- Create command recipes: [`docs/CREATE_COMMAND.md`](docs/CREATE_COMMAND.md)
-- Export and crop behavior: [`docs/EXPORT.md`](docs/EXPORT.md)
-- Diagram catalog: [`docs/DIAGRAM_TYPES.md`](docs/DIAGRAM_TYPES.md)
-- Hero patterns: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
-- Mermaid integration: [`docs/MERMAID.md`](docs/MERMAID.md)
-- Advanced customization: [`docs/ADVANCED.md`](docs/ADVANCED.md)
-- Prompt workflows (canonical): [`docs/PROMPTS.md`](docs/PROMPTS.md)
-- Full docs index: [`docs/README.md`](docs/README.md)
+Full docs map: [`docs/README.md`](docs/README.md)
 
 ## Contributing
 

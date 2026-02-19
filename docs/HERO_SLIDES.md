@@ -2,6 +2,15 @@
 
 Modern hero slides render Apple-style layouts with calm gradients, orbit accents, and structured triptychs. Each layout was designed around a narrative prompt so you can quickly "describe the slide" before rendering.
 
+## Use This Doc When
+
+- You are building a super custom hero (README goal 4).
+- You need open-canvas, triptych, or freeform SVG hero composition.
+- You need mermaid/flow visuals embedded in hero layouts.
+
+If you need a single fast first run, use [Quick Start Guide](./QUICKSTART.md).
+If you only need standard `create` layouts, use [Create Command Guide](./CREATE_COMMAND.md).
+
 ## Quick Examples
 
 | Tiles Layout | Flowchart Layout | Custom SVG Layout |

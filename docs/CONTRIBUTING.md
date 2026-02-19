@@ -46,6 +46,23 @@ Run example scripts to verify changes:
 python3 scripts/all_diagram_types.py
 ```
 
+
+## Documentation PR Checklist
+
+Use this checklist for any PR that touches docs.
+
+- Keep docs roles aligned with [`docs/DOCS_OWNERSHIP.md`](DOCS_OWNERSHIP.md).
+- Keep task routing aligned between [`README.md`](../README.md) and [`docs/README.md`](README.md).
+- Avoid duplicate top-level links in hub pages.
+- Keep required entry headings in core docs:
+  - `## Use This Doc When` in `docs/QUICKSTART.md`, `docs/CREATE_COMMAND.md`, `docs/HERO_SLIDES.md`, `docs/ADVANCED.md`
+  - `## Use This Page When` in `examples/README.md`
+- Run the docs drift guard and ensure it passes:
+
+```bash
+npm run check-docs-drift
+```
+
 ## Submitting Changes
 
 1. Make your changes

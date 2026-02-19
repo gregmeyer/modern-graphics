@@ -2,6 +2,16 @@
 
 Use `modern-graphics create` when you want one command path with clarity-first defaults.
 
+## Use This Doc When
+
+- You want to call the CLI directly (README goal 5).
+- You already know the message shape and need the right `--layout`.
+- You want to control export behavior without moving to advanced APIs.
+
+If you only need a first successful output, start with [Quick Start Guide](./QUICKSTART.md).
+If you need super custom hero composition, use [Hero Slides Guide](./HERO_SLIDES.md).
+If you want copy/paste runnable examples by outcome, use `examples/README.md`.
+
 ## Mental Model
 
 `create` is split into three argument groups:
@@ -107,10 +117,7 @@ Available presets:
 - `x` (1600x900)
 - `substack-hero` (1400x700)
 
-Tracked social preset examples:
-- `examples/output/showcase/create-first/social-preset-linkedin.png`
-- `examples/output/showcase/create-first/social-preset-x.png`
-- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+Tracked social preset examples: `examples/output/showcase/create-first/`.
 
 ## CLI-Only Layouts (Outside `create`)
 
@@ -160,11 +167,7 @@ modern-graphics premium-card \
   --output ./output/premium-card.png
 ```
 
-Tracked Slice 2 examples:
-
-| Slide Cards | Slide Compare | Premium Card |
-|---|---|---|
-| ![Slide Cards](../examples/output/showcase/cli-layouts/01-slide-cards.png) | ![Slide Compare](../examples/output/showcase/cli-layouts/02-slide-compare.png) | ![Premium Card](../examples/output/showcase/cli-layouts/03-premium-card.png) |
+Tracked Slice 2 examples: `examples/output/showcase/cli-layouts/`.
 
 ## Error Hints
 

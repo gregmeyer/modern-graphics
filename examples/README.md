@@ -2,7 +2,19 @@
 
 Use this page to choose one example path and run it immediately.
 
-## Pick an Example by Intent
+## Use This Page When
+
+- You want runnable commands to make graphics now (README goal 2).
+- You want tracked visual references before you customize.
+- You want output paths that are safe for local experimentation.
+
+For API-first usage, see [`docs/QUICKSTART.md`](../docs/QUICKSTART.md).
+For direct CLI recipes, see [`docs/CREATE_COMMAND.md`](../docs/CREATE_COMMAND.md).
+For custom themes and super custom heroes, see [`docs/ADVANCED.md`](../docs/ADVANCED.md) and [`docs/HERO_SLIDES.md`](../docs/HERO_SLIDES.md).
+
+This page is command-first. For full flag reference and edge-case behavior, use `docs/CREATE_COMMAND.md`.
+
+## Pick an Example by Goal
 
 ### I need a hero slide
 
@@ -51,10 +63,7 @@ modern-graphics create \
 
 Expected output: `examples/output/generated/hero-linkedin.png`
 
-Tracked social preset references:
-- `examples/output/showcase/create-first/social-preset-linkedin.png`
-- `examples/output/showcase/create-first/social-preset-x.png`
-- `examples/output/showcase/create-first/social-preset-substack-hero.png`
+Tracked social preset references live in `examples/output/showcase/create-first/`.
 
 ### I need a wireframe scene I can reuse in insight graphics
 
@@ -93,10 +102,7 @@ modern-graphics premium-card \
 
 Expected output: `examples/output/generated/ops-guardrail-card.png`
 
-Tracked Slice 2 references:
-- `examples/output/showcase/cli-layouts/01-slide-cards.png`
-- `examples/output/showcase/cli-layouts/02-slide-compare.png`
-- `examples/output/showcase/cli-layouts/03-premium-card.png`
+Tracked Slice 2 references live in `examples/output/showcase/cli-layouts/`.
 
 ### I need the full showcase set
 
@@ -129,24 +135,11 @@ Expected outputs:
 - Theme gallery PNG references: `examples/output/theme-demo/*.png`
 - Temporary local outputs: `examples/output/generated/`
 
-Detailed output policy: [`examples/output/README.md`](output/README.md)
+Detailed output policy: [`examples/output/README.md`](output/README.md).
 
-## Advanced Examples Index
+## Extend Or Validate
 
-These are useful when you are extending behavior or testing specific surfaces:
-
-- `examples/flow_styles_example.py` (flow style matrix)
-- `examples/hero_mermaid_diagrams.py` (mermaid + hero composition)
-- `examples/radar_example.py` (radar chart examples)
-- `examples/transaction_card_demo.py` (transaction card composition)
-- `scripts/generate_cli_layout_showcase.py` (slice-2 CLI layout showcase asset generator)
-- `scripts/export_options.py` (crop/padding/export tuning)
-- `scripts/attribution_examples.py` (attribution variants)
-- `scripts/run_phase1_quality_harness.py` (quality harness)
-
-## Related Docs
-
-- [`docs/QUICKSTART.md`](../docs/QUICKSTART.md)
-- [`docs/CREATE_COMMAND.md`](../docs/CREATE_COMMAND.md)
-- [`docs/EXPORT.md`](../docs/EXPORT.md)
-- [`docs/MIGRATION.md`](../docs/MIGRATION.md)
+If you are extending behavior or validating output quality, use:
+- `scripts/README.md`
+- `docs/EXPORT.md`
+- `docs/MIGRATION.md`

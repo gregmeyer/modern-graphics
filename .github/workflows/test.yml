@@ -10,6 +10,9 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Install dependencies
         run: |
           pip install -e .
@@ -24,6 +27,9 @@ jobs:
       - name: Run overhaul validator
         run: |
           python3 scripts/validate_overhaul_phase1.py
+      - name: Run docs drift guard
+        run: |
+          npm run check-docs-drift
       - name: Run smoke tests (Phase 1-5)
         run: |
           pytest -q \
