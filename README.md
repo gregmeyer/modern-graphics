@@ -18,6 +18,36 @@ Build hero slides, insight cards, and diagrams from one CLI with clarity-first d
 
 Canonical showcase assets live in `examples/output/showcase/`.
 
+## Quick Switch (Jobs To Be Done)
+
+- [Use the package](#use-the-package-2-minutes)
+- [Make graphics](#make-graphics-3-minutes)
+- [Build a custom theme (font/colors)](#build-a-custom-theme-fontcolors-8-minutes)
+- [Build a super custom hero](#build-a-super-custom-hero-10-minutes)
+- [Call the CLI directly](#call-the-cli-directly-5-minutes)
+
+## First Commands (Most Common Jobs)
+
+### Make graphics (about 3 minutes)
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --png \
+  --output ./output/hero.png
+```
+
+Expected output: `./output/hero.png`.
+
+### Build a custom theme (about 8 minutes)
+
+```bash
+python scripts/custom_template.py
+```
+
+Expected output: `dark_cycle_example.html`.
+
 ## Start Here
 
 Install dependencies once:
@@ -47,29 +77,29 @@ Defaults (good for most first runs):
 
 ## Choose Your Path
 
-### 1) Use the package
+### Use the package (2 minutes)
 
 - Start here: [`docs/QUICKSTART.md`](docs/QUICKSTART.md)
 - API surface: [`docs/API.md`](docs/API.md)
 
-### 2) Make graphics
+### Make graphics (3 minutes)
 
 - Runnable examples: [`examples/README.md`](examples/README.md)
 - Diagram/layout catalog: [`docs/DIAGRAM_TYPES.md`](docs/DIAGRAM_TYPES.md)
 - Curated tracked outputs: `examples/output/showcase/`
 
-### 3) Build a custom theme
+### Build a custom theme (font/colors) (8 minutes)
 
 - Theme and template customization: [`docs/ADVANCED.md#custom-templates`](docs/ADVANCED.md#custom-templates)
 - Export/crop/padding tuning: [`docs/EXPORT.md`](docs/EXPORT.md)
 
-### 4) Build a super custom hero
+### Build a super custom hero (10 minutes)
 
 - Hero composition patterns: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
 - Mermaid and SVG embedding: [`docs/MERMAID.md`](docs/MERMAID.md)
 - SVG.js and freeform extension: [`docs/ADVANCED.md#svgjs-integration`](docs/ADVANCED.md#svgjs-integration)
 
-### 5) Call the CLI directly
+### Call the CLI directly (5 minutes)
 
 - Canonical command + recipes: [`docs/CREATE_COMMAND.md`](docs/CREATE_COMMAND.md)
 - Migration from legacy commands: [`docs/MIGRATION.md`](docs/MIGRATION.md)
