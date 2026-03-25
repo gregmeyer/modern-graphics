@@ -99,7 +99,7 @@ indicator that affects marine ecosystems globally.
 
 Run individual use case:
 ```bash
-python scripts/use_case_tech_startup.py
+python examples/use_case_tech_startup.py
 ```
 
 Run all use cases:

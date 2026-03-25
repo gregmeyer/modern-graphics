@@ -47,7 +47,7 @@ modern_graphics/
 
 Run example scripts to verify changes:
 ```bash
-python3 scripts/all_diagram_types.py
+python3 examples/all_diagram_types.py
 ```
 
 

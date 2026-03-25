@@ -43,7 +43,7 @@ Expected output: `./output/hero.png`.
 ### Build a custom theme (about 8 minutes)
 
 ```bash
-python scripts/custom_template.py
+python examples/custom_template.py
 ```
 
 Expected output: `dark_cycle_example.html`.

@@ -90,7 +90,7 @@ script = generate_svg_init_script("my-svg", 800, 600, custom_script)
 - SVG.js: complex diagrams, dynamic/animated graphics, programmatic shape generation
 - Static SVG: simple shapes and icons, static diagrams, performance-critical graphics
 
-See `scripts/svg_js_example.py` for complete examples.
+See `examples/svg_js_example.py` for complete examples.
 
 ## Custom Diagram Types
 
