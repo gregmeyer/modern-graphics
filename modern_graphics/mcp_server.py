@@ -191,7 +191,35 @@ async def list_tools() -> list[Tool]:
                 "required": ["layout"],
             },
         ),
+        Tool(
+            name="list_themes",
+            description="List all available color themes with their primary/accent colors and descriptions.",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
     ]
+
+
+def _get_theme_info() -> list:
+    """Build theme metadata from the registry."""
+    from .color_scheme import SCHEME_REGISTRY
+    seen = set()
+    themes = []
+    for name, scheme in SCHEME_REGISTRY.items():
+        if id(scheme) in seen:
+            continue
+        seen.add(id(scheme))
+        aliases = [k for k, v in SCHEME_REGISTRY.items() if v is scheme and k != name]
+        themes.append({
+            "name": name,
+            "description": getattr(scheme, "description", "") or "",
+            "primary": getattr(scheme, "primary", "") or "",
+            "accent": getattr(scheme, "accent", "") or "",
+            "aliases": aliases,
+        })
+    return themes
 
 
 @app.call_tool()
@@ -221,6 +249,9 @@ async def call_tool(name: str, arguments: dict) -> list:
 
         elif name == "list_layouts":
             return _json_response({"layouts": _get_layout_info()})
+
+        elif name == "list_themes":
+            return _json_response({"themes": _get_theme_info()})
 
         elif name == "generate_graphic":
             layout = arguments.get("layout", "")

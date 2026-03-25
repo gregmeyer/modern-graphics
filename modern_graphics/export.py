@@ -265,7 +265,8 @@ def export_html_to_png(
                         img.crop(box).save(output_path)
                         temp_png_path.unlink(missing_ok=True)
             except Exception as e:
-                print(f"Warning: Could not crop ({e}), using full page")
+                print(f"Warning: Could not crop ({e}), using full page.")
+                print(f"  Tip: try --crop-mode tight or --crop-mode none")
                 if temp_png_path and temp_png_path.exists():
                     temp_png_path.rename(output_path)
                 else:
