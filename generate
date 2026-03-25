@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+IMAGE="modern-graphics"
+OUTPUT_DIR="${OUTPUT_DIR:-$SCRIPT_DIR/output}"
+
+# Auto-build if image doesn't exist
+if ! docker image inspect "$IMAGE" &>/dev/null; then
+  echo "Building Docker image (first run)..."
+  make -C "$SCRIPT_DIR" build
+fi
+
+# First positional arg is the layout
+LAYOUT="${1:?Usage: ./generate <layout> [--headline ...] [--png|--html] [-o name]}"
+shift
+
+# Parse our flags vs passthrough flags
+FORMAT="png"
+FILENAME="$LAYOUT"
+PASSTHROUGH=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --html) FORMAT="html"; shift ;;
+    --png)  FORMAT="png"; shift ;;
+    -o|--name) FILENAME="$2"; shift 2 ;;
+    *) PASSTHROUGH+=("$1"); shift ;;
+  esac
+done
+
+mkdir -p "$OUTPUT_DIR"
+OUTFILE="./output/${FILENAME}.${FORMAT}"
+FORMAT_FLAG=""
+[[ "$FORMAT" == "png" ]] && FORMAT_FLAG="--png"
+
+docker run --rm --ipc=host --init \
+  -v "$OUTPUT_DIR":/app/output -w /app \
+  "$IMAGE" \
+  create --layout "$LAYOUT" "${PASSTHROUGH[@]}" $FORMAT_FLAG --output "$OUTFILE"
+
+echo "✓ ${OUTPUT_DIR}/${FILENAME}.${FORMAT}"

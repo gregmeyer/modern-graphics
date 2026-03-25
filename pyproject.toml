@@ -44,9 +44,13 @@ ai = [
     "openai>=1.0.0",
     "braintrust>=0.0.0",
 ]
+mcp = [
+    "mcp>=1.0.0",
+]
 
 [project.scripts]
 modern-graphics = "modern_graphics.cli:main"
+modern-graphics-mcp = "modern_graphics.mcp_server:run"
 
 [tool.setuptools]
 packages = ["modern_graphics"]

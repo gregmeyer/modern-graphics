@@ -477,7 +477,7 @@ def main():
     create_layout = create_parser.add_argument_group('layout-specific')
     create_expert = create_parser.add_argument_group('expert')
 
-    create_core.add_argument('--layout', required=True, choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate')
+    create_core.add_argument('--layout', choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate (omit to get a suggestion)')
     create_core.add_argument('--output', required=True, help='Output HTML/PNG path')
     create_core.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
     create_core.add_argument('--theme', choices=list_schemes(), default=CREATE_DEFAULTS.theme, help=f'Color theme (default: {CREATE_DEFAULTS.theme})')
@@ -1004,6 +1004,41 @@ def main():
         return 0
 
     if args.command == 'create':
+        if not getattr(args, 'layout', None):
+            import sys as _sys
+            from .suggest import suggest_layout_top_n, LAYOUT_DESCRIPTIONS
+            if _sys.stdin.isatty():
+                try:
+                    desc = input("What do you want to show? ")
+                except (EOFError, KeyboardInterrupt):
+                    print("")
+                    return 0
+                results = suggest_layout_top_n(desc, n=3)
+                best = results[0]
+                print(f"\nSuggested layout: {best.layout} (confidence: {best.confidence})")
+                print(f"  {LAYOUT_DESCRIPTIONS.get(best.layout, '')}")
+                print(f"\nTry:\n  {best.example_command}")
+                if len(results) > 1:
+                    print("\nAlternatives:")
+                    for alt in results[1:]:
+                        print(f"  {alt.layout} — {LAYOUT_DESCRIPTIONS.get(alt.layout, '')} (matched: {alt.reason})")
+                try:
+                    confirm = input("\nRun the suggested command? [Y/n] ").strip().lower()
+                except (EOFError, KeyboardInterrupt):
+                    print("")
+                    return 0
+                if confirm in ("", "y", "yes"):
+                    args.layout = best.layout
+                else:
+                    print("\nAvailable layouts:")
+                    for lt, desc_text in sorted(LAYOUT_DESCRIPTIONS.items()):
+                        print(f"  {lt:18s} {desc_text}")
+                    return 0
+            else:
+                print("Error: --layout is required in non-interactive mode.")
+                print("Use: modern-graphics create --layout <layout> --output <path>")
+                print("Run 'modern-graphics create --help' to see available layouts.")
+                return 1
         output_path = Path(args.output)
         attribution = Attribution(
             person=getattr(args, 'person', 'Greg Meyer'),
