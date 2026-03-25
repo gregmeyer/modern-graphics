@@ -4,10 +4,14 @@ Thank you for your interest in contributing!
 
 ## Development Setup
 
+**pip (recommended for development):**
+
 1. Clone the repository
 2. Install in editable mode: `pip install -e .`
 3. Install development dependencies: `pip install -e ".[dev]"`
 4. Set up `.env` file with `OPENAI_API_KEY` (optional, for AI features)
+
+**Docker:** You can also use `make build` and `make run` to run the CLI without a local install. For active development, pip is preferred.
 
 ## Project Structure
 

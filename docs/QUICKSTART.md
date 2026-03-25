@@ -12,6 +12,16 @@ If you already know your target layout and flags, use [Create Command Guide](./C
 
 ## Installation
 
+### Docker (no local install)
+
+```bash
+make build
+```
+
+That's it! Use `make run ARGS='create ...'` to generate graphics. Output goes to `./output/` on your host.
+
+### pip install
+
 ```bash
 pip install playwright pillow python-dotenv
 playwright install chromium

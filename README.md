@@ -50,6 +50,17 @@ Expected output: `dark_cycle_example.html`.
 
 ## Start Here
 
+### Option A: Docker (no local install)
+
+```bash
+make build
+make run ARGS='create --layout hero --headline "Execution scales. Judgment does not." --png --output ./output/hero.png'
+```
+
+Output lands in `./output/` on your host.
+
+### Option B: pip install
+
 Install dependencies once:
 
 ```bash
