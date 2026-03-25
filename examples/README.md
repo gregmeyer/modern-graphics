@@ -81,7 +81,6 @@ For local development with `pip install -e .`:
 ### Themes and Templates
 - [custom_template.py](custom_template.py) — build a branded theme
 - [create_team_scheme.py](create_team_scheme.py) — interactive color scheme creation
-- [generate_complete_theme_demo.py](generate_complete_theme_demo.py) — full theme gallery
 
 ### Use Cases (require OpenAI API key)
 - [use_case_corporate.py](use_case_corporate.py) — quarterly report graphics
