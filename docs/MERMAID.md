@@ -1,5 +1,12 @@
 # Mermaid diagrams in cards and hero
 
+## Use This Doc When
+
+- You want to embed Mermaid diagrams as SVG or PNG.
+- You need Mermaid integration with hero or insight layouts.
+
+If you need general CLI usage, use [Create Command Guide](./CREATE_COMMAND.md).
+
 Yes — you can take a Mermaid diagram, output it to SVG, and have that SVG show up in a **card** or a **hero** image.
 
 ## Flow
@@ -218,3 +225,9 @@ Font-only (no theme) is also supported: omit `--theme` and pass `--font` so only
 - **Mermaid → SVG** via `mermaid_to_svg()` (needs Mermaid CLI) or any external renderer.  
 - **Theme:** pass `color_scheme` (or use `--theme` on the CLI) so the diagram uses your scheme's colors and font.  
 - **Pass that SVG** into `custom_mockup` (slide card), `svg_content` (insight card), or `freeform_canvas` (modern hero).
+
+---
+
+## Read Next
+
+- [Hero Slides Guide](./HERO_SLIDES.md) -- hero composition patterns

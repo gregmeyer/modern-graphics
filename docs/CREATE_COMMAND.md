@@ -177,3 +177,10 @@ If required inputs are missing, `create` returns:
 - a layout-specific `Hint: try ...` command
 
 This is intentional to keep first-time usage recoverable without reading source code.
+
+---
+
+## Read Next
+
+- [Export Guide](./EXPORT.md) -- crop, padding, and social export
+- [Custom Themes](./CUSTOM_THEMES.md) -- branded visual styles

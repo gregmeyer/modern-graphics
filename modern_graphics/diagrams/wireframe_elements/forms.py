@@ -4,6 +4,49 @@ from typing import Optional, List, Dict
 from .config import WireframeConfig
 
 
+def render_checklist_row(
+    config: WireframeConfig,
+    x: int,
+    y: int,
+    width: int,
+    label: str,
+    checked: bool = False,
+    box_size: int = 18,
+) -> str:
+    """Render a checklist row: checkbox + label.
+
+    Args:
+        config: Wireframe configuration
+        x: X position
+        y: Y position
+        width: Width available for label
+        label: Row label
+        checked: Whether checkbox shows as checked
+        box_size: Size of checkbox square
+
+    Returns:
+        SVG group element
+    """
+    c = config.colors
+    r = 4
+
+    checkbox_svg = f"""
+    <rect x="{x}" y="{y}" width="{box_size}" height="{box_size}" rx="{r}" fill="{c.surface_primary}" stroke="{c.border_medium}" stroke-width="1.5"/>
+    """
+    if checked:
+        checkbox_svg += f"""
+    <path d="M {x+4} {y+9} L {x+7} {y+13} L {x+14} {y+5}" fill="none" stroke="{c.accent_green}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    """
+
+    label_x = x + box_size + 12
+    return f"""
+  <g class="checklist-row">
+    {checkbox_svg}
+    <text x="{label_x}" y="{y + box_size - 4}" font-family="{config.font_family}" font-size="{config.font_size_body}" font-weight="500" fill="{c.text_primary}">{label}</text>
+  </g>
+    """
+
+
 def render_form_field(
     config: WireframeConfig,
     x: int,
@@ -149,21 +192,33 @@ def render_modal(
     if fields:
         for field in fields:
             label = field.get('label', 'Field')
+            is_checklist = field.get('checkbox', False) or field.get('checklist', False)
             is_textarea = field.get('textarea', False)
             field_height = 50 if is_textarea else 32
-            
-            elements.append(render_form_field(
-                config,
-                x + padding,
-                content_y,
-                field_width,
-                label,
-                height=field_height,
-                is_textarea=is_textarea,
-                placeholder_lines=3 if is_textarea else 1
-            ))
-            
-            content_y += field_height + 24
+
+            if is_checklist:
+                row_height = 26
+                elements.append(render_checklist_row(
+                    config,
+                    x + padding,
+                    content_y,
+                    field_width,
+                    label,
+                    checked=field.get('checked', False),
+                ))
+                content_y += row_height + 12
+            else:
+                elements.append(render_form_field(
+                    config,
+                    x + padding,
+                    content_y,
+                    field_width,
+                    label,
+                    height=field_height,
+                    is_textarea=is_textarea,
+                    placeholder_lines=3 if is_textarea else 1
+                ))
+                content_y += field_height + 24
     
     # Submit button
     button_y = y + height - padding - 32

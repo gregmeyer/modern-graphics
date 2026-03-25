@@ -1,5 +1,12 @@
 # Core Concepts
 
+## Use This Doc When
+
+- You want to understand the generator, templates, and attribution system.
+- You are reading API docs and need background on core abstractions.
+
+If you want to start building, use [Quick Start Guide](./QUICKSTART.md).
+
 Understanding these four concepts will help you use the library effectively.
 
 ## 1. The Generator
@@ -76,7 +83,7 @@ Template examples:
 |---------|-----------|--------------|
 | ![Default Template](../examples/output/showcase/templates/default.png) | ![Corporate Template](../examples/output/showcase/templates/corporate.png) | ![Tech Startup Template](../examples/output/showcase/templates/tech-startup.png) |
 
-Learn more: [Advanced Topics](./ADVANCED.md) and [Create Command Guide](./CREATE_COMMAND.md).
+Learn more: [Custom Themes](./CUSTOM_THEMES.md) and [Create Command Guide](./CREATE_COMMAND.md).
 
 ## 4. Attribution
 

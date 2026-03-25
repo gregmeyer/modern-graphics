@@ -147,4 +147,4 @@ template = (TemplateBuilder("template_name")
     .build())
 ```
 
-See [Advanced Topics](ADVANCED.md) for detailed template creation.
+See [Custom Themes](CUSTOM_THEMES.md) for detailed template creation.

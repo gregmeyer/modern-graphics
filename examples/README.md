@@ -10,7 +10,7 @@ Use this page to choose one example path and run it immediately.
 
 For API-first usage, see [`docs/QUICKSTART.md`](../docs/QUICKSTART.md).
 For direct CLI recipes, see [`docs/CREATE_COMMAND.md`](../docs/CREATE_COMMAND.md).
-For custom themes and super custom heroes, see [`docs/ADVANCED.md`](../docs/ADVANCED.md) and [`docs/HERO_SLIDES.md`](../docs/HERO_SLIDES.md).
+For custom themes, see [`docs/CUSTOM_THEMES.md`](../docs/CUSTOM_THEMES.md). For super custom heroes and SVG composition, see [`docs/SVG_COMPOSITION.md`](../docs/SVG_COMPOSITION.md) and [`docs/HERO_SLIDES.md`](../docs/HERO_SLIDES.md).
 
 This page is command-first. For full flag reference and edge-case behavior, use `docs/CREATE_COMMAND.md`.
 

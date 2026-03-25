@@ -152,5 +152,11 @@ Fixture snapshots are generated under:
 ## Related Docs
 
 - [Create Command Guide](./CREATE_COMMAND.md)
-- [Advanced Topics](./ADVANCED.md)
+- [Custom Themes](./CUSTOM_THEMES.md)
 - [Examples](../examples/README.md)
+
+---
+
+## Read Next
+
+- [Create Command Guide](./CREATE_COMMAND.md) -- back to CLI recipes

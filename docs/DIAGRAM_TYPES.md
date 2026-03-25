@@ -1,5 +1,12 @@
 # Diagram Types Guide
 
+## Use This Doc When
+
+- You need to choose which layout fits your content.
+- You want to see visual examples of each diagram type.
+
+If you already know your layout, use [Create Command Guide](./CREATE_COMMAND.md).
+
 ## Choosing the Right Diagram Type
 
 Use this decision tree to pick the right diagram for your needs:
@@ -227,3 +234,10 @@ The following supported layouts are currently exposed as dedicated CLI commands 
 
 See [Create Command Guide](CREATE_COMMAND.md#cli-only-layouts-outside-create) for copy/paste command recipes.
 Note: `before-after` is currently blocked by a stub implementation and documented as such in the command guide.
+
+---
+
+## Read Next
+
+- [Create Command Guide](./CREATE_COMMAND.md) -- CLI recipes and flag reference
+- [Examples](../examples/README.md) -- runnable cookbook by outcome

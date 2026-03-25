@@ -1,5 +1,12 @@
 # Migration Guide (Legacy CLI -> Create)
 
+## Use This Doc When
+
+- You are migrating from legacy commands to the unified `create` command.
+- You see deprecation warnings in your scripts.
+
+If you are starting fresh, use [Quick Start Guide](./QUICKSTART.md).
+
 Modern Graphics keeps legacy commands working, but new workflows should use the unified `create` entrypoint.
 
 ## What changed
@@ -97,3 +104,9 @@ modern-graphics create \
 - Start by migrating high-volume templates first (`comparison`, `timeline`, `insight-card`).
 - Keep legacy commands in existing scripts until you have a clean `create` replacement.
 - Use `docs/CREATE_COMMAND.md` for layout-specific parameter recipes.
+
+---
+
+## Read Next
+
+- [Create Command Guide](./CREATE_COMMAND.md) -- full CLI reference

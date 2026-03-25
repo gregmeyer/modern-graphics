@@ -12,38 +12,9 @@ If you already know your target layout and flags, use [Create Command Guide](./C
 
 ## Installation
 
-### Docker (no local install)
-
-```bash
-./generate hero --headline "Execution scales. Judgment does not."
-# ✓ ./output/hero.png
-```
-
-The wrapper auto-builds the Docker image on first run and defaults to PNG. Use `--html` for HTML output, `-o name` for a custom filename, or `OUTPUT_DIR=<path>` for a custom output directory.
-
-For more control, use Make targets directly:
-
-| Target | What it does |
-|--------|-------------|
-| `make build` | Build the Docker image |
-| `make run ARGS='...'` | Run any `modern-graphics` CLI command |
-| `make test` | Run the smoke-test suite inside the container |
-| `make shell` | Interactive bash shell in the container |
-
-**Where do files go?** Generated files land on your local disk at `./output/`, not inside Docker. The container mounts your host directory, writes the file, and exits — the image stays the same size no matter how many graphics you generate. To reclaim space from stale build layers: `docker image prune`.
-
-### pip install
-
-```bash
-pip install playwright pillow python-dotenv
-playwright install chromium
-```
-
-That's it! No complex setup needed.
+Follow the install steps in the [main README](../README.md#start-here) (Docker, MCP, or pip). Then come back here for your first command.
 
 ## Fastest Path (CLI)
-
-Use the unified `create` command first:
 
 ```bash
 modern-graphics create \
@@ -52,15 +23,9 @@ modern-graphics create \
   --output ./output/hero.html
 ```
 
-Then export directly to PNG:
+Or with Docker: `./generate hero --headline "Execution scales. Judgment does not."`
 
-```bash
-modern-graphics create \
-  --layout insight-card \
-  --text "One-page artifacts force explicit decisions." \
-  --png \
-  --output ./output/insight-card.png
-```
+For more layout recipes, see [Create Command Guide](./CREATE_COMMAND.md#fast-recipes).
 
 Defaults are clarity-first (`density=clarity`, `crop-mode=safe`, `padding-mode=minimal`).
 
@@ -125,10 +90,11 @@ In those few lines, you:
 2. **Generated a diagram** - Used `generate_cycle_diagram()` to create a flow diagram
 3. **Exported to PNG** - Saved a high-quality image file
 
-## Next Steps
+---
 
-- **[Create Command Guide](./CREATE_COMMAND.md)** - call the CLI directly with layout recipes
-- **[Diagram Types](./DIAGRAM_TYPES.md)** - choose the right layout for your message
-- **[Advanced Topics](./ADVANCED.md)** - custom themes, SVG.js, and extension paths
-- **[Hero Slides Guide](./HERO_SLIDES.md)** - super custom hero composition
-- **[Full Documentation](README.md)** - complete task-first docs map
+## Read Next
+
+- [Create Command Guide](./CREATE_COMMAND.md) -- CLI recipes and flag reference
+- [Diagram Types](./DIAGRAM_TYPES.md) -- choose the right layout
+- [Custom Themes](./CUSTOM_THEMES.md) -- branded visual styles
+- [Full Documentation](README.md) -- complete task-first docs map

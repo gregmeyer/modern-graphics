@@ -394,3 +394,10 @@ Canvas chips automatically style based on the hero theme (light/dark/warm).
 - Use `flow_nodes` for flowchart/DAG visualizations
 - Use `freeform_canvas` for complete custom control
 - Visual descriptions trigger automatic styling based on keywords
+
+---
+
+## Read Next
+
+- [SVG Composition](./SVG_COMPOSITION.md) -- SVG.js and custom diagram types
+- [Mermaid Guide](./MERMAID.md) -- Mermaid diagram embedding

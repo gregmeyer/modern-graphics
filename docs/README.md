@@ -6,6 +6,7 @@ Task-first map of the docs in this repository, aligned to the main README goals.
 
 - [Quick Start Guide](QUICKSTART.md) – first successful graphic in minutes
 - [API Reference](API.md) – imports, generator APIs, and convenience functions
+- [MCP Server](MCP_SERVER.md) – let AI clients generate graphics via tool calls
 
 ## 2) Make graphics
 
@@ -15,14 +16,14 @@ Task-first map of the docs in this repository, aligned to the main README goals.
 
 ## 3) Build a custom theme
 
-- [Advanced Topics](ADVANCED.md#custom-templates) – templates, styles, and extension paths
+- [Custom Themes](CUSTOM_THEMES.md) – templates, styles, and AI-assisted theme creation
 - [Export Guide](EXPORT.md) – crop, padding, and social export behavior
 
 ## 4) Build a super custom hero
 
 - [Mermaid Guide](MERMAID.md) – Mermaid to SVG/PNG + hero/insight integration
 - [Hero Slides Guide](HERO_SLIDES.md) – hero composition patterns and freeform usage
-- [Advanced Topics](ADVANCED.md#svgjs-integration) – SVG.js and custom SVG strategies
+- [SVG Composition](SVG_COMPOSITION.md) – SVG.js and custom diagram types
 - [Wireframe Scene Spec](WIREFRAME_SCENE_SPEC.md) – scene schema and payload contract
 
 ## 5) Call the CLI directly
@@ -40,16 +41,9 @@ Task-first map of the docs in this repository, aligned to the main README goals.
 
 - [Troubleshooting](TROUBLESHOOTING.md) – common operational fixes
 - [Contributing Guide](CONTRIBUTING.md) – development and PR workflow
-- [Strategy Extension Contract](STRATEGY_EXTENSION.md) – adding strategies with gates
 - [Radar Diagram](RADAR_DIAGRAM.md) – radar layout usage and examples
 
-## Internal Program Docs
-
-- [Overhaul Spec](OVERHAUL_SPEC.md)
-- [Overhaul Workplan](OVERHAUL_WORKPLAN.md)
-- [Overhaul Phase 1 PR Summary](archive/OVERHAUL_PHASE1_PR_SUMMARY.md)
-
-Historical plans and notes remain in [`docs/archive/`](archive/).
+Historical plans, governance docs, and internal notes: [`docs/archive/`](archive/).
 
 ## Repository Links
 
