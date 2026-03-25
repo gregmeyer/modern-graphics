@@ -12,7 +12,12 @@ help:
 	@echo "  make shell    Interactive bash in container"
 	@echo "  make test     Run smoke tests"
 	@echo ""
-	@echo "Example: make run ARGS='create --layout hero --headline \"Hello\" --png --output ./output/hero.png'"
+	@echo "Shorthand:"
+	@echo "  ./generate <layout> [flags]   Auto-builds, defaults to PNG, outputs to ./output/"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make run ARGS='create --layout hero --headline \"Hello\" --png --output ./output/hero.png'"
+	@echo "  ./generate hero --headline \"Hello\""
 
 build:
 	docker build -t $(IMAGE) .

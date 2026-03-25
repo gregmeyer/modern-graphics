@@ -53,19 +53,34 @@ Expected output: `dark_cycle_example.html`.
 ### Option A: Docker (no local install)
 
 ```bash
-make build
-make run ARGS='create --layout hero --headline "Execution scales. Judgment does not." --png --output ./output/hero.png'
+./generate hero --headline "Execution scales. Judgment does not."
+# ✓ ./output/hero.png
 ```
 
-Output lands in `./output/` on your host.
+The wrapper auto-builds the Docker image on first run, defaults to PNG, and writes to `./output/`.
+
+```bash
+# HTML instead of PNG
+./generate hero --headline "My title" --html
+
+# Custom filename
+./generate hero --headline "My title" -o my-hero
+
+# Custom output directory
+OUTPUT_DIR=~/Desktop ./generate hero --headline "My title"
+```
+
+**Make targets** (for more control):
 
 | Target | What it does |
 |--------|-------------|
-| `make build` | Build the Docker image (one-time) |
+| `make build` | Build the Docker image |
 | `make run ARGS='...'` | Run any `modern-graphics` CLI command |
 | `make test` | Run the smoke-test suite inside the container |
 | `make shell` | Drop into an interactive bash shell in the container |
 | `make help` | Print available targets |
+
+**Where do files go?** Generated files land on your local disk at `./output/`, not inside Docker. The container mounts your host directory, writes the file, and exits — the 2.75GB image stays the same size no matter how many graphics you generate. To reclaim space from stale build layers: `docker image prune`.
 
 ### Option B: pip install
 

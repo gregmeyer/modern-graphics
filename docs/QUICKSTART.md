@@ -15,17 +15,22 @@ If you already know your target layout and flags, use [Create Command Guide](./C
 ### Docker (no local install)
 
 ```bash
-make build
+./generate hero --headline "Execution scales. Judgment does not."
+# ✓ ./output/hero.png
 ```
 
-That's it! Use `make run ARGS='create ...'` to generate graphics. Output goes to `./output/` on your host.
+The wrapper auto-builds the Docker image on first run and defaults to PNG. Use `--html` for HTML output, `-o name` for a custom filename, or `OUTPUT_DIR=<path>` for a custom output directory.
+
+For more control, use Make targets directly:
 
 | Target | What it does |
 |--------|-------------|
-| `make build` | Build the Docker image (one-time) |
+| `make build` | Build the Docker image |
 | `make run ARGS='...'` | Run any `modern-graphics` CLI command |
 | `make test` | Run the smoke-test suite inside the container |
 | `make shell` | Interactive bash shell in the container |
+
+**Where do files go?** Generated files land on your local disk at `./output/`, not inside Docker. The container mounts your host directory, writes the file, and exits — the image stays the same size no matter how many graphics you generate. To reclaim space from stale build layers: `docker image prune`.
 
 ### pip install
 
