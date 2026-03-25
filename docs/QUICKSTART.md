@@ -20,6 +20,13 @@ make build
 
 That's it! Use `make run ARGS='create ...'` to generate graphics. Output goes to `./output/` on your host.
 
+| Target | What it does |
+|--------|-------------|
+| `make build` | Build the Docker image (one-time) |
+| `make run ARGS='...'` | Run any `modern-graphics` CLI command |
+| `make test` | Run the smoke-test suite inside the container |
+| `make shell` | Interactive bash shell in the container |
+
 ### pip install
 
 ```bash

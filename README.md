@@ -59,6 +59,14 @@ make run ARGS='create --layout hero --headline "Execution scales. Judgment does 
 
 Output lands in `./output/` on your host.
 
+| Target | What it does |
+|--------|-------------|
+| `make build` | Build the Docker image (one-time) |
+| `make run ARGS='...'` | Run any `modern-graphics` CLI command |
+| `make test` | Run the smoke-test suite inside the container |
+| `make shell` | Drop into an interactive bash shell in the container |
+| `make help` | Print available targets |
+
 ### Option B: pip install
 
 Install dependencies once:
