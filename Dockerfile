@@ -5,7 +5,7 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY modern_graphics modern_graphics/
 
-RUN pip install --no-cache-dir -e .
+RUN pip install --no-cache-dir -e ".[mcp]"
 
 ENTRYPOINT ["modern-graphics"]
 CMD ["--help"]

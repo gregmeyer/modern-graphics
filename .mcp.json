@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "modern-graphics": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i", "--ipc=host",
+        "-v", "/Users/grmeyer/playground/writing/utils/modern-graphics/output:/app/output",
+        "-w", "/app",
+        "--entrypoint", "python",
+        "modern-graphics",
+        "-m", "modern_graphics.mcp_server"
+      ]
+    }
+  }
+}

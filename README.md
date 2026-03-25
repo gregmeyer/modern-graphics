@@ -82,7 +82,19 @@ OUTPUT_DIR=~/Desktop ./generate hero --headline "My title"
 
 **Where do files go?** Generated files land on your local disk at `./output/`, not inside Docker. The container mounts your host directory, writes the file, and exits — the 2.75GB image stays the same size no matter how many graphics you generate. To reclaim space from stale build layers: `docker image prune`.
 
-### Option B: pip install
+### Option B: MCP Server (AI-assisted)
+
+Let Claude or other AI clients generate graphics for you via tool calls:
+
+```bash
+pip install modern-graphics-generator[mcp]
+```
+
+Configure in Claude Code (`.mcp.json`), then ask: "make me a comparison graphic of manual vs automated."
+
+See [MCP Server Guide](docs/MCP_SERVER.md) for full setup.
+
+### Option C: pip install
 
 Install dependencies once:
 
