@@ -17,7 +17,8 @@ REQUIRED_HEADINGS = {
     "docs/QUICKSTART.md": ["## Use This Doc When"],
     "docs/CREATE_COMMAND.md": ["## Use This Doc When"],
     "docs/HERO_SLIDES.md": ["## Use This Doc When"],
-    "docs/ADVANCED.md": ["## Use This Doc When", "## Fast Path"],
+    "docs/CUSTOM_THEMES.md": ["## Use This Doc When"],
+    "docs/SVG_COMPOSITION.md": ["## Use This Doc When"],
     "docs/EXPORT.md": ["## Use This Doc When", "## Fast Path"],
     "examples/README.md": ["## Use This Page When"],
 }

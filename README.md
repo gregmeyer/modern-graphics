@@ -136,14 +136,14 @@ Defaults (good for most first runs):
 
 ### Build a custom theme (font/colors) (8 minutes)
 
-- Theme and template customization: [`docs/ADVANCED.md#custom-templates`](docs/ADVANCED.md#custom-templates)
+- Theme and template customization: [`docs/CUSTOM_THEMES.md`](docs/CUSTOM_THEMES.md)
 - Export/crop/padding tuning: [`docs/EXPORT.md`](docs/EXPORT.md)
 
 ### Build a super custom hero (10 minutes)
 
 - Hero composition patterns: [`docs/HERO_SLIDES.md`](docs/HERO_SLIDES.md)
 - Mermaid and SVG embedding: [`docs/MERMAID.md`](docs/MERMAID.md)
-- SVG.js and freeform extension: [`docs/ADVANCED.md#svgjs-integration`](docs/ADVANCED.md#svgjs-integration)
+- SVG.js and freeform extension: [`docs/SVG_COMPOSITION.md`](docs/SVG_COMPOSITION.md)
 
 ### Call the CLI directly (5 minutes)
 
@@ -156,7 +156,7 @@ Full docs map: [`docs/README.md`](docs/README.md)
 ## Contributing
 
 - Contribution guide: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
-- Strategy and overhaul context: [`docs/OVERHAUL_SPEC.md`](docs/OVERHAUL_SPEC.md)
+- Historical plans and notes: [`docs/archive/`](docs/archive/)
 
 ## License
 
