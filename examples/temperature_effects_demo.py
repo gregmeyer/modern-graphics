@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
 from modern_graphics import ModernGraphicsGenerator, Attribution
 from modern_graphics.diagrams import generate_unified_story_slide
@@ -23,7 +24,7 @@ if not api_key:
     sys.exit(1)
 
 # Output directory
-output_dir = Path(__file__).parent.parent / "examples" / "output" / "generated" / "temperature_demo"
+output_dir = Path(__file__).parent / "output" / "generated" / "temperature_demo"
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # Initialize prompt storage

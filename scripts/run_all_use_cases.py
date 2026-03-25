@@ -8,8 +8,9 @@ from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
-# Add scripts directory to path for relative imports
+# Add scripts and examples directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "examples"))
 
 from use_case_tech_startup import *
 from use_case_corporate import *

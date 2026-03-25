@@ -10,6 +10,7 @@ import sys
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 from modern_graphics import (
     quick_template_from_description,
     register_template,
@@ -20,7 +21,7 @@ from modern_graphics.diagrams import generate_unified_story_slide
 from prompt_storage import PromptStorage
 
 # Output directory (goes to generated/ for temporary outputs)
-output_dir = Path(__file__).parent.parent / "examples" / "output" / "generated" / "use_cases" / "corporate"
+output_dir = Path(__file__).parent / "output" / "generated" / "use_cases" / "corporate"
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # Initialize prompt storage
