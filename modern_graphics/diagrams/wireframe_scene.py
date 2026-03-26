@@ -825,3 +825,8 @@ def list_element_types() -> List[str]:
 def list_presets() -> List[str]:
     """Return named scene preset names."""
     return list(SCENE_PRESETS.keys())
+
+
+def register_preset(name: str, spec: Dict[str, Any]) -> None:
+    """Register a custom scene preset at runtime."""
+    SCENE_PRESETS[name.lower()] = spec

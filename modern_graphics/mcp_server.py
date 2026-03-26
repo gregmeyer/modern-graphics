@@ -341,6 +341,58 @@ async def list_tools() -> list[Tool]:
                 "required": ["base", "overlay"],
             },
         ),
+        Tool(
+            name="generate_wireframe",
+            description="Generate a wireframe SVG from a scene preset, custom spec, or description. Supports theme-aware colors. Returns SVG content and optionally saves to file.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "preset": {
+                        "type": "string",
+                        "description": "Scene preset name (e.g., 'before', 'after', 'postit_flow', 'postit_flow_orgchart', 'postit_flow_mindmap')",
+                    },
+                    "scene_spec": {
+                        "type": "object",
+                        "description": "Custom scene spec: {width, height, elements: [{type, x, y, width?, height?, props?}]}",
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Describe what the wireframe should show — auto-matched to the best preset",
+                    },
+                    "theme": {
+                        "type": "string",
+                        "description": "Color theme — wireframe inherits theme colors (e.g., 'dark' for dark backgrounds)",
+                    },
+                    "output_path": {
+                        "type": "string",
+                        "description": "Optional path to save the SVG file",
+                    },
+                },
+            },
+        ),
+        Tool(
+            name="list_wireframe_elements",
+            description="List all available wireframe element types and scene presets.",
+            inputSchema={"type": "object", "properties": {}},
+        ),
+        Tool(
+            name="register_wireframe_preset",
+            description="Register a custom wireframe scene preset for reuse. The preset becomes available in generate_wireframe and list_wireframe_elements.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Preset name",
+                    },
+                    "scene_spec": {
+                        "type": "object",
+                        "description": "Scene spec: {width, height, elements: [{type, x, y, width?, height?, props?}]}",
+                    },
+                },
+                "required": ["name", "scene_spec"],
+            },
+        ),
     ]
 
 
@@ -615,11 +667,95 @@ async def call_tool(name: str, arguments: dict) -> list:
             result = await asyncio.to_thread(_composite)
             return _json_response(result)
 
+        elif name == "generate_wireframe":
+            from .diagrams.wireframe_scene import render_scene, list_presets as _list_presets
+            from .diagrams.wireframe_elements.config import WireframeConfig
+
+            preset = arguments.get("preset")
+            scene_spec = arguments.get("scene_spec")
+            desc = arguments.get("description")
+            wf_theme = arguments.get("theme")
+            output_path = arguments.get("output_path")
+
+            # Build config with theme colors
+            config = WireframeConfig()
+            if wf_theme:
+                from .color_scheme import get_scheme as _get_scheme_wf
+                scheme = _get_scheme_wf(wf_theme)
+                if scheme:
+                    config = WireframeConfig.from_color_scheme(scheme)
+
+            # Determine spec
+            if desc and not preset and not scene_spec:
+                preset = _match_wireframe_description(desc)
+            if preset:
+                spec = preset
+            elif scene_spec:
+                spec = scene_spec
+            else:
+                return _error_response("Provide one of: preset, scene_spec, or description")
+
+            svg = render_scene(spec, config)
+            result_data: Dict[str, Any] = {"svg_content": svg}
+            if isinstance(preset, str):
+                result_data["preset_used"] = preset
+
+            if output_path:
+                out = Path(output_path)
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_text(svg, encoding="utf-8")
+                result_data["file_path"] = str(out)
+
+            return _json_response(result_data)
+
+        elif name == "list_wireframe_elements":
+            from .diagrams.wireframe_scene import list_presets as _list_presets_info, list_element_types as _list_el
+            return _json_response({
+                "element_types": _list_el(),
+                "presets": _list_presets_info(),
+            })
+
+        elif name == "register_wireframe_preset":
+            from .diagrams.wireframe_scene import register_preset
+            preset_name = arguments.get("name", "")
+            scene_spec = arguments.get("scene_spec", {})
+            if not preset_name or not scene_spec:
+                return _error_response("'name' and 'scene_spec' are required.")
+            register_preset(preset_name, scene_spec)
+            return _json_response({"registered": True, "name": preset_name})
+
         else:
             return _error_response(f"Unknown tool: {name}")
 
     except Exception as exc:
         return _error_response(str(exc))
+
+
+_WIREFRAME_KEYWORD_MAP = [
+    ("before", ["before", "old", "legacy", "manual", "current state"]),
+    ("after", ["after", "new", "modern", "agentic", "improved"]),
+    ("postit_flow", ["flow", "process", "steps", "sequence", "workflow"]),
+    ("postit_flow_zigzag", ["zigzag", "back and forth"]),
+    ("postit_flow_orgchart", ["org chart", "orgchart", "hierarchy", "reporting structure"]),
+    ("postit_flow_fishbone", ["fishbone", "root cause", "cause and effect", "ishikawa"]),
+    ("postit_flow_mindmap", ["mind map", "mindmap", "brainstorm", "idea map"]),
+    ("postit_flow_outline", ["outline", "nested", "indented"]),
+    ("postit_flow_vertical", ["vertical", "top to bottom", "top-down"]),
+    ("postit_flow_arc", ["arc", "curved"]),
+]
+
+
+def _match_wireframe_description(description: str) -> str:
+    """Match a description to the best wireframe preset."""
+    desc_lower = description.lower()
+    best_preset = "after"
+    best_score = 0
+    for preset_name, keywords in _WIREFRAME_KEYWORD_MAP:
+        score = sum(1 for kw in keywords if kw in desc_lower)
+        if score > best_score:
+            best_score = score
+            best_preset = preset_name
+    return best_preset
 
 
 async def main():
