@@ -43,15 +43,15 @@ def _error_response(message: str) -> list:
 
 
 def _get_layout_info() -> List[Dict[str, Any]]:
-    """Build layout metadata from the registry."""
+    """Build layout metadata from the registry, preferring strategy metadata."""
     layouts = []
     for name in DEFAULT_LAYOUT_REGISTRY.list_types():
         strategy = DEFAULT_LAYOUT_REGISTRY.get(name)
         layouts.append({
             "name": name,
-            "description": LAYOUT_DESCRIPTIONS.get(name, ""),
+            "description": (strategy.description if strategy else "") or LAYOUT_DESCRIPTIONS.get(name, ""),
             "required_args": sorted(strategy.required_args) if strategy else [],
-            "example_command": EXAMPLE_COMMANDS.get(name, ""),
+            "example_command": (strategy.example_command if strategy else "") or EXAMPLE_COMMANDS.get(name, ""),
         })
     return layouts
 

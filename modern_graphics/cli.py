@@ -71,6 +71,7 @@ from .cli_utils import (
     parse_items,
     parse_highlights_arg,
 )
+from .layouts import list_layout_strategies
 from .cli_build import handle_themes, handle_build, handle_retheme
 from .cli_create import handle_create
 from .cli_legacy import handle_legacy_command
@@ -98,7 +99,7 @@ def main():
     create_layout = create_parser.add_argument_group('layout-specific')
     create_expert = create_parser.add_argument_group('expert')
 
-    create_core.add_argument('--layout', choices=['hero', 'insight', 'key-insight', 'insight-card', 'insight-story', 'comparison', 'story', 'timeline', 'funnel', 'grid'], help='Layout family to generate (omit to get a suggestion)')
+    create_core.add_argument('--layout', choices=list_layout_strategies() + ['insight'], help='Layout family to generate (omit to get a suggestion)')
     create_core.add_argument('--output', required=True, help='Output HTML/PNG path')
     create_core.add_argument('--title', default='Modern Graphic', help='Graphic title scope')
     create_core.add_argument('--theme', choices=list_schemes(), default=CREATE_DEFAULTS.theme, help=f'Color theme (default: {CREATE_DEFAULTS.theme})')

@@ -78,6 +78,24 @@ LAYOUT_DESCRIPTIONS: Dict[str, str] = {
 }
 
 
+def _get_effective_rules() -> List[Tuple[str, List[str], int]]:
+    """Get keyword rules, merging registry metadata with hardcoded fallbacks."""
+    try:
+        from .layouts import DEFAULT_LAYOUT_REGISTRY
+        registry_rules = []
+        for name in DEFAULT_LAYOUT_REGISTRY.list_types():
+            strategy = DEFAULT_LAYOUT_REGISTRY.get(name)
+            if strategy and strategy.keywords:
+                registry_rules.append((name, strategy.keywords, 10))
+            if strategy and strategy.description and name not in LAYOUT_DESCRIPTIONS:
+                LAYOUT_DESCRIPTIONS[name] = strategy.description
+            if strategy and strategy.example_command and name not in EXAMPLE_COMMANDS:
+                EXAMPLE_COMMANDS[name] = strategy.example_command
+        return registry_rules if registry_rules else _KEYWORD_RULES
+    except ImportError:
+        return _KEYWORD_RULES
+
+
 def suggest_layout(description: str) -> SuggestResult:
     """Return the best layout match for a plain-text description."""
     results = suggest_layout_top_n(description, n=1)
@@ -87,10 +105,11 @@ def suggest_layout(description: str) -> SuggestResult:
 def suggest_layout_top_n(description: str, n: int = 3) -> List[SuggestResult]:
     """Return the top N layout matches ranked by score, then priority."""
     desc_lower = description.lower().strip()
+    effective_rules = _get_effective_rules()
 
     # Score each layout
     scores: Dict[str, Tuple[int, List[str]]] = {}
-    for layout, keywords, weight in _KEYWORD_RULES:
+    for layout, keywords, weight in effective_rules:
         matched = [kw for kw in keywords if kw in desc_lower]
         if matched:
             current_score, current_matched = scores.get(layout, (0, []))
@@ -116,7 +135,7 @@ def suggest_layout_top_n(description: str, n: int = 3) -> List[SuggestResult]:
 
     # Normalize confidence: top score / max possible single-layout score
     max_score = ranked[0][1][0]
-    max_possible = max(len(kws) * w for _, kws, w in _KEYWORD_RULES)
+    max_possible = max(len(kws) * w for _, kws, w in effective_rules)
 
     results: List[SuggestResult] = []
     for layout, (score, matched) in ranked[:n]:
