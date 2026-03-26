@@ -56,6 +56,7 @@ CONTENT_BBOX_JS = """
     '.flywheel-container',
     '.timeline-container',
     '.timeline',
+    '.hero',
     '.comparison',
     '.tests-grid',
     '.wrapper',

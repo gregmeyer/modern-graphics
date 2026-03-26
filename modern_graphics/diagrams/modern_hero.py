@@ -308,6 +308,11 @@ def generate_modern_hero(
     stats_gap = tokens.spacing.md
     stats_margin = tokens.spacing.xxl
 
+    # Auto-detect dark themes from color_scheme when background_variant isn't explicitly set to dark
+    if background_variant == "light" and color_scheme is not None:
+        from .theme_utils import _is_dark_color
+        if hasattr(color_scheme, "bg_primary") and _is_dark_color(color_scheme.bg_primary):
+            background_variant = "dark"
     background_class = "hero-light" if background_variant == "light" else "hero-dark"
     visual_desc = (visual_description or "").lower()
     curved_flow = "hero-flow-curved" if "curved arrow" in visual_desc or "curved flow" in visual_desc else ""

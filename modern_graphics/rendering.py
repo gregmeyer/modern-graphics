@@ -96,7 +96,7 @@ def generate_sync(
 
     html = render_layout(layout, generator, **render_args)
 
-    if layout == "story" and color_scheme is not None:
+    if color_scheme is not None:
         html = color_scheme.apply_to_html(html)
 
     result: Dict[str, Any] = {"layout": layout, "format": fmt}
