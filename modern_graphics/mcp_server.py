@@ -82,6 +82,28 @@ def _generate_sync(
     if color_scheme is not None:
         render_args["color_scheme"] = color_scheme
 
+    # Preprocess image paths → embedded data URLs
+    try:
+        from .image_utils import image_path_to_img_tag, image_path_to_svg_image
+
+        if layout == "insight-card" and "image_path" in render_args and "svg_content" not in render_args:
+            img_path = render_args.pop("image_path")
+            w = int(render_args.pop("image_width", 360))
+            h = int(render_args.pop("image_height", 260))
+            render_args["svg_content"] = image_path_to_svg_image(img_path, width=w, height=h)
+
+        if layout == "hero" and "image_path" in render_args and "freeform_canvas" not in render_args:
+            img_path = render_args.pop("image_path")
+            render_args["freeform_canvas"] = image_path_to_img_tag(img_path)
+
+        if layout == "insight-story":
+            for key, svg_key in [("before_image_path", "before_svg"), ("after_image_path", "after_svg")]:
+                if key in render_args and svg_key not in render_args:
+                    img_path = render_args.pop(key)
+                    render_args[svg_key] = image_path_to_svg_image(img_path, width=360, height=260)
+    except (FileNotFoundError, ValueError) as exc:
+        return {"error": str(exc)}
+
     html = render_layout(layout, generator, **render_args)
 
     if layout == "story" and color_scheme is not None:
