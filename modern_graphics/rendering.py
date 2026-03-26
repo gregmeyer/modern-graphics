@@ -114,4 +114,8 @@ def generate_sync(
         result["file_path"] = str(html_path)
         result["html_content"] = html
 
+    # Include gallery URL if the site is running
+    site_port = os.environ.get("MODERN_GRAPHICS_SITE_PORT", "8484")
+    result["gallery_url"] = f"http://localhost:{site_port}"
+
     return result

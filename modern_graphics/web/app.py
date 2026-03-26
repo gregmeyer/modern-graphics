@@ -119,7 +119,7 @@ def main():
     import uvicorn
 
     parser = argparse.ArgumentParser(description="Modern Graphics gallery server")
-    parser.add_argument("--port", type=int, default=8080, help="Port (default: 8080)")
+    parser.add_argument("--port", type=int, default=int(os.environ.get("MODERN_GRAPHICS_SITE_PORT", "8484")), help="Port (default: 8484)")
     parser.add_argument("--host", default="0.0.0.0", help="Host (default: 0.0.0.0)")
     args = parser.parse_args()
 
