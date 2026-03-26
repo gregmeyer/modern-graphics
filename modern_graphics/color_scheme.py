@@ -18,6 +18,29 @@ from typing import Dict, Optional, List
 from dataclasses import dataclass, field
 
 
+SHADOW_PRESETS = {
+    "none": {"container": "none", "card": "none"},
+    "subtle": {
+        "container": "0 2px 12px rgba(0,0,0,0.06)",
+        "card": "0 1px 4px rgba(0,0,0,0.04)",
+    },
+    "medium": {
+        "container": "0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)",
+        "card": "0 4px 16px rgba(0,0,0,0.08)",
+    },
+    "dramatic": {
+        "container": "0 24px 80px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.12)",
+        "card": "0 12px 40px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.08)",
+    },
+}
+
+BORDER_RADIUS_PRESETS = {
+    "soft": {"sm": "8px", "md": "16px", "lg": "24px", "xl": "32px", "pill": "999px"},
+    "sharp": {"sm": "2px", "md": "4px", "lg": "8px", "xl": "12px", "pill": "4px"},
+    "pixel": {"sm": "0", "md": "0", "lg": "0", "xl": "0", "pill": "0"},
+}
+
+
 @dataclass
 class ColorScheme:
     """Defines a complete color scheme for graphics theming
@@ -48,7 +71,13 @@ class ColorScheme:
     # Custom CSS injection
     custom_css: Optional[str] = None           # Arbitrary CSS to inject
     mermaid_flowchart_extra_css: Optional[str] = None  # Extra CSS for Mermaid flowchart nodes (e.g. post-it shadow)
-    
+
+    # Visual style overrides
+    shadow_depth: str = "medium"           # "none" | "subtle" | "medium" | "dramatic"
+    background_css: Optional[str] = None   # CSS background override (gradient, solid, pattern)
+    heading_scale: float = 1.0             # Typography scale multiplier for headings
+    spacing_scale: float = 1.0             # Spacing multiplier
+
     # Primary colors
     primary: str = "#2563eb"  # Main brand color
     secondary: str = "#64748b"  # Secondary/accent
@@ -154,7 +183,7 @@ class ColorScheme:
     
     def get_css_overrides(self) -> str:
         """Generate CSS overrides for all graphics types"""
-        return f"""
+        css = f"""
         /* Color Scheme: {self.name} */
         
         /* Base styles */
@@ -529,6 +558,54 @@ class ColorScheme:
             fill: {self.text_tertiary};
         }}
         """
+
+        # Visual style overrides (border radius, shadows, background, heading scale)
+        radii = BORDER_RADIUS_PRESETS.get(self.border_style, BORDER_RADIUS_PRESETS["soft"])
+        shadows = SHADOW_PRESETS.get(self.shadow_depth, SHADOW_PRESETS["medium"])
+
+        visual_css = f"""
+        /* Visual style: {self.border_style} borders, {self.shadow_depth} shadows */
+        :root {{
+            --mg-radius-sm: {radii["sm"]};
+            --mg-radius-md: {radii["md"]};
+            --mg-radius-lg: {radii["lg"]};
+            --mg-radius-xl: {radii["xl"]};
+            --mg-radius-pill: {radii["pill"]};
+            --mg-shadow-container: {shadows["container"]};
+            --mg-shadow-card: {shadows["card"]};
+        }}
+
+        .slide-container, .hero, .insight-card, .story-slide-container {{
+            border-radius: {radii["xl"]} !important;
+            box-shadow: {shadows["container"]} !important;
+        }}
+
+        .card, .panel, .tile, .flow-node, .showcase-panel, .stat-card,
+        .comparison-column, .timeline-event, .funnel-stage, .grid-item {{
+            border-radius: {radii["md"]} !important;
+            box-shadow: {shadows["card"]} !important;
+        }}
+
+        .pill, .badge, .tag, .status-pill, .eyebrow {{
+            border-radius: {radii["pill"]} !important;
+        }}
+"""
+
+        if self.background_css:
+            visual_css += f"""
+        body {{
+            background: {self.background_css} !important;
+        }}
+"""
+
+        if self.heading_scale != 1.0:
+            scale = self.heading_scale
+            visual_css += f"""
+        .headline, h1 {{ font-size: calc(var(--base-h1, 42px) * {scale}) !important; }}
+        .subhead, h2 {{ font-size: calc(var(--base-h2, 24px) * {scale}) !important; }}
+"""
+
+        return css + visual_css
     
     def get_svg_color_replacements(self) -> Dict[str, str]:
         """Get color replacements for SVG elements and common hardcoded colors"""
@@ -585,7 +662,11 @@ class ColorScheme:
         replacements = self.get_svg_color_replacements()
         for old_color, new_color in replacements.items():
             html = html.replace(old_color, new_color)
-        
+
+        # Inject custom CSS
+        if self.custom_css:
+            html = html.replace('</style>', f'\n{self.custom_css}\n    </style>', 1)
+
         return html
     
     def _with_alpha(self, color: str, alpha: float) -> str:
@@ -665,6 +746,8 @@ DARK_SCHEME = ColorScheme(
     border_light="#334155",
     border_medium="#475569",
     border_dark="#64748b",
+    shadow_depth="dramatic",
+    background_css="linear-gradient(135deg, #0f172a, #1e293b)",
 )
 
 WARM_SCHEME = ColorScheme(
@@ -687,6 +770,7 @@ WARM_SCHEME = ColorScheme(
     border_light="#fde68a",
     border_medium="#fcd34d",
     border_dark="#f59e0b",
+    shadow_depth="subtle",
 )
 
 GREEN_SCHEME = ColorScheme(
@@ -745,6 +829,9 @@ ARCADE_SCHEME = ColorScheme(
     effects={"glow": True, "scanlines": True, "pixel_borders": True},
     glow_color="#00fff5",
     border_style="pixel",
+    shadow_depth="dramatic",
+    background_css="linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 100%)",
+    heading_scale=1.1,
 )
 
 POSTIT_SCHEME = ColorScheme(
@@ -767,6 +854,8 @@ POSTIT_SCHEME = ColorScheme(
     border_light="#ffecb3",
     border_medium="#d4a84b", # Tan border
     border_dark="#b8860b",
+    shadow_depth="subtle",
+    background_css="#fafaf5",
     mermaid_flowchart_extra_css=(
         ".node rect,.node polygon,.node circle{filter:drop-shadow(2px 2px 4px rgba(0,0,0,0.12));} "
         ".node .label{font-style:normal;}"
@@ -807,6 +896,9 @@ NIKE_SCHEME = ColorScheme(
     effects={"glow": True, "scanlines": False, "pixel_borders": False},
     glow_color="#AAFF00",
     border_style="sharp",
+    shadow_depth="dramatic",
+    background_css="#111111",
+    heading_scale=1.15,
 )
 
 APPLE_SCHEME = ColorScheme(
@@ -842,6 +934,9 @@ APPLE_SCHEME = ColorScheme(
     effects={"glow": False, "scanlines": False, "pixel_borders": False},
     glow_color="#0071e3",
     border_style="soft",
+    shadow_depth="subtle",
+    background_css="#f5f5f7",
+    heading_scale=0.95,
 )
 
 OPERATOR_CLARITY_V2_SCHEME = ColorScheme(
