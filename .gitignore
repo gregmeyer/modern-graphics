@@ -1,3 +1,6 @@
+# Generated site
+site/
+
 # Python
 __pycache__/
 *.py[cod]
