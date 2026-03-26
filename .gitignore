@@ -28,9 +28,10 @@ env/
 ENV/
 .venv
 
-# IDE
+# IDE / local config
 .vscode/
 .idea/
+.mcp.json
 *.swp
 *.swo
 *~
