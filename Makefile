@@ -1,4 +1,4 @@
-.PHONY: build run shell test mcp help
+.PHONY: build run shell test mcp gallery site help
 
 IMAGE := modern-graphics
 DOCKER_RUN := docker run --rm --ipc=host --init
@@ -12,6 +12,8 @@ help:
 	@echo "  make shell    Interactive bash in container"
 	@echo "  make test     Run smoke tests"
 	@echo "  make mcp      Run MCP server in Docker (for AI clients)"
+	@echo "  make gallery  Generate static gallery site in site/"
+	@echo "  make site     Serve interactive gallery on http://localhost:8484"
 	@echo ""
 	@echo "Shorthand:"
 	@echo "  ./generate <layout> [flags]   Auto-builds, defaults to PNG, outputs to ./output/"
@@ -36,3 +38,12 @@ test:
 mcp:
 	@mkdir -p $(OUTPUT_DIR)
 	$(DOCKER_RUN) -i -v $(OUTPUT_DIR):/app/output -w /app --entrypoint python $(IMAGE) -m modern_graphics.mcp_server
+
+gallery:
+	@mkdir -p site
+	$(DOCKER_RUN) -v $(PWD)/site:/app/site -v $(PWD)/examples:/app/examples -w /app --entrypoint python $(IMAGE) -m modern_graphics.web.gallery --output /app/site
+
+site: gallery
+	@echo "Gallery site at http://localhost:8484"
+	@mkdir -p $(OUTPUT_DIR)
+	$(DOCKER_RUN) -p 8484:8484 -v $(PWD)/site:/app/site -v $(OUTPUT_DIR):/app/output -w /app --entrypoint python $(IMAGE) -m modern_graphics.web.app --port 8484
