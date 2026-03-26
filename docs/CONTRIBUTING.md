@@ -61,6 +61,7 @@ Use this checklist for any PR that touches docs.
 - Keep required entry headings in core docs:
   - `## Use This Doc When` in `docs/QUICKSTART.md`, `docs/CREATE_COMMAND.md`, `docs/HERO_SLIDES.md`, `docs/CUSTOM_THEMES.md`, `docs/SVG_COMPOSITION.md`
   - `## Use This Page When` in `examples/README.md`
+- When you add or rename MCP tools (or change path/env behavior), update [`docs/MCP_SERVER.md`](MCP_SERVER.md) to match `modern_graphics/mcp_server.py`. The drift script does not check tool parity automatically.
 - Run the docs drift guard and ensure it passes:
 
 ```bash
