@@ -14,6 +14,8 @@ If you already know your target layout and flags, use [Create Command Guide](./C
 
 Follow the install steps in the [main README](../README.md#start-here) (Docker, MCP, or pip). Then come back here for your first command.
 
+Not sure which layout or theme to use? Browse the gallery: `make gallery && open site/index.html`
+
 ## Fastest Path (CLI)
 
 ```bash

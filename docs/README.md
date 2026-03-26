@@ -7,6 +7,7 @@ Task-first map of the docs in this repository, aligned to the main README goals.
 - [Quick Start Guide](QUICKSTART.md) – first successful graphic in minutes
 - [API Reference](API.md) – imports, generator APIs, and convenience functions
 - [MCP Server](MCP_SERVER.md) – let AI clients generate graphics via tool calls
+- Interactive gallery: `make site` → browse layouts, themes, and generate graphics at `http://localhost:8484`
 
 ## 2) Make graphics
 

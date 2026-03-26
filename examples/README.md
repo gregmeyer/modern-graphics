@@ -8,6 +8,15 @@ Runnable examples and curated showcase outputs for modern-graphics.
 - You want tracked visual references before you customize.
 - You want to browse example scripts by category.
 
+## Browse Visually
+
+Not sure which layout or theme to pick? Browse the interactive gallery:
+
+```bash
+make gallery && open site/index.html   # static gallery
+make site                               # live at http://localhost:8484
+```
+
 ## Fastest Path: Docker + MCP
 
 The recommended workflow — no local Python setup needed:

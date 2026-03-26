@@ -78,9 +78,28 @@ OUTPUT_DIR=~/Desktop ./generate hero --headline "My title"
 | `make run ARGS='...'` | Run any `modern-graphics` CLI command |
 | `make test` | Run the smoke-test suite inside the container |
 | `make shell` | Drop into an interactive bash shell in the container |
+| `make gallery` | Generate a static gallery site in `site/` |
+| `make site` | Serve interactive gallery at `http://localhost:8484` |
 | `make help` | Print available targets |
 
 **Where do files go?** Generated files land on your local disk at `./output/`, not inside Docker. The container mounts your host directory, writes the file, and exits — the 2.75GB image stays the same size no matter how many graphics you generate. To reclaim space from stale build layers: `docker image prune`.
+
+### Browse the Gallery
+
+See all available layouts and themes visually:
+
+```bash
+make gallery        # generate static site
+open site/index.html  # browse layouts and themes offline
+```
+
+Or serve the interactive version with live graphic generation:
+
+```bash
+make site           # starts at http://localhost:8484
+```
+
+The interactive gallery lets you pick a layout, fill in content, choose a theme, and generate graphics in-browser. Each result includes copyable CLI and MCP commands.
 
 ### Option B: MCP Server (AI-assisted)
 
