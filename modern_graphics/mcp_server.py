@@ -270,6 +270,49 @@ async def list_tools() -> list[Tool]:
                 "required": ["theme"],
             },
         ),
+        Tool(
+            name="composite_image",
+            description="Overlay one image on top of another at a specified position. Use to add logos, watermarks, or badges to generated graphics.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "base": {
+                        "type": "string",
+                        "description": "Path to the base image (PNG)",
+                    },
+                    "overlay": {
+                        "type": "string",
+                        "description": "Path to the overlay image (PNG, supports transparency)",
+                    },
+                    "position": {
+                        "type": "string",
+                        "enum": ["top-left", "top-center", "top-right", "center", "bottom-left", "bottom-center", "bottom-right"],
+                        "description": "Where to place the overlay (default: top-right)",
+                    },
+                    "x": {
+                        "type": "integer",
+                        "description": "Optional exact X pixel offset from left. Overrides position.",
+                    },
+                    "y": {
+                        "type": "integer",
+                        "description": "Optional exact Y pixel offset from top. Overrides position.",
+                    },
+                    "scale": {
+                        "type": "number",
+                        "description": "Scale factor for the overlay (e.g., 0.5 = half size, 2.0 = double). Default: 1.0",
+                    },
+                    "padding": {
+                        "type": "integer",
+                        "description": "Padding in pixels from the edge when using named positions. Default: 20",
+                    },
+                    "output": {
+                        "type": "string",
+                        "description": "Output path. Defaults to overwriting the base image.",
+                    },
+                },
+                "required": ["base", "overlay"],
+            },
+        ),
     ]
 
 
@@ -488,6 +531,57 @@ async def call_tool(name: str, arguments: dict) -> list:
                 "path": save_path,
                 "theme": theme_name,
             })
+
+        elif name == "composite_image":
+            from PIL import Image as PILImage
+
+            base_path = arguments.get("base", "")
+            overlay_path = arguments.get("overlay", "")
+            if not base_path or not overlay_path:
+                return _error_response("'base' and 'overlay' are required.")
+
+            if not os.path.exists(base_path):
+                return _error_response(f"Base image not found: {base_path}")
+            if not os.path.exists(overlay_path):
+                return _error_response(f"Overlay image not found: {overlay_path}")
+
+            def _composite() -> Dict[str, Any]:
+                base_img = PILImage.open(base_path).convert("RGBA")
+                overlay_img = PILImage.open(overlay_path).convert("RGBA")
+
+                scale = arguments.get("scale", 1.0)
+                if scale != 1.0:
+                    new_w = int(overlay_img.width * scale)
+                    new_h = int(overlay_img.height * scale)
+                    overlay_img = overlay_img.resize((new_w, new_h), PILImage.LANCZOS)
+
+                pad = arguments.get("padding", 20)
+                bw, bh = base_img.size
+                ow, oh = overlay_img.size
+
+                if "x" in arguments and "y" in arguments:
+                    x, y = arguments["x"], arguments["y"]
+                else:
+                    pos = arguments.get("position", "top-right")
+                    positions = {
+                        "top-left": (pad, pad),
+                        "top-center": ((bw - ow) // 2, pad),
+                        "top-right": (bw - ow - pad, pad),
+                        "center": ((bw - ow) // 2, (bh - oh) // 2),
+                        "bottom-left": (pad, bh - oh - pad),
+                        "bottom-center": ((bw - ow) // 2, bh - oh - pad),
+                        "bottom-right": (bw - ow - pad, bh - oh - pad),
+                    }
+                    x, y = positions.get(pos, positions["top-right"])
+
+                base_img.paste(overlay_img, (x, y), overlay_img)
+
+                out_path = arguments.get("output", base_path)
+                base_img.convert("RGB").save(out_path)
+                return {"composited": True, "output": out_path, "overlay_size": [ow, oh], "position": [x, y]}
+
+            result = await asyncio.to_thread(_composite)
+            return _json_response(result)
 
         else:
             return _error_response(f"Unknown tool: {name}")
