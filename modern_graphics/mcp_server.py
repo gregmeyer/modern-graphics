@@ -62,6 +62,7 @@ def _generate_sync(
     output_path: str,
     fmt: str = "html",
     theme: str | None = None,
+    transparent: bool = False,
 ) -> Dict[str, Any]:
     """Synchronous rendering — called via asyncio.to_thread."""
     from .generator import ModernGraphicsGenerator
@@ -73,7 +74,8 @@ def _generate_sync(
     out.parent.mkdir(parents=True, exist_ok=True)
 
     attribution = Attribution()
-    generator = ModernGraphicsGenerator("Modern Graphic", attribution=attribution)
+    title = args.pop("title", "") or ""
+    generator = ModernGraphicsGenerator(title, attribution=attribution)
 
     color_scheme = get_scheme(theme) if theme else None
     render_args = dict(args)
@@ -90,7 +92,7 @@ def _generate_sync(
     if fmt == "png":
         png_path = out.with_suffix(".png")
         try:
-            generator.export_to_png(html, png_path, crop_mode="safe")
+            generator.export_to_png(html, png_path, crop_mode="safe", transparent_background=transparent)
         except Exception as exc:
             return {"error": f"PNG export failed: {exc}. Try format='html' or ensure Playwright is installed."}
         result["file_path"] = str(png_path)
@@ -154,6 +156,10 @@ async def list_tools() -> list[Tool]:
                     "theme": {
                         "type": "string",
                         "description": "Color theme (e.g., corporate, apple, dark, warm, green)",
+                    },
+                    "transparent": {
+                        "type": "boolean",
+                        "description": "If true, PNG background is transparent instead of white. Default: false.",
                     },
                 },
                 "required": ["layout", "args"],
@@ -372,6 +378,7 @@ async def call_tool(name: str, arguments: dict) -> list:
             args = arguments.get("args", {})
             fmt = arguments.get("format", "html")
             theme = arguments.get("theme")
+            transparent = arguments.get("transparent", False)
             output_path = arguments.get(
                 "output_path",
                 os.path.join(OUTPUT_DIR, f"{layout}.{fmt}"),
@@ -383,7 +390,7 @@ async def call_tool(name: str, arguments: dict) -> list:
                 return _error_response(f"Unknown layout '{layout}'. Available: {', '.join(available)}")
 
             result = await asyncio.to_thread(
-                _generate_sync, layout, args, output_path, fmt, theme
+                _generate_sync, layout, args, output_path, fmt, theme, transparent
             )
 
             if "error" in result:
@@ -577,7 +584,10 @@ async def call_tool(name: str, arguments: dict) -> list:
                 base_img.paste(overlay_img, (x, y), overlay_img)
 
                 out_path = arguments.get("output", base_path)
-                base_img.convert("RGB").save(out_path)
+                if out_path.lower().endswith(".png"):
+                    base_img.save(out_path)  # preserve RGBA transparency
+                else:
+                    base_img.convert("RGB").save(out_path)
                 return {"composited": True, "output": out_path, "overlay_size": [ow, oh], "position": [x, y]}
 
             result = await asyncio.to_thread(_composite)
