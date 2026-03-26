@@ -263,7 +263,7 @@ async def list_tools() -> list[Tool]:
         ),
         Tool(
             name="generate_wireframe",
-            description="Generate a wireframe SVG from a scene preset, custom spec, or description. Supports theme-aware colors. Returns SVG content and optionally saves to file. IMPORTANT: Custom scene_spec elements must be a flat list with explicit x/y positions — nested content inside containers won't render. Use presets ('before', 'after') for complex compositions.",
+            description="Generate a wireframe SVG from a scene preset, custom spec, or description. Supports theme-aware colors and nested elements. Returns SVG content and optionally saves to file.",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -273,7 +273,7 @@ async def list_tools() -> list[Tool]:
                     },
                     "scene_spec": {
                         "type": "object",
-                        "description": "Custom scene spec: {width, height, elements: [{type, x, y, width?, height?, props?}]}. Elements are rendered as a flat list — position each element with explicit x/y coordinates. Don't nest elements inside containers.",
+                        "description": "Custom scene spec: {width, height, elements: [{type, x, y, width?, height?, props?, children?}]}. Elements support an optional 'children' array for nesting — child coordinates are relative to the parent.",
                     },
                     "description": {
                         "type": "string",

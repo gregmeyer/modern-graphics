@@ -774,6 +774,65 @@ SCENE_PRESETS: Dict[str, Dict[str, Any]] = {
 }
 
 
+def _render_children(
+    children: List[Dict[str, Any]],
+    parent_el: Dict[str, Any],
+    config: WireframeConfig,
+) -> str:
+    """Render child elements with coordinates offset by the parent's position."""
+    parent_x = parent_el.get("x", 0)
+    parent_y = parent_el.get("y", 0)
+    # Offset by chrome height for browser windows so children appear in the content area
+    chrome_offset = config.chrome_height if parent_el.get("type") == "browser_window" else 0
+
+    parts = []
+    for child in children:
+        child_copy = dict(child)
+        child_copy["x"] = child_copy.get("x", 0) + parent_x
+        child_copy["y"] = child_copy.get("y", 0) + parent_y + chrome_offset
+
+        el_type = child_copy.get("type")
+        if not el_type or el_type not in ELEMENT_REGISTRY:
+            continue
+
+        adapter = ELEMENT_REGISTRY[el_type]
+        svg = adapter(config, child_copy)
+
+        # Recurse if child also has children
+        if "children" in child_copy:
+            child_svg = _render_children(child_copy["children"], child_copy, config)
+            svg = _inject_children(svg, child_svg)
+
+        parts.append(svg)
+    return "\n".join(parts)
+
+
+def _inject_children(parent_svg: str, children_svg: str) -> str:
+    """Inject rendered children SVG into parent element before the closing </g>."""
+    last_g = parent_svg.rfind("</g>")
+    if last_g >= 0:
+        return parent_svg[:last_g] + children_svg + "\n" + parent_svg[last_g:]
+    return parent_svg + children_svg
+
+
+def _render_element(el: Dict[str, Any], config: WireframeConfig) -> str:
+    """Render a single element, recursively handling children."""
+    el_type = el.get("type")
+    if not el_type:
+        return ""
+    if el_type not in ELEMENT_REGISTRY:
+        raise ValueError(f"Unknown element type: {el_type}. Known: {list(ELEMENT_REGISTRY)}")
+
+    adapter = ELEMENT_REGISTRY[el_type]
+    svg = adapter(config, el)
+
+    if "children" in el:
+        children_svg = _render_children(el["children"], el, config)
+        svg = _inject_children(svg, children_svg)
+
+    return svg
+
+
 def render_scene(
     spec: Union[Dict[str, Any], str],
     config: WireframeConfig,
@@ -782,7 +841,8 @@ def render_scene(
 
     Args:
         spec: Either a preset name (e.g. "before", "after") or a dict with
-            width, height, and elements (list of { type, x, y, width?, height?, props? }).
+            width, height, and elements. Elements support an optional ``children``
+            array for nesting — child coordinates are relative to the parent.
         config: WireframeConfig for colors, fonts, and filter defs.
 
     Returns:
@@ -797,15 +857,7 @@ def render_scene(
     height = spec.get("height", 520)
     elements_list = spec.get("elements", [])
 
-    parts = []
-    for el in elements_list:
-        el_type = el.get("type")
-        if not el_type:
-            continue
-        if el_type not in ELEMENT_REGISTRY:
-            raise ValueError(f"Unknown element type: {el_type}. Known: {list(ELEMENT_REGISTRY)}")
-        adapter = ELEMENT_REGISTRY[el_type]
-        parts.append(adapter(config, el))
+    parts = [_render_element(el, config) for el in elements_list]
 
     defs = config.get_filter_defs()
     content = "\n".join(parts)
