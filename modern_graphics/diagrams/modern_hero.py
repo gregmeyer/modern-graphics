@@ -543,6 +543,7 @@ def generate_modern_hero_triptych(
     eyebrow: Optional[str] = None,
     headline_align: str = "left",
     subheadline_align: Optional[str] = None,
+    color_scheme: Optional["ColorScheme"] = None,
 ) -> str:
     """Render the triptych hero layout (manual → templates → generated).
     
@@ -550,6 +551,8 @@ def generate_modern_hero_triptych(
         headline_align: Text alignment for headline ('left', 'center', 'right'). Default: 'left'
         subheadline_align: Text alignment for subheadline ('left', 'center', 'right'). 
                           If None, uses headline_align. Default: None
+        color_scheme: Accepted for API parity with other layouts; theming is applied
+            to exported HTML in the shared rendering pipeline (e.g. apply_to_html).
     """
     if len(columns) < 3:
         raise ValueError("modern hero triptych requires at least 3 columns")
