@@ -37,6 +37,31 @@ from .rendering import (
 
 
 app = Server("modern-graphics")
+SESSION_OUTPUT_ROOT: str | None = None
+
+
+def _resolve_container_path(path_value: str | None, *, default_path: str) -> str:
+    """Map host paths into container workspace paths when running in Docker."""
+    if not path_value:
+        return default_path
+
+    resolved = path_value
+    host_root = os.environ.get("HOST_WORKSPACE_ROOT")
+    container_root = os.environ.get("CONTAINER_WORKSPACE_ROOT")
+    if host_root and container_root:
+        try:
+            host_path = Path(host_root).resolve()
+            candidate = Path(path_value).expanduser()
+            if candidate.is_absolute():
+                candidate_resolved = candidate.resolve()
+                if candidate_resolved == host_path or host_path in candidate_resolved.parents:
+                    rel = candidate_resolved.relative_to(host_path)
+                    resolved = str(Path(container_root) / rel)
+        except Exception:
+            # Preserve the provided path if mapping fails.
+            resolved = path_value
+
+    return str(Path(resolved).expanduser())
 
 
 def _json_response(data: Any) -> list:
@@ -145,6 +170,20 @@ async def list_tools() -> list[Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {},
+            },
+        ),
+        Tool(
+            name="set_output_root",
+            description="Set the default output directory for this MCP session. generate_graphic and generate_wireframe use this path when output_path is omitted.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "path": {
+                        "type": "string",
+                        "description": "Default output directory path",
+                    },
+                },
+                "required": ["path"],
             },
         ),
         Tool(
@@ -347,15 +386,37 @@ async def call_tool(name: str, arguments: dict) -> list:
         elif name == "list_themes":
             return _json_response({"themes": _get_theme_info()})
 
+        elif name == "set_output_root":
+            global SESSION_OUTPUT_ROOT
+            requested = arguments.get("path", "")
+            if not requested:
+                return _error_response("'path' is required.")
+
+            resolved_root = _resolve_container_path(
+                requested,
+                default_path=OUTPUT_DIR,
+            )
+            root_path = Path(resolved_root).expanduser()
+            root_path.mkdir(parents=True, exist_ok=True)
+            SESSION_OUTPUT_ROOT = str(root_path)
+            return _json_response({
+                "ok": True,
+                "output_root": SESSION_OUTPUT_ROOT,
+            })
+
         elif name == "generate_graphic":
             layout = arguments.get("layout", "")
             args = arguments.get("args", {})
             fmt = arguments.get("format", "html")
             theme = arguments.get("theme")
             transparent = arguments.get("transparent", False)
-            output_path = arguments.get(
-                "output_path",
-                os.path.join(OUTPUT_DIR, f"{layout}.{fmt}"),
+            default_file_path = os.path.join(
+                SESSION_OUTPUT_ROOT or OUTPUT_DIR,
+                f"{layout}.{fmt}",
+            )
+            output_path = _resolve_container_path(
+                arguments.get("output_path"),
+                default_path=default_file_path,
             )
 
             strategy = DEFAULT_LAYOUT_REGISTRY.get(layout)
@@ -575,7 +636,10 @@ async def call_tool(name: str, arguments: dict) -> list:
             scene_spec = arguments.get("scene_spec")
             desc = arguments.get("description")
             wf_theme = arguments.get("theme")
-            output_path = arguments.get("output_path")
+            output_path = _resolve_container_path(
+                arguments.get("output_path"),
+                default_path="",
+            )
 
             # Build config with theme colors
             config = WireframeConfig()
@@ -600,8 +664,14 @@ async def call_tool(name: str, arguments: dict) -> list:
             if isinstance(preset, str):
                 result_data["preset_used"] = preset
 
+            output_root = SESSION_OUTPUT_ROOT or OUTPUT_DIR
             if output_path:
                 out = Path(output_path)
+                if not out.suffix:
+                    out = out / "wireframe.svg"
+            else:
+                out = Path(output_root) / "wireframe.svg"
+            if out:
                 out.parent.mkdir(parents=True, exist_ok=True)
                 out.write_text(svg, encoding="utf-8")
                 result_data["file_path"] = str(out)

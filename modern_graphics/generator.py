@@ -306,6 +306,7 @@ class ModernGraphicsGenerator(BaseGenerator):
         eyebrow: Optional[str] = None,
         headline_align: str = "left",
         subheadline_align: Optional[str] = None,
+        color_scheme: Optional[Any] = None,
     ) -> str:
         """Generate the triptych hero layout (manual → templates → outputs)."""
         return generate_modern_hero_triptych(
@@ -317,6 +318,7 @@ class ModernGraphicsGenerator(BaseGenerator):
             eyebrow=eyebrow,
             headline_align=headline_align,
             subheadline_align=subheadline_align,
+            color_scheme=color_scheme,
         )
     
     def generate_story_slide(
