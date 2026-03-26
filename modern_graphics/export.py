@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Optional
@@ -243,7 +244,7 @@ def export_html_to_png(
             )
 
             if resolved_crop_mode == "none":
-                temp_png_path.rename(output_path)
+                shutil.move(str(temp_png_path), str(output_path))
                 browser.close()
                 return output_path
 
@@ -260,14 +261,15 @@ def export_html_to_png(
                         padding=effective_padding,
                     )
                     if box is None:
-                        temp_png_path.rename(output_path)
+                        shutil.move(str(temp_png_path), str(output_path))
                     else:
                         img.crop(box).save(output_path)
                         temp_png_path.unlink(missing_ok=True)
             except Exception as e:
-                print(f"Warning: Could not crop ({e}), using full page")
+                print(f"Warning: Could not crop ({e}), using full page.")
+                print(f"  Tip: try --crop-mode tight or --crop-mode none")
                 if temp_png_path and temp_png_path.exists():
-                    temp_png_path.rename(output_path)
+                    shutil.move(str(temp_png_path), str(output_path))
                 else:
                     page.screenshot(path=str(output_path), full_page=True)
 
