@@ -13,6 +13,37 @@ if TYPE_CHECKING:
     from ..color_scheme import ColorScheme
 
 
+CANVAS_WIDTH = 1200
+CANVAS_HEIGHT = 360
+
+# Open hero: Pretext measure widths stay aligned with CSS max-widths.
+HERO_OPEN_HEADLINE_MAX_WIDTH_PX = 900
+HERO_OPEN_SUBHEAD_MAX_WIDTH_PX = 720
+HERO_OPEN_EYEBROW_MAX_WIDTH_PX = HERO_OPEN_HEADLINE_MAX_WIDTH_PX
+HERO_OPEN_INSIGHT_CALLOUT_BOX_MAX_WIDTH_PX = HERO_OPEN_SUBHEAD_MAX_WIDTH_PX
+HERO_OPEN_INSIGHT_CALLOUT_TEXT_MAX_WIDTH_PX = 608
+
+HERO_TRIPTYCH_HEADLINE_MAX_WIDTH_PX = 1200
+HERO_TRIPTYCH_SUBHEAD_MAX_WIDTH_PX = 780
+HERO_TRIPTYCH_PANEL_TITLE_MAX_WIDTH_PX = 360
+
+
+def _hero_open_font_stacks(color_scheme: Optional["ColorScheme"]) -> tuple[str, str]:
+    """Display and body font stacks for open-hero Pretext/Css parity."""
+    display = "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
+    body = display
+    if color_scheme is not None:
+        display = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display)
+        )
+        body = (
+            getattr(color_scheme, "font_family_body", None)
+            or getattr(color_scheme, "font_family", body)
+        )
+    return display, body
+
+
 def _render_svg_icon(kind: Optional[str], size: int = 64) -> str:
     """Return a lightweight SVG icon for hero panels."""
     if kind == "manual":
@@ -38,19 +69,54 @@ def _render_list(items: Optional[List[str]]) -> str:
 _QUOTE_ICON_SVG = '<svg fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>'
 
 
-def _render_insight_callout(callout: Optional[Dict[str, str]]) -> str:
+def _render_insight_callout(
+    callout: Optional[Dict[str, str]],
+    *,
+    use_pretext: bool = False,
+    body_font: str,
+    label_font_px: int = 11,
+    quote_font_px: int = 22,
+    text_max_width: float = HERO_OPEN_INSIGHT_CALLOUT_TEXT_MAX_WIDTH_PX,
+) -> str:
     """Render an insight-card-style quote callout (same visual language as key insight card)."""
     if not callout or not callout.get("text"):
         return ""
     text = callout.get("text", "")
     label = callout.get("label", "")
-    label_html = f'<div class="insight-callout-label">{escape(label)}</div>' if label else ""
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
+
+        label_html = (
+            pretext_slot(
+                text=label,
+                font=f"{label_font_px}px {body_font}",
+                max_width=text_max_width,
+                line_height=1.2,
+                css_class="insight-callout-label",
+                text_anchor="start",
+            )
+            if label
+            else ""
+        )
+        text_html = pretext_slot(
+            text=text,
+            font=f"italic {quote_font_px}px {body_font}",
+            max_width=text_max_width,
+            line_height=1.45,
+            css_class="insight-callout-text",
+            text_anchor="start",
+        )
+    else:
+        label_html = (
+            f'<div class="insight-callout-label">{escape(label)}</div>' if label else ""
+        )
+        text_html = f'<p class="insight-callout-text">{text}</p>'
     return f"""
         <div class="insight-callout">
             <div class="insight-callout-icon">{_QUOTE_ICON_SVG}</div>
             <div class="insight-callout-content">
                 {label_html}
-                <p class="insight-callout-text">{text}</p>
+                {text_html}
             </div>
         </div>"""
 
@@ -79,10 +145,6 @@ def _render_tile_flow(tiles: Optional[List[Dict[str, str]]]) -> str:
             """
         )
     return f"<div class='tile-flow'>{''.join(cards)}</div>"
-
-
-CANVAS_WIDTH = 1200
-CANVAS_HEIGHT = 360
 
 
 def _extract_panel_data(
@@ -377,47 +439,67 @@ def generate_modern_hero(
         )
     stats_html = _render_stats(stats)
     cta_html = f"<div class='cta'>{cta}</div>" if cta else ""
-    insight_callout_html = _render_insight_callout(insight_callout) if insight_callout and insight_callout.get("text") else ""
-    # Determine headline/subhead rendering: pretext-slot or plain div
-    use_pretext = getattr(generator, 'use_pretext', False)
+    use_pretext = getattr(generator, "use_pretext", False)
+    _display_font, _body_font = _hero_open_font_stacks(color_scheme)
     if use_pretext:
         from ..pretext_renderer import pretext_slot
-        # Resolve font from color_scheme or defaults
-        _display_font = "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
-        _body_font = _display_font
-        if color_scheme is not None:
-            _display_font = getattr(color_scheme, 'font_family_display', None) or getattr(color_scheme, 'font_family', _display_font)
-            _body_font = getattr(color_scheme, 'font_family_body', None) or getattr(color_scheme, 'font_family', _body_font)
-        _text_anchor = {"left": "start", "center": "middle", "right": "end"}.get(headline_align, "start")
+    insight_callout_html = (
+        _render_insight_callout(
+            insight_callout,
+            use_pretext=use_pretext,
+            body_font=_body_font,
+            text_max_width=float(HERO_OPEN_INSIGHT_CALLOUT_TEXT_MAX_WIDTH_PX),
+        )
+        if insight_callout and insight_callout.get("text")
+        else ""
+    )
+    _text_anchor = {"left": "start", "center": "middle", "right": "end"}.get(
+        headline_align, "start"
+    )
+    if use_pretext:
         headline_html = pretext_slot(
             text=headline,
             font=f"{headline_size}px {_display_font}",
-            max_width=900,
+            max_width=float(HERO_OPEN_HEADLINE_MAX_WIDTH_PX),
             line_height=1.15,
             css_class="headline",
             text_anchor=_text_anchor,
         )
         if subheadline:
-            _sub_anchor = {"left": "start", "center": "middle", "right": "end"}.get(subheadline_align or headline_align, "start")
+            _sub_anchor = {"left": "start", "center": "middle", "right": "end"}.get(
+                subheadline_align or headline_align, "start"
+            )
             subhead_html = pretext_slot(
                 text=subheadline,
                 font=f"{subhead_size}px {_body_font}",
-                max_width=720,
+                max_width=float(HERO_OPEN_SUBHEAD_MAX_WIDTH_PX),
                 line_height=1.4,
                 css_class="subhead",
                 text_anchor=_sub_anchor,
             )
         else:
             subhead_html = ""
+        if eyebrow:
+            eyebrow_html = pretext_slot(
+                text=eyebrow,
+                font=f"{eyebrow_size}px {_body_font}",
+                max_width=float(HERO_OPEN_EYEBROW_MAX_WIDTH_PX),
+                line_height=1.2,
+                css_class="eyebrow",
+                text_anchor=_text_anchor,
+            )
+        else:
+            eyebrow_html = ""
     else:
         headline_html = f'<div class="headline">{headline}</div>'
         subhead_html = f"<div class='subhead'>{subheadline}</div>" if subheadline else ""
+        eyebrow_html = f"<div class='eyebrow'>{eyebrow}</div>" if eyebrow else ""
 
     html = f"""
     <div class="hero {hero_classes}">
         <div class="halo"></div>
         <div class="hero-header">
-            {f"<div class='eyebrow'>{eyebrow}</div>" if eyebrow else ''}
+            {eyebrow_html}
             {headline_html}
             {subhead_html}
         </div>
@@ -523,8 +605,10 @@ def generate_modern_hero(
         .insight-callout { position: relative; max-width: 720px; margin-top: 28px; padding: 28px 32px 28px 80px; background: rgba(255,255,255,0.95); border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04); }
         .hero-dark .insight-callout { background: rgba(255,255,255,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.08); }
         .hero-warm .insight-callout { background: rgba(255,255,255,0.9); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
-        .insight-callout-icon { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; color: #7C3AED; opacity: 0.35; }
+        .insight-callout-icon { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; color: #7C3AED; opacity: 0.35; z-index: 1; pointer-events: none; }
         .insight-callout-icon svg { width: 100%; height: 100%; }
+        .insight-callout-content { position: relative; z-index: 0; min-width: 0; }
+        .insight-callout-content .pretext-slot { display: block; max-width: 100%; }
         .hero-dark .insight-callout-icon { color: #a78bfa; opacity: 0.5; }
         .hero-warm .insight-callout-icon { color: #ea580c; opacity: 0.4; }
         .insight-callout-label { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6b7280; margin-bottom: 8px; }
@@ -547,6 +631,20 @@ def generate_modern_hero(
         .stat strong { display: block; margin-top: 6px; font-size: 24px; font-weight: 600; letter-spacing: -0.015em; }
         .hero-warm .stat strong { color: #6a2a00; }
     """
+    css = css.replace(
+        "letter-spacing: -0.025em; max-width: 900px;",
+        f"letter-spacing: -0.025em; max-width: {HERO_OPEN_HEADLINE_MAX_WIDTH_PX}px;",
+        1,
+    ).replace(
+        "margin-top: 16px; max-width: 720px; font-size: 24px;",
+        f"margin-top: 16px; max-width: {HERO_OPEN_SUBHEAD_MAX_WIDTH_PX}px; font-size: 24px;",
+        1,
+    ).replace(
+        ".insight-callout { position: relative; max-width: 720px;",
+        f".insight-callout " + "{ position: relative; max-width: "
+        f"{HERO_OPEN_INSIGHT_CALLOUT_BOX_MAX_WIDTH_PX}px;",
+        1,
+    )
     css = css.replace("padding: 80px;", f"padding: {body_pad}px;", 1)
     css = css.replace("border-radius: 48px;", f"border-radius: {hero_radius}px;", 1)
     css = css.replace("padding: 72px;", f"padding: {hero_pad}px;", 1)
@@ -601,6 +699,10 @@ def generate_modern_hero_triptych(
     panel_gap = tokens.spacing.lg
     panel_radius = tokens.radius["xl"] + tokens.spacing.xs
     stats_gap = tokens.spacing.lg - tokens.spacing.xs
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font, body_font = _hero_open_font_stacks(color_scheme)
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     # Normalize alignment values
     headline_align = headline_align.lower() if headline_align else "left"
@@ -615,17 +717,54 @@ def generate_modern_hero_triptych(
     headline_align_class = f"headline-align-{headline_align}"
     subheadline_align_class = f"subheadline-align-{subheadline_align}"
 
-    column_html = "".join(
-        f"""
+    column_html = []
+    for col in columns[:3]:
+        title_text = col.get("title", "")
+        if use_pretext:
+            panel_title_html = pretext_slot(
+                text=title_text,
+                font=f"20px {display_font}",
+                max_width=float(HERO_TRIPTYCH_PANEL_TITLE_MAX_WIDTH_PX),
+                line_height=1.2,
+                css_class="panel-title",
+            )
+        else:
+            panel_title_html = f"<div class='panel-title'>{title_text}</div>"
+        column_html.append(
+            f"""
         <div class='panel'>
             {_render_svg_icon(col.get('icon'))}
-            <div class='panel-title'>{col.get('title', '')}</div>
+            {panel_title_html}
             {_render_list(col.get('items'))}
         </div>
         """
-        for col in columns[:3]
-    )
+        )
+    column_html_markup = "".join(column_html)
     stats_html = _render_stats(stats)
+    if use_pretext:
+        headline_html = pretext_slot(
+            text=headline,
+            font=f"{headline_size}px {display_font}",
+            max_width=float(HERO_TRIPTYCH_HEADLINE_MAX_WIDTH_PX),
+            line_height=1.15,
+            css_class="headline",
+            text_anchor={"left": "start", "center": "middle", "right": "end"}.get(headline_align, "start"),
+        )
+        subhead_html = (
+            pretext_slot(
+                text=subheadline,
+                font=f"{subhead_size}px {body_font}",
+                max_width=float(HERO_TRIPTYCH_SUBHEAD_MAX_WIDTH_PX),
+                line_height=1.35,
+                css_class="subhead",
+                text_anchor={"left": "start", "center": "middle", "right": "end"}.get(subheadline_align, "start"),
+            )
+            if subheadline
+            else ""
+        )
+    else:
+        headline_html = f"<div class='headline'>{headline}</div>"
+        subhead_html = f"<div class='subhead'>{subheadline}</div>" if subheadline else ""
     html = f"""
     <div class='hero hero-triptych {headline_align_class} {subheadline_align_class}'>
         <svg class='soft-orbit' viewBox='0 0 900 900' aria-hidden='true'>
@@ -639,11 +778,11 @@ def generate_modern_hero_triptych(
         <svg class='defs' width='0' height='0'><defs><radialGradient id='orbitGrad' r='0.7'><stop offset='0' stop-color='#E4D7FF' stop-opacity='0.85'/><stop offset='0.5' stop-color='#D5C8FA' stop-opacity='0.35'/><stop offset='1' stop-color='rgba(255,255,255,0)'/></radialGradient></defs></svg>
         <div class='hero-header'>
             {f"<div class='eyebrow'>{eyebrow}</div>" if eyebrow else ''}
-            <div class='headline'>{headline}</div>
-            {f"<div class='subhead'>{subheadline}</div>" if subheadline else ''}
+            {headline_html}
+            {subhead_html}
         </div>
         <div class='panels'>
-            {column_html}
+            {column_html_markup}
         </div>
         {stats_html}
     </div>
@@ -674,6 +813,11 @@ def generate_modern_hero_triptych(
         .stat span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: #9D9FB5; }
         .stat strong { display: block; margin-top: 6px; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; color: #2C2F3C; }
     """
+    css = css.replace(
+        "max-width: 780px; font-size: 22px; color: #4B4E5F;",
+        f"max-width: {HERO_TRIPTYCH_SUBHEAD_MAX_WIDTH_PX}px; font-size: 22px; color: #4B4E5F;",
+        1,
+    )
     css = css.replace("padding: 80px;", f"padding: {body_pad}px;", 1)
     css = css.replace("border-radius: 48px;", f"border-radius: {hero_radius}px;", 1)
     css = css.replace("padding: 72px;", f"padding: {hero_pad}px;", 1)

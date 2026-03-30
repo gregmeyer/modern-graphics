@@ -29,24 +29,49 @@ def generate_grid_diagram(
         HTML string
     """
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    body_font = display_font
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+        body_font = (
+            getattr(color_scheme, "font_family_body", None)
+            or getattr(color_scheme, "font_family", body_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     items_html = []
     for item in items:
         number = item.get("number")
         text = item["text"]
+        if use_pretext:
+            item_text_html = pretext_slot(
+                text=text,
+                font=f"16px {body_font}",
+                max_width=130,
+                line_height=1.5,
+                css_class="md-subtitle1",
+                text_anchor="middle",
+            )
+        else:
+            item_text_html = f'<div class="md-subtitle1">{text}</div>'
         if number:
             items_html.append(f"""
             <div class="md-card">
                 <div class="md-card-badge" aria-hidden="true">{number}</div>
                 <div class="md-card-content">
-                    <div class="md-subtitle1">{text}</div>
+                    {item_text_html}
                 </div>
             </div>""")
         else:
             items_html.append(f"""
             <div class="md-card">
                 <div class="md-card-content">
-                    <div class="md-subtitle1">{text}</div>
+                    {item_text_html}
                 </div>
             </div>""")
     
@@ -212,11 +237,22 @@ def generate_grid_diagram(
         
         {ATTRIBUTION_STYLES}
     """
+    if use_pretext:
+        headline_html = pretext_slot(
+            text=generator.title,
+            font=f"24px {display_font}",
+            max_width=860,
+            line_height=1.2,
+            css_class="md-headline",
+            text_anchor="middle",
+        )
+    else:
+        headline_html = f'<div class="md-headline">{generator.title}</div>'
     
     html_content = f"""
     <div class="wrapper">
         <div class="container">
-            <div class="md-headline">{generator.title}</div>
+            {headline_html}
             <div class="md-grid">
 {''.join(items_html)}
             </div>{convergence_html}

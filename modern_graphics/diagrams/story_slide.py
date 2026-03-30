@@ -3,7 +3,7 @@
 import html
 import json
 import textwrap
-from typing import Optional, Dict, List, Tuple, Any
+from typing import Optional, Dict, List, Tuple, Any, Literal
 from ..base import BaseGenerator
 from ..constants import ATTRIBUTION_STYLES
 
@@ -37,9 +37,19 @@ def _shorten_text(text: Optional[str], width: int) -> str:
     return textwrap.shorten(text.strip(), width, placeholder="...")
 
 
-def _build_static_mini_tile(width: int, height: int, palette: Dict[str, str], data: Dict[str, str]) -> str:
-    safe_headline = html.escape((data.get('tile_headline') or data.get('headline') or '')[:36])
-    safe_subline = html.escape((data.get('subline') or '')[:48])
+def _build_static_mini_tile(
+    width: int,
+    height: int,
+    palette: Dict[str, str],
+    data: Dict[str, str],
+    use_pretext: bool = False,
+    *,
+    pretext_foreign_object_layout: Literal["refined", "legacy"] = "refined",
+) -> str:
+    raw_headline = (data.get("tile_headline") or data.get("headline") or "")[:36]
+    raw_subline = (data.get("subline") or "")[:48]
+    safe_headline = html.escape(raw_headline)
+    safe_subline = html.escape(raw_subline)
     safe_pill = html.escape((data.get('pill') or '')[:24])
     safe_metric = html.escape((data.get('metric') or '')[:48])
     
@@ -55,12 +65,41 @@ def _build_static_mini_tile(width: int, height: int, palette: Dict[str, str], da
     pill_rect_width = min(240, chart_width)
     pill_rect_x = padding_x
     pill_text_x = pill_rect_x + pill_rect_width / 2
-    
+
+    # Pretext uses taller foreignObject bands so multi-line SVG text is not clipped.
+    _PRETEXT_TITLE_FO_Y = 56
+    _PRETEXT_TITLE_FO_H = 88
+    _PRETEXT_GAP_TITLE_SUB = 8
+    _PRETEXT_SUB_FO_H = 52
+    _PRETEXT_GAP_SUB_PILL = 12
+    _PRETEXT_GAP_PILL_CHART = 8
+    if use_pretext:
+        if pretext_foreign_object_layout == "legacy":
+            title_fo_y = 64
+            title_fo_h = 44
+            sub_fo_y = 112
+            sub_fo_h = 36
+            pill_rect_y = 164
+            chart_top = 220
+        else:
+            title_fo_y = _PRETEXT_TITLE_FO_Y
+            title_fo_h = _PRETEXT_TITLE_FO_H
+            sub_fo_y = title_fo_y + title_fo_h + _PRETEXT_GAP_TITLE_SUB
+            sub_fo_h = _PRETEXT_SUB_FO_H
+            pill_rect_y = sub_fo_y + sub_fo_h + _PRETEXT_GAP_SUB_PILL
+            chart_top = pill_rect_y + 36 + _PRETEXT_GAP_PILL_CHART
+    else:
+        pill_rect_y = 164
+        chart_top = 220
+
     values = data.get('chart') or [70, 95, 65, 110]
-    chart_top = 220
     chart_bottom_margin = 80
     chart_base_y = height - chart_bottom_margin
-    chart_height = max(120, chart_base_y - chart_top)
+    span = chart_base_y - chart_top
+    if use_pretext and pretext_foreign_object_layout == "refined":
+        chart_height = max(48, span)
+    else:
+        chart_height = max(120, span)
     step = chart_width / max(len(values) - 1, 1)
     
     points = []
@@ -118,14 +157,51 @@ def _build_static_mini_tile(width: int, height: int, palette: Dict[str, str], da
     metric_rect_height = 120
     metric_rect_y = max(chart_top, chart_top + (chart_height - metric_rect_height) / 2)
     metric_text_y = metric_rect_y + (metric_rect_height / 2) - 6
-    
+
+    text_area_w = width - (padding_x * 2)
+    pill_text_y = pill_rect_y + 23
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
+
+        title_row = f"""
+                <foreignObject x="{padding_x}" y="{title_fo_y}" width="{text_area_w}" height="{title_fo_h}" requiredExtensions="http://www.w3.org/1999/xhtml">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="margin:0;padding:0;">
+                        {pretext_slot(
+                            text=raw_headline,
+                            font="24px Inter, -apple-system, sans-serif",
+                            max_width=float(text_area_w),
+                            line_height=1.2,
+                            css_class="mini-tile-headline",
+                            fill=palette["text_primary"],
+                        )}
+                    </div>
+                </foreignObject>"""
+        sub_row = f"""
+                <foreignObject x="{padding_x}" y="{sub_fo_y}" width="{text_area_w}" height="{sub_fo_h}" requiredExtensions="http://www.w3.org/1999/xhtml">
+                    <div xmlns="http://www.w3.org/1999/xhtml" style="margin:0;padding:0;opacity:0.9;">
+                        {pretext_slot(
+                            text=raw_subline,
+                            font="14px Inter, -apple-system, sans-serif",
+                            max_width=float(text_area_w),
+                            line_height=1.35,
+                            css_class="mini-tile-subline",
+                            fill=palette["text_secondary"],
+                        )}
+                    </div>
+                </foreignObject>"""
+    else:
+        title_row = f"""
+                <text x="{padding_x}" y="96" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="700" fill="{palette['text_primary']}">{safe_headline}</text>"""
+        sub_row = f"""
+                <text x="{padding_x}" y="136" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="500" fill="{palette['text_secondary']}" opacity="0.9">{safe_subline}</text>"""
+
     return f"""
             <svg class="hero-mini-tile-svg" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Story insight tile">
                 <rect x="0" y="0" width="{width}" height="{height}" rx="28" fill="{palette['background']}" stroke="{palette['border']}" stroke-width="2"/>
-                <text x="{padding_x}" y="96" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="700" fill="{palette['text_primary']}">{safe_headline}</text>
-                <text x="{padding_x}" y="136" font-family="Inter, -apple-system, sans-serif" font-size="14" font-weight="500" fill="{palette['text_secondary']}" opacity="0.9">{safe_subline}</text>
-                <rect x="{pill_rect_x}" y="164" width="{pill_rect_width}" height="36" rx="18" fill="{palette['metric_bg']}"/>
-                <text x="{pill_text_x}" y="187" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="600" fill="{palette['text_primary']}" text-anchor="middle">{safe_pill}</text>
+                {title_row}
+                {sub_row}
+                <rect x="{pill_rect_x}" y="{pill_rect_y}" width="{pill_rect_width}" height="36" rx="18" fill="{palette['metric_bg']}"/>
+                <text x="{pill_text_x}" y="{pill_text_y}" font-family="Inter, -apple-system, sans-serif" font-size="13" font-weight="600" fill="{palette['text_primary']}" text-anchor="middle">{safe_pill}</text>
                 <line x1="{chart_start_x}" y1="{chart_base_y}" x2="{chart_end_x}" y2="{chart_base_y}" stroke="{palette['border']}" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
                 {f'<path d="{area_path_str}" fill="{palette["metric_bg"]}" opacity="0.6"/>' if area_path_str else ''}
                 {f'<path d="{line_path_str}" stroke="{palette["accent_primary"]}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' if line_path_str else ''}
@@ -528,6 +604,9 @@ def generate_story_slide(
         "metric_bg": metric_bg,
         "metric_text": metric_text
     }
+    use_pretext = getattr(generator, "use_pretext", False)
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     cards_data = story_cards if story_cards is not None else _default_story_cards(
         what_changed,
         time_period,
@@ -545,7 +624,7 @@ def generate_story_slide(
         """
     hero_mockup_inner = f"""
             <div class="hero-mockup-wrapper">
-                {_build_static_mini_tile(640, 400, tile_palette, hero_svg_data)}
+                {_build_static_mini_tile(640, 400, tile_palette, hero_svg_data, use_pretext=use_pretext)}
                 {canvas_cards_html}
             </div>
         """
@@ -869,11 +948,40 @@ def generate_story_slide(
     container_classes = "story-slide-container"
     if top_tile_only:
         container_classes += " top-tile-only"
-    
+
+    if use_pretext:
+        hero_headline_block = pretext_slot(
+            text=final_headline,
+            font=(
+                "56px Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+            ),
+            max_width=920,
+            line_height=1.1,
+            css_class="hero-headline",
+            text_anchor="middle",
+            fill=hero_text_primary,
+        )
+        hero_subheadline_block = pretext_slot(
+            text=final_subheadline,
+            font=(
+                "24px Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+            ),
+            max_width=920,
+            line_height=1.3,
+            css_class="hero-subheadline",
+            text_anchor="middle",
+            fill=hero_text_secondary,
+        )
+    else:
+        hero_headline_block = f'<div class="hero-headline">{final_headline}</div>'
+        hero_subheadline_block = (
+            f'<div class="hero-subheadline">{final_subheadline}</div>'
+        )
+
     hero_section_html = f"""
         <div class="hero-section">
-            <div class="hero-headline">{final_headline}</div>
-            <div class="hero-subheadline">{final_subheadline}</div>
+            {hero_headline_block}
+            {hero_subheadline_block}
             <div class="hero-visual">
                 <div class="hero-slide-mockup">
                     {hero_mockup_inner}
@@ -897,10 +1005,24 @@ def generate_story_slide(
                 </div>
             </div>
         </div>"""
+        if use_pretext:
+            insight_text_block = pretext_slot(
+                text=insight,
+                font=(
+                    "42px Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+                ),
+                max_width=1160,
+                line_height=1.4,
+                css_class="insight-text",
+                text_anchor="middle",
+                fill="#FFFFFF",
+            )
+        else:
+            insight_text_block = f'<div class="insight-text">{insight}</div>'
         insight_section_html = f"""
         <div class="insight-section">
             <div class="insight-label">The Core Insight</div>
-            <div class="insight-text">{insight}</div>
+            {insight_text_block}
         </div>"""
     html_content = f"""
     <div class="{container_classes}">

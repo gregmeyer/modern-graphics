@@ -76,6 +76,7 @@ def generate_insight_story(
     section_gap = tokens.spacing.xl + tokens.spacing.xs
     panel_radius = tokens.radius["lg"]
     panel_pad = tokens.spacing.lg
+    use_pretext = getattr(generator, "use_pretext", False)
     if color_scheme:
         accent_color = color_scheme.primary
         success_color = color_scheme.success or success_color
@@ -87,6 +88,8 @@ def generate_insight_story(
         font_family = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
         font_family_display = font_family
         font_family_body = font_family
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     # Build shift indicator HTML
     shift_html = ""
@@ -157,13 +160,23 @@ def generate_insight_story(
     # Build key insight
     insight_html = ""
     if insight_text:
+        if use_pretext:
+            insight_text_html = pretext_slot(
+                text=insight_text,
+                font=f"{max(tokens.typography.body_l + 2, 22)}px {font_family_body}",
+                max_width=980,
+                line_height=1.5,
+                css_class="insight-text",
+            )
+        else:
+            insight_text_html = f'<p class="insight-text">{insight_text}</p>'
         insight_html = f"""
         <div class="key-insight">
             <div class="insight-icon">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
             <div class="insight-label">{escape(insight_label)}</div>
-            <p class="insight-text">{insight_text}</p>
+            {insight_text_html}
         </div>
         """
     
@@ -185,14 +198,37 @@ def generate_insight_story(
         </div>
         """
     
+    if use_pretext:
+        headline_html = pretext_slot(
+            text=headline,
+            font=f"{max(tokens.typography.h1, 42)}px {font_family_display}",
+            max_width=600,
+            line_height=1.1,
+            css_class="insight-headline",
+        )
+        subtitle_html = (
+            pretext_slot(
+                text=subtitle,
+                font=f"{max(tokens.typography.body_l, 20)}px {font_family_body}",
+                max_width=600,
+                line_height=1.5,
+                css_class="subtitle",
+            )
+            if subtitle
+            else ""
+        )
+    else:
+        headline_html = f"<h1>{escape(headline)}</h1>"
+        subtitle_html = f'<p class="subtitle">{escape(subtitle)}</p>' if subtitle else ""
+    
     html_content = f"""
     <div class="insight-card">
         <div class="card-inner">
             <div class="header">
                 <div class="header-text">
                     {f'<div class="eyebrow">{escape(eyebrow)}</div>' if eyebrow else ''}
-                    <h1>{escape(headline)}</h1>
-                    {f'<p class="subtitle">{escape(subtitle)}</p>' if subtitle else ''}
+                    {headline_html}
+                    {subtitle_html}
                 </div>
                 {shift_html}
             </div>
@@ -286,7 +322,7 @@ def generate_insight_story(
             border-radius: 1px;
         }}
         
-        h1 {{
+        h1, .insight-headline {{
             font-family: var(--font-display);
             font-size: {max(tokens.typography.h1, 42)}px;
             font-weight: 700;

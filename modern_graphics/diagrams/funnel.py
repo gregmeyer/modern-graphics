@@ -57,6 +57,15 @@ def generate_funnel_diagram(
         ]
     
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     max_value = max(stage.get("value", 0) for stage in stages) or 1
     min_width = 45
     max_width = 92
@@ -81,7 +90,27 @@ def generate_funnel_diagram(
         """)
     
     conversion = (stages[-1].get("value", 0) / stages[0].get("value", 1)) * 100
+    conversion_text = f"{conversion:.1f}%"
     template = _get_template(generator)
+    if use_pretext:
+        title_html = pretext_slot(
+            text=generator.title,
+            font=f"28px {display_font}",
+            max_width=520,
+            line_height=1.2,
+            css_class="funnel-title",
+        )
+        metric_value_html = pretext_slot(
+            text=conversion_text,
+            font=f"26px {display_font}",
+            max_width=180,
+            line_height=1.2,
+            css_class="value metric-value",
+            text_anchor="end",
+        )
+    else:
+        title_html = f'<div class="funnel-title">{generator.title}</div>'
+        metric_value_html = f'<div class="value">{conversion_text}</div>'
     css_content = f"""
         {generate_css_variables(theme)}
         
@@ -182,10 +211,10 @@ def generate_funnel_diagram(
     html_content = f"""
     <div class="funnel-wrapper">
         <div class="funnel-header">
-            <div class="funnel-title">{generator.title}</div>
+            {title_html}
             <div class="funnel-metric">
                 <div class="label">Overall Conversion</div>
-                <div class="value">{conversion:.1f}%</div>
+                {metric_value_html}
             </div>
         </div>
         <div class="funnel-stages">
