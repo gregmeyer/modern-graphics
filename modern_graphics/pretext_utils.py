@@ -28,6 +28,40 @@ def generate_pretext_bootstrap_script() -> str:
     <script type="module">
     import { prepareWithSegments, layoutWithLines } from '""" + PRETEXT_CDN_URL + """';
 
+    /** Split CSS font shorthand into SVG attributes; keep raw for Pretext measure. */
+    function parseFontForSvg(rawFont) {
+      let style = 'normal';
+      let weight = 'normal';
+      let s = String(rawFont || '16px sans-serif').trim();
+      if (/^italic\\s+/i.test(s)) {
+        style = 'italic';
+        s = s.replace(/^italic\\s+/i, '');
+      } else if (/^oblique\\s+/i.test(s)) {
+        style = 'oblique';
+        s = s.replace(/^oblique\\s+/i, '');
+      }
+      if (/^bold\\s+/i.test(s)) {
+        weight = 'bold';
+        s = s.replace(/^bold\\s+/i, '');
+      }
+      while (true) {
+        const mw = s.match(/^(\\d{1,3})\\s+/);
+        if (!mw) break;
+        const n = parseInt(mw[1], 10);
+        if (n >= 100 && n <= 900) {
+          weight = String(n);
+          s = s.slice(mw[0].length);
+          continue;
+        }
+        break;
+      }
+      const fontSizeMatch = s.match(/(\\d+(?:\\.\\d+)?)px/);
+      const fontSize = fontSizeMatch ? parseFloat(fontSizeMatch[1]) : 16;
+      let fontFamily = s.replace(/(\\d+(?:\\.\\d+)?)px\\s*/, '').trim();
+      if (!fontFamily) fontFamily = 'sans-serif';
+      return { style, weight, fontSize, fontFamily };
+    }
+
     function processSlots() {
       const slots = document.querySelectorAll('.pretext-slot');
       if (!slots.length) {
@@ -43,11 +77,8 @@ def generate_pretext_bootstrap_script() -> str:
         const fill = slot.getAttribute('data-pt-fill') || 'currentColor';
         const textAnchor = slot.getAttribute('data-pt-text-anchor') || 'start';
 
-        // Parse font size from the font string (e.g. "64px 'Press Start 2P'" -> 64)
-        const fontSizeMatch = font.match(/(\\d+(?:\\.\\d+)?)px/);
-        const fontSize = fontSizeMatch ? parseFloat(fontSizeMatch[1]) : 16;
-
-        // Compute absolute line height
+        const parsed = parseFontForSvg(font);
+        const fontSize = parsed.fontSize;
         const absLineHeight = lineHeight < 4 ? fontSize * lineHeight : lineHeight;
 
         try {
@@ -56,17 +87,21 @@ def generate_pretext_bootstrap_script() -> str:
 
           // Build SVG
           const svgNS = 'http://www.w3.org/2000/svg';
-          const totalHeight = result.height || (result.lineCount * absLineHeight);
+          let totalHeight = result.height || (result.lineCount * absLineHeight);
+          totalHeight = Math.ceil(totalHeight + 2);
           const svg = document.createElementNS(svgNS, 'svg');
           svg.setAttribute('width', String(maxWidth));
           svg.setAttribute('height', String(totalHeight));
           svg.setAttribute('viewBox', `0 0 ${maxWidth} ${totalHeight}`);
           svg.style.display = 'block';
-          svg.style.overflow = 'visible';
+          svg.style.maxWidth = '100%';
+          svg.style.overflow = 'hidden';
 
           const textEl = document.createElementNS(svgNS, 'text');
-          textEl.setAttribute('font-family', font.replace(/^[\\d.]+px\\s*/, ''));
-          textEl.setAttribute('font-size', String(fontSize));
+          textEl.setAttribute('font-family', parsed.fontFamily);
+          textEl.setAttribute('font-size', String(parsed.fontSize));
+          textEl.setAttribute('font-style', parsed.style);
+          textEl.setAttribute('font-weight', parsed.weight);
           textEl.setAttribute('fill', fill);
           textEl.setAttribute('text-anchor', textAnchor);
 

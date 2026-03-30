@@ -37,6 +37,15 @@ def generate_comparison_diagram(
     step_size = max(tokens.typography.caption, 13)
     outcome_size = max(tokens.typography.body, 17)
     vs_size = max(tokens.typography.caption, 13)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     section_gap = tokens.spacing.xl
     card_padding = tokens.spacing.lg + tokens.spacing.xs
     step_gap = tokens.spacing.sm
@@ -47,11 +56,21 @@ def generate_comparison_diagram(
         title = column_data['title']
         steps = column_data['steps']
         icon = "✕" if not is_positive else "✓"
+        if use_pretext:
+            title_html = pretext_slot(
+                text=title,
+                font=f"{column_title_size}px {display_font}",
+                max_width=350,
+                line_height=1.2,
+                css_class="column-title",
+            )
+        else:
+            title_html = f'<div class="column-title">{title}</div>'
         
         html = f'''        <div class="column {column_class}">
             <div class="column-header">
                 <div class="column-icon">{icon}</div>
-                <div class="column-title">{title}</div>
+                {title_html}
             </div>
             <div class="steps-container">
 '''
@@ -265,7 +284,18 @@ def generate_comparison_diagram(
 {generate_column_html(left_column, left_class, False)}
         
         <div class="vs">
-            <div class="vs-circle">{vs_text}</div>
+            {"".join([
+                '<div class="vs-circle">',
+                pretext_slot(
+                    text=vs_text,
+                    font=f"{vs_size}px {display_font}",
+                    max_width=36,
+                    line_height=1.0,
+                    css_class="vs-label",
+                    text_anchor="middle",
+                ) if use_pretext else vs_text,
+                "</div>",
+            ])}
         </div>
         
 {generate_column_html(right_column, right_class, True)}

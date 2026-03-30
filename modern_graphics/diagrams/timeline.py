@@ -42,6 +42,15 @@ def generate_timeline_diagram(
         return _generate_vertical_timeline(generator, events, color_scheme)
     
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     # Material elevation 2dp (card)
     shadow = "0 2px 6px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12)"
@@ -70,11 +79,22 @@ def generate_timeline_diagram(
         }}""")
         
         desc_html = f'<div class="md-body2">{description}</div>' if description else ""
+        if use_pretext:
+            event_text_html = pretext_slot(
+                text=text,
+                font=f"16px {display_font}",
+                max_width=200,
+                line_height=1.4,
+                css_class="md-subtitle1",
+                text_anchor="middle",
+            )
+        else:
+            event_text_html = f'<div class="md-subtitle1">{text}</div>'
         events_html.append(f"""
             <div class="timeline-step">
                 <div class="timeline-step-content">
                     <div class="md-overline">{date}</div>
-                    <div class="md-subtitle1">{text}</div>
+                    {event_text_html}
                     {desc_html}
                 </div>
                 <div class="timeline-step-indicator {event_class}">
@@ -214,11 +234,22 @@ def generate_timeline_diagram(
         
         {ATTRIBUTION_STYLES}
     """
+    if use_pretext:
+        headline_html = pretext_slot(
+            text=generator.title,
+            font=f"24px {display_font}",
+            max_width=1000,
+            line_height=1.2,
+            css_class="md-headline",
+            text_anchor="middle",
+        )
+    else:
+        headline_html = f'<div class="md-headline">{generator.title}</div>'
     
     html_content = f"""
     <div class="wrapper">
     <div class="timeline-container">
-        <div class="md-headline">{generator.title}</div>
+        {headline_html}
         <div class="timeline-track">
 {''.join(events_html)}
         </div>
@@ -238,6 +269,15 @@ def _generate_vertical_timeline(
 ) -> str:
     """Generate a vertical timeline (Material Design: central line, alternating content, chips)."""
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     shadow = "0 2px 6px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.12)"
     if theme.is_dark:
@@ -263,11 +303,21 @@ def _generate_vertical_timeline(
         }}""")
         
         desc_html = f'<div class="md-body2">{description}</div>' if description else ""
+        if use_pretext:
+            event_text_html = pretext_slot(
+                text=text,
+                font=f"16px {display_font}",
+                max_width=260,
+                line_height=1.4,
+                css_class="md-subtitle1",
+            )
+        else:
+            event_text_html = f'<div class="md-subtitle1">{text}</div>'
         events_html.append(f"""
             <div class="vt-item vt-{side}">
                 <div class="vt-content">
                     <div class="vt-chip">{date}</div>
-                    <div class="md-subtitle1">{text}</div>
+                    {event_text_html}
                     {desc_html}
                 </div>
                 <div class="vt-dot {event_class}" aria-hidden="true"></div>
@@ -399,11 +449,22 @@ def _generate_vertical_timeline(
         
         {ATTRIBUTION_STYLES}
     """
+    if use_pretext:
+        headline_html = pretext_slot(
+            text=generator.title,
+            font=f"24px {display_font}",
+            max_width=640,
+            line_height=1.2,
+            css_class="md-headline",
+            text_anchor="middle",
+        )
+    else:
+        headline_html = f'<div class="md-headline">{generator.title}</div>'
     
     html_content = f"""
     <div class="wrapper">
     <div class="timeline-container">
-        <div class="md-headline">{generator.title}</div>
+        {headline_html}
         <div class="timeline">
 {''.join(events_html)}
         </div>

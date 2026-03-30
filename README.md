@@ -177,6 +177,10 @@ Full docs map: [`docs/README.md`](docs/README.md)
 - Contribution guide: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
 - Historical plans and notes: [`docs/archive/`](docs/archive/)
 
+## Acknowledgments
+
+- [@chenglou/pretext](https://github.com/chenglou/pretext) — pixel-perfect text measurement and layout by [Cheng Lou](https://github.com/chenglou), used for optional SVG text rendering (`--text-render pretext`)
+
 ## License
 
 MIT License.

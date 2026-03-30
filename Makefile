@@ -33,7 +33,7 @@ shell:
 	$(DOCKER_RUN) -it -v $(OUTPUT_DIR):/app/output -w /app --entrypoint /bin/bash $(IMAGE)
 
 test:
-	$(DOCKER_RUN) -v $(PWD):/app -w /app --entrypoint /bin/bash $(IMAGE) -c "pip install pytest -q && pytest -q tests/smoke/test_overhaul_phase1_smoke.py tests/smoke/test_layout_strategy_smoke.py tests/smoke/test_create_cli_phase3_smoke.py tests/smoke/test_create_story_regression_phase7_smoke.py tests/smoke/test_export_phase4_smoke.py tests/smoke/test_cli_migration_phase5_smoke.py tests/smoke/test_export_presets_phase6_smoke.py"
+	$(DOCKER_RUN) -v $(PWD):/app -w /app --entrypoint /bin/bash $(IMAGE) -c "pip install pytest -q && pytest -q tests/smoke/test_overhaul_phase1_smoke.py tests/smoke/test_layout_strategy_smoke.py tests/smoke/test_create_cli_phase3_smoke.py tests/smoke/test_create_story_regression_phase7_smoke.py tests/smoke/test_story_tile_pretext_smoke.py tests/smoke/test_export_phase4_smoke.py tests/smoke/test_cli_migration_phase5_smoke.py tests/smoke/test_export_presets_phase6_smoke.py"
 
 mcp:
 	@mkdir -p $(OUTPUT_DIR)

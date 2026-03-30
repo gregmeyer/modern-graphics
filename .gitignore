@@ -31,6 +31,9 @@ env/
 ENV/
 .venv
 
+# Local planning notes (not shipped with the repo)
+docs/plans/
+
 # IDE / local config
 .vscode/
 .idea/

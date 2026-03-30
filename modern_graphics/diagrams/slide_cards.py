@@ -93,6 +93,20 @@ def generate_slide_card_diagram(
         to embed that wireframe (themed if color_scheme provided).
     """
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    body_font = display_font
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+        body_font = (
+            getattr(color_scheme, "font_family_body", None)
+            or getattr(color_scheme, "font_family", body_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     cards_html = []
     cards_css = []
     
@@ -145,6 +159,24 @@ def generate_slide_card_diagram(
         
         # Generate HTML for this card
         badge_html = f'<div class="card-badge">{badge}</div>' if badge else ''
+        if use_pretext:
+            title_html = pretext_slot(
+                text=title,
+                font=f"20px {display_font}",
+                max_width=260,
+                line_height=1.35,
+                css_class="card-title",
+            )
+            tagline_html = pretext_slot(
+                text=tagline,
+                font=f"16px {body_font}",
+                max_width=260,
+                line_height=1.5,
+                css_class="card-tagline",
+            )
+        else:
+            title_html = f'<div class="card-title">{title}</div>'
+            tagline_html = f'<div class="card-tagline">{tagline}</div>'
         
         features_html = ''
         if features:
@@ -160,8 +192,8 @@ def generate_slide_card_diagram(
                 {badge_html}
                 <div class="card-mockup">{svg_mockup}</div>
                 <div class="card-text-content">
-                    <div class="card-title">{title}</div>
-                    <div class="card-tagline">{tagline}</div>
+                    {title_html}
+                    {tagline_html}
                     <div class="card-subtext">{subtext}</div>
                     {features_html}
                 </div>
@@ -171,8 +203,8 @@ def generate_slide_card_diagram(
             cards_html.append(f"""
             <div class="slide-card {card_id}">
                 {badge_html}
-                <div class="card-title">{title}</div>
-                <div class="card-tagline">{tagline}</div>
+                {title_html}
+                {tagline_html}
                 <div class="card-mockup">{svg_mockup}</div>
                 <div class="card-subtext">{subtext}</div>
                 {features_html}
@@ -419,11 +451,22 @@ def generate_slide_card_diagram(
         
         {ATTRIBUTION_STYLES}
         """
+    if use_pretext:
+        diagram_title_html = pretext_slot(
+            text=generator.title,
+            font=f"24px {display_font}",
+            max_width=1200,
+            line_height=1.35,
+            css_class="title",
+            text_anchor="middle",
+        )
+    else:
+        diagram_title_html = f'<div class="title">{generator.title}</div>'
     
     html_content = f"""
     <div class="wrapper">
     <div class="slide-cards-container">
-        <div class="title">{generator.title}</div>
+        {diagram_title_html}
         <div class="slide-cards-row">
 {''.join(cards_html)}
         </div>
@@ -453,6 +496,20 @@ def generate_slide_card_comparison(
         color_scheme: Optional ColorScheme for theming
     """
     theme = extract_theme_colors(color_scheme)
+    use_pretext = getattr(generator, "use_pretext", False)
+    display_font = "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    body_font = display_font
+    if color_scheme is not None:
+        display_font = (
+            getattr(color_scheme, "font_family_display", None)
+            or getattr(color_scheme, "font_family", display_font)
+        )
+        body_font = (
+            getattr(color_scheme, "font_family_body", None)
+            or getattr(color_scheme, "font_family", body_font)
+        )
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
     
     def generate_card_html(card: Dict[str, any], card_class: str) -> str:
         title = card.get("title", "")
@@ -487,11 +544,30 @@ def generate_slide_card_comparison(
                 features_html += f'<div class="card-feature">{feature}</div>'
             features_html += '</div>'
         
+        if use_pretext:
+            title_html = pretext_slot(
+                text=title,
+                font=f"20px {display_font}",
+                max_width=300,
+                line_height=1.35,
+                css_class="card-title",
+            )
+            tagline_html = pretext_slot(
+                text=tagline,
+                font=f"16px {body_font}",
+                max_width=300,
+                line_height=1.5,
+                css_class="card-tagline",
+            )
+        else:
+            title_html = f'<div class="card-title">{title}</div>'
+            tagline_html = f'<div class="card-tagline">{tagline}</div>'
+        
         return f"""
             <div class="slide-card {card_class}" style="border-left: 4px solid {palette['accent']};">
                 {badge_html}
-                <div class="card-title">{title}</div>
-                <div class="card-tagline">{tagline}</div>
+                {title_html}
+                {tagline_html}
                 <div class="card-mockup" style="background: {palette['tint']};">{svg_mockup}</div>
                 {features_html}
             </div>"""
@@ -643,11 +719,22 @@ def generate_slide_card_comparison(
         
         {ATTRIBUTION_STYLES}
         """
+    if use_pretext:
+        comparison_title_html = pretext_slot(
+            text=generator.title,
+            font=f"24px {display_font}",
+            max_width=1200,
+            line_height=1.35,
+            css_class="title",
+            text_anchor="middle",
+        )
+    else:
+        comparison_title_html = f'<div class="title">{generator.title}</div>'
     
     html_content = f"""
     <div class="wrapper">
     <div class="slide-comparison-container">
-        <div class="title">{generator.title}</div>
+        {comparison_title_html}
         <div class="slide-comparison-row">
 {generate_card_html(left_card, 'left-card')}
             <div class="card-vs">{vs_text}</div>
