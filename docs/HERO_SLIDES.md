@@ -67,6 +67,24 @@ python -m modern_graphics.cli modern-hero \
   --output hero.png --png
 ```
 
+### Text Rendering (Pretext)
+
+Use Pretext (`--text-render pretext`) when you want deterministic SVG text layout in quote-heavy hero copy.
+
+- Best fit: open-hero insight quote callouts where italic quote text needs stable wrapping and icon spacing.
+- Also useful for story slides that include hero mini-tiles, where Pretext now uses refined `foreignObject` height reservations to avoid clipping.
+- `freeform_canvas` or wireframe SVG remains separate markup; Pretext renders only explicit `.pretext-slot` text regions.
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --subheadline "Route every story beat through templates so each visual ships with intent." \
+  --text-render pretext \
+  --png \
+  --output ./output/hero-pretext.png
+```
+
 ## 2. Modern Hero (Dark Variant)
 
 **Python:**
