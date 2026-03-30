@@ -13,11 +13,12 @@ from .templates import StyleTemplate, DEFAULT_TEMPLATE
 class BaseGenerator:
     """Base class for Modern Graphics generators"""
     
-    def __init__(self, title: str, template: Optional[StyleTemplate] = None, attribution: Optional[Attribution] = None, use_svg_js: bool = False):
+    def __init__(self, title: str, template: Optional[StyleTemplate] = None, attribution: Optional[Attribution] = None, use_svg_js: bool = False, use_pretext: bool = False):
         self.title = title
         self.template = template or DEFAULT_TEMPLATE
         self.attribution = attribution or Attribution()
         self.use_svg_js = use_svg_js
+        self.use_pretext = use_pretext
     
     def _generate_attribution_html(self) -> str:
         """Generate attribution label HTML (pill style, optional context)."""
@@ -114,7 +115,13 @@ class BaseGenerator:
         if self.use_svg_js:
             from .svg_utils import generate_svg_js_cdn_script
             svg_js_script = generate_svg_js_cdn_script()
-        
+
+        # Include Pretext for SVG text rendering if enabled
+        pretext_scripts = ""
+        if self.use_pretext:
+            from .pretext_utils import generate_pretext_bootstrap_script
+            pretext_scripts = generate_pretext_bootstrap_script()
+
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,6 +137,7 @@ class BaseGenerator:
 </head>
 <body>
 {content}
+{pretext_scripts}
 </body>
 </html>"""
     

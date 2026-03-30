@@ -238,6 +238,16 @@ def export_html_to_png(
             page.goto(f"file://{temp_html_path.resolve()}", wait_until="networkidle")
             page.wait_for_timeout(1000)
 
+            # Wait for Pretext SVG text rendering if slots are present
+            has_pretext = page.query_selector('.pretext-slot') is not None
+            if has_pretext:
+                try:
+                    page.wait_for_function(
+                        "window.__pretextReady === true", timeout=5000
+                    )
+                except Exception:
+                    print("Warning: Pretext rendering did not complete in time, using fallback text.")
+
             page.screenshot(
                 path=str(temp_png_path),
                 full_page=True,

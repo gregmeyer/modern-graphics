@@ -141,6 +141,7 @@ def main():
     create_expert.add_argument('--export-preset', choices=list_export_presets(), help='Channel preset for PNG export (linkedin|x|substack-hero)')
     create_expert.add_argument('--crop-mode', choices=['none', 'safe', 'tight'], default=CREATE_DEFAULTS.crop_mode, help=f'PNG crop mode (default: {CREATE_DEFAULTS.crop_mode})')
     create_expert.add_argument('--padding-mode', choices=['none', 'minimal', 'comfortable'], default=CREATE_DEFAULTS.padding_mode, help=f'PNG padding mode (default: {CREATE_DEFAULTS.padding_mode})')
+    create_expert.add_argument('--text-render', choices=['css', 'pretext'], default='css', help='Text rendering mode: css (default) or pretext (SVG text via Pretext)')
 
     # Themes browser
     subparsers.add_parser('themes', help='List available color themes with descriptions')

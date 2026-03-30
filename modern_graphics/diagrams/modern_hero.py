@@ -378,13 +378,48 @@ def generate_modern_hero(
     stats_html = _render_stats(stats)
     cta_html = f"<div class='cta'>{cta}</div>" if cta else ""
     insight_callout_html = _render_insight_callout(insight_callout) if insight_callout and insight_callout.get("text") else ""
+    # Determine headline/subhead rendering: pretext-slot or plain div
+    use_pretext = getattr(generator, 'use_pretext', False)
+    if use_pretext:
+        from ..pretext_renderer import pretext_slot
+        # Resolve font from color_scheme or defaults
+        _display_font = "'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif"
+        _body_font = _display_font
+        if color_scheme is not None:
+            _display_font = getattr(color_scheme, 'font_family_display', None) or getattr(color_scheme, 'font_family', _display_font)
+            _body_font = getattr(color_scheme, 'font_family_body', None) or getattr(color_scheme, 'font_family', _body_font)
+        _text_anchor = {"left": "start", "center": "middle", "right": "end"}.get(headline_align, "start")
+        headline_html = pretext_slot(
+            text=headline,
+            font=f"{headline_size}px {_display_font}",
+            max_width=900,
+            line_height=1.15,
+            css_class="headline",
+            text_anchor=_text_anchor,
+        )
+        if subheadline:
+            _sub_anchor = {"left": "start", "center": "middle", "right": "end"}.get(subheadline_align or headline_align, "start")
+            subhead_html = pretext_slot(
+                text=subheadline,
+                font=f"{subhead_size}px {_body_font}",
+                max_width=720,
+                line_height=1.4,
+                css_class="subhead",
+                text_anchor=_sub_anchor,
+            )
+        else:
+            subhead_html = ""
+    else:
+        headline_html = f'<div class="headline">{headline}</div>'
+        subhead_html = f"<div class='subhead'>{subheadline}</div>" if subheadline else ""
+
     html = f"""
     <div class="hero {hero_classes}">
         <div class="halo"></div>
         <div class="hero-header">
             {f"<div class='eyebrow'>{eyebrow}</div>" if eyebrow else ''}
-            <div class="headline">{headline}</div>
-            {f"<div class='subhead'>{subheadline}</div>" if subheadline else ''}
+            {headline_html}
+            {subhead_html}
         </div>
         <div class="hero-body">
             {freeform_html}
