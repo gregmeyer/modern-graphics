@@ -172,6 +172,31 @@ Defaults (good for most first runs):
 
 Full docs map: [`docs/README.md`](docs/README.md)
 
+## Text Rendering Mode
+
+Use Pretext when you care about deterministic SVG text layout and quote-heavy typography.
+
+- Enable with `--text-render pretext` on `modern-graphics create`.
+- Best fit: open hero quote/insight callouts (italic quote text) and story slides with hero mini-tiles.
+- Recent refinements:
+  - Open hero insight quote text no longer overlaps the quote icon lane.
+  - Story mini-tile text uses refined reserved `foreignObject` bands to avoid clipping in Pretext mode.
+
+```bash
+modern-graphics create \
+  --layout hero \
+  --headline "Execution scales. Judgment does not." \
+  --text-render pretext \
+  --png \
+  --output ./output/hero-pretext.png
+```
+
+Visual comparison:
+
+```bash
+python3 examples/pretext_mini_tile_refinement_demo.py
+```
+
 ## Contributing
 
 - Contribution guide: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
