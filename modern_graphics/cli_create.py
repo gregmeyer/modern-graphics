@@ -298,9 +298,11 @@ def handle_create(args) -> int:
     if getattr(args, 'png', False) and output_path.suffix != '.png':
         output_path = output_path.with_suffix('.png')
 
+    use_pretext = getattr(args, 'text_render', 'css') == 'pretext'
     generator = ModernGraphicsGenerator(
         getattr(args, 'title', 'Modern Graphic'),
         attribution=attribution,
+        use_pretext=use_pretext,
     )
     density = normalize_density(getattr(args, "density", "clarity"))
     color_scheme = get_scheme(getattr(args, 'theme', None)) if getattr(args, 'theme', None) else None

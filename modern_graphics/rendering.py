@@ -53,6 +53,7 @@ def generate_sync(
     fmt: str = "html",
     theme: str | None = None,
     transparent: bool = False,
+    text_render: str = "css",
 ) -> Dict[str, Any]:
     """Synchronous rendering — generates HTML or PNG."""
     from .generator import ModernGraphicsGenerator
@@ -63,9 +64,10 @@ def generate_sync(
     out = Path(output_path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
+    use_pretext = text_render == "pretext"
     attribution = Attribution()
     title = args.pop("title", "") or ""
-    generator = ModernGraphicsGenerator(title, attribution=attribution)
+    generator = ModernGraphicsGenerator(title, attribution=attribution, use_pretext=use_pretext)
 
     color_scheme = get_scheme(theme) if theme else None
     render_args = dict(args)

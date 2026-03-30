@@ -185,7 +185,10 @@ class ColorScheme:
         """Generate CSS overrides for all graphics types"""
         css = f"""
         /* Color Scheme: {self.name} */
-        
+
+        /* Pretext SVG text: inherit color from parent CSS */
+        .pretext-slot text, .pretext-slot tspan {{ fill: currentColor; }}
+
         /* Base styles */
         body {{
             font-family: {self.font_family};

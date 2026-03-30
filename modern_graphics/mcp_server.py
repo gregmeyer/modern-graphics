@@ -128,6 +128,11 @@ async def list_tools() -> list[Tool]:
                         "type": "boolean",
                         "description": "If true, PNG background is transparent instead of white. Default: false.",
                     },
+                    "text_render": {
+                        "type": "string",
+                        "enum": ["css", "pretext"],
+                        "description": "Text rendering mode. 'css' uses standard HTML/CSS (default). 'pretext' uses Pretext for pixel-perfect SVG text.",
+                    },
                 },
                 "required": ["layout", "args"],
             },
@@ -410,6 +415,7 @@ async def call_tool(name: str, arguments: dict) -> list:
             fmt = arguments.get("format", "html")
             theme = arguments.get("theme")
             transparent = arguments.get("transparent", False)
+            text_render = arguments.get("text_render", "css")
             default_file_path = os.path.join(
                 SESSION_OUTPUT_ROOT or OUTPUT_DIR,
                 f"{layout}.{fmt}",
@@ -425,7 +431,7 @@ async def call_tool(name: str, arguments: dict) -> list:
                 return _error_response(f"Unknown layout '{layout}'. Available: {', '.join(available)}")
 
             result = await asyncio.to_thread(
-                _generate_sync, layout, args, output_path, fmt, theme, transparent
+                _generate_sync, layout, args, output_path, fmt, theme, transparent, text_render
             )
 
             if "error" in result:
