@@ -64,7 +64,7 @@ Run it and you'll have your first graphic!
 
 When you install Modern Graphics Generator, you get:
 
-**10+ Diagram Types:**
+**11+ Diagram Types:**
 - Cycle diagrams (process flows)
 - Comparison diagrams (side-by-side)
 - Timeline diagrams (events over time)
@@ -76,6 +76,7 @@ When you install Modern Graphics Generator, you get:
 - Before/After diagrams (transformations)
 - Funnel diagrams (conversion funnels)
 - Slide card comparisons
+- Equation diagrams (mathematical expressions as visual centerpieces)
 
 **Features:**
 - ✅ High-quality PNG export (automatic cropping)

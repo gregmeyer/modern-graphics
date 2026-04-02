@@ -233,6 +233,21 @@ def _build_grid_payload(args, density, color_scheme):
 # Payload builder registry
 # ---------------------------------------------------------------------------
 
+def _build_equation_payload(args, density, color_scheme):
+    """Build payload for the equation layout."""
+    if not getattr(args, "equation", None):
+        return _emit_create_error(args.layout, "--equation is required for this layout")
+    payload = {
+        "equation": args.equation,
+        "label": getattr(args, "eq_label", None),
+        "footnote": getattr(args, "footnote", None),
+        "size": getattr(args, "eq_size", "large"),
+    }
+    if color_scheme is not None:
+        payload["color_scheme"] = color_scheme
+    return payload
+
+
 PAYLOAD_BUILDERS = {
     "hero": _build_hero_payload,
     "key-insight": _build_key_insight_payload,
@@ -243,6 +258,7 @@ PAYLOAD_BUILDERS = {
     "timeline": _build_timeline_payload,
     "funnel": _build_funnel_payload,
     "grid": _build_grid_payload,
+    "equation": _build_equation_payload,
 }
 PAYLOAD_BUILDERS["insight"] = PAYLOAD_BUILDERS["key-insight"]
 
