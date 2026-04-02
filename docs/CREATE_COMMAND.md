@@ -51,6 +51,7 @@ For legacy command migration, see `docs/MIGRATION.md`.
 | Chronology | `timeline` | `--events` |
 | Stage conversion | `funnel` | `--stages` (optional `--values`) |
 | Numbered concept grid | `grid` | `--items` |
+| Mathematical expression | `equation` | `--equation` (optional `--eq-label`, `--footnote`, `--eq-size`) |
 | Legacy transformation layout | `before-after` (CLI command) | `--before` + `--after` (currently blocked by stub) |
 | Multi-card transformation strip | `slide-cards` (CLI command) | `--cards` JSON |
 | Card-vs-card comparison | `slide-compare` (CLI command) | `--left` JSON + `--right` JSON |

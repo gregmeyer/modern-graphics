@@ -223,6 +223,24 @@ Want variations beyond the default PNGs? Run `python examples/generate_complete_
 ### Radar Diagram
 Need radial comparison views? See [Radar Diagram Guide](RADAR_DIAGRAM.md) for usage and examples.
 
+### Equation Diagrams
+
+Render a mathematical-style equation as the visual centerpiece — ideal for LinkedIn and presentation graphics.
+
+```bash
+modern-graphics create --layout equation \
+  --equation "Satisfaction = Perception - Expectation" \
+  --eq-label "The Satisfaction Gap" \
+  --footnote "The gap is where churn lives." \
+  --theme dark --png --output equation.png
+```
+
+Operators `=`, `+`, `−`, `×`, `÷` are auto-detected. Each term stacks on its own line with operators aligned left. Three size presets: `--eq-size small` (64px), `medium` (84px), `large` (108px, default).
+
+Supports CSS and Pretext (`--text-render pretext`) rendering modes for pixel-perfect SVG text.
+
+**Use cases**: Conceptual equations, business formulas, framework definitions, LinkedIn social graphics
+
 ### Additional CLI Layouts
 
 The following supported layouts are currently exposed as dedicated CLI commands (not `create` layouts):
