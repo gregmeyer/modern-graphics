@@ -74,6 +74,7 @@ def _build_default_registry() -> LayoutStrategyRegistry:
     )
     from .diagrams.modern_hero import generate_modern_hero, generate_modern_hero_triptych
     from .diagrams.story_slide import generate_story_slide
+    from .diagrams.equation import generate_equation
 
     def _render_comparison(generator: BaseGenerator, **kwargs: object) -> str:
         return generator.generate_comparison_diagram(
@@ -214,6 +215,16 @@ def _build_default_registry() -> LayoutStrategyRegistry:
             description="Narrative block: what changed, over what period, why it matters",
             example_command='modern-graphics create --layout story --what-changed "Execution accelerated" --output story.html',
             keywords=["story", "narrative", "what changed", "transformation", "journey", "evolution"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="equation",
+            render_fn=generate_equation,
+            required_args={"equation"},
+            description="Mathematical-style equation as visual centerpiece",
+            example_command='modern-graphics create --layout equation --equation "Satisfaction = Perception - Expectation" --output equation.html',
+            keywords=["equation", "formula", "math", "equals", "expression"],
         )
     )
     return registry

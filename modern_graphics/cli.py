@@ -135,6 +135,10 @@ def main():
     create_layout.add_argument('--what-changed', help='Story field: what changed')
     create_layout.add_argument('--time-period', help='Story field: over what period')
     create_layout.add_argument('--what-it-means', help='Story field: why it matters')
+    create_layout.add_argument('--equation', help='Equation: "Satisfaction = Perception - Expectation"')
+    create_layout.add_argument('--eq-label', help='Equation label shown above (e.g. "The Satisfaction Gap")')
+    create_layout.add_argument('--footnote', help='Equation footnote shown below a thin rule')
+    create_layout.add_argument('--eq-size', choices=['small', 'medium', 'large'], default='large', help='Equation term size (default: large)')
 
     create_expert.add_argument('--density', default=CREATE_DEFAULTS.density, choices=['clarity', 'balanced', 'dense'], help=f'Density mode (default: {CREATE_DEFAULTS.density})')
     create_expert.add_argument('--png', action='store_true', help='Export as PNG')
