@@ -227,6 +227,10 @@ Need radial comparison views? See [Radar Diagram Guide](RADAR_DIAGRAM.md) for us
 
 Render a mathematical-style equation as the visual centerpiece — ideal for LinkedIn and presentation graphics.
 
+| Dark Theme | Apple Theme |
+|---|---|
+| [![Equation dark example](../examples/output/showcase/create-first/equation-dark.png)](../examples/output/showcase/create-first/equation-dark.png) | [![Equation apple example](../examples/output/showcase/create-first/equation-apple.png)](../examples/output/showcase/create-first/equation-apple.png) |
+
 ```bash
 modern-graphics create --layout equation \
   --equation "Satisfaction = Perception - Expectation" \

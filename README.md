@@ -16,6 +16,10 @@ Build hero slides, insight cards, and diagrams from one CLI with clarity-first d
 |---|---|---|
 | [![Cycle diagram example](examples/output/showcase/diagram-types/01-cycle.png)](examples/output/showcase/diagram-types/01-cycle.png) | [![Timeline diagram example](examples/output/showcase/diagram-types/03-timeline.png)](examples/output/showcase/diagram-types/03-timeline.png) | [![Slide cards example](examples/output/showcase/diagram-types/07-slide-cards.png)](examples/output/showcase/diagram-types/07-slide-cards.png) |
 
+| Equation (Dark) | Equation (Apple) |
+|---|---|
+| [![Equation dark example](examples/output/showcase/create-first/equation-dark.png)](examples/output/showcase/create-first/equation-dark.png) | [![Equation apple example](examples/output/showcase/create-first/equation-apple.png)](examples/output/showcase/create-first/equation-apple.png) |
+
 Canonical showcase assets live in `examples/output/showcase/`.
 
 ## Quick Switch (Jobs To Be Done)
