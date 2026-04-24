@@ -56,7 +56,7 @@ modern-graphics-mcp = "modern_graphics.mcp_server:run"
 packages = ["modern_graphics", "modern_graphics.web"]
 
 [tool.setuptools.package-data]
-modern_graphics = ["py.typed", "web/static/*", "web/templates/*"]
+modern_graphics = ["py.typed", "web/static/*", "web/templates/*", "assets/vendor/*.js", "assets/vendor/*.md"]
 
 [tool.black]
 line-length = 88

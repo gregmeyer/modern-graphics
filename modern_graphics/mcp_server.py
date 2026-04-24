@@ -105,11 +105,11 @@ async def list_tools() -> list[Tool]:
                 "properties": {
                     "layout": {
                         "type": "string",
-                        "description": "Layout type (e.g., hero, comparison, timeline, funnel, story, key-insight, grid)",
+                        "description": "Layout type. Editorial: hero, hero-triptych, comparison, timeline, funnel, story, key-insight, insight-card, insight-story, grid, equation. Charts: line-chart, bar-chart, grouped-bar-chart, horizontal-bar-chart, stacked-bar-chart, grouped-stacked-bar-chart, stacked-area-chart, pie-chart, donut-chart, sankey-chart, cohort-chart. Call list_layouts for the full list with required args.",
                     },
                     "args": {
                         "type": "object",
-                        "description": "Layout-specific arguments (e.g., {\"headline\": \"My title\"} for hero, {\"left_column\": {...}, \"right_column\": {...}} for comparison)",
+                        "description": "Layout-specific arguments. Examples — hero: {headline}; comparison: {left_column, right_column}; timeline: {events:[{date,text}]}; bar-chart/horizontal-bar-chart/pie-chart/donut-chart: {labels:[...], values:[...]}; line-chart/grouped-bar-chart/stacked-bar-chart/stacked-area-chart: {labels:[...], series:[{name,values}]}; grouped-stacked-bar-chart: {labels, series:[{name, stack, values}]}; sankey-chart: {links:[{from,to,value}], nodes?}; cohort-chart: {cohorts:[{date,size,values:[pct,...]}], period_labels?}. All charts support optional title, subtitle, x_axis_label, y_axis_label, show_legend.",
                     },
                     "output_path": {
                         "type": "string",

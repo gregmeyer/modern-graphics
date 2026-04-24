@@ -248,6 +248,133 @@ def _build_equation_payload(args, density, color_scheme):
     return payload
 
 
+def _parse_labels(raw):
+    if not raw:
+        return None
+    return [s.strip() for s in raw.split(",") if s.strip()]
+
+
+def _parse_values_list(raw):
+    if not raw:
+        return None
+    return [float(s.strip()) for s in raw.split(",") if s.strip()]
+
+
+def _load_json_arg(raw, field_label):
+    """Parse inline JSON, or @path/to/file.json if prefixed with @."""
+    import json as _json
+    if raw is None:
+        return None
+    raw = raw.strip()
+    if raw.startswith("@"):
+        path = Path(raw[1:]).expanduser()
+        if not path.exists():
+            raise ValueError(f"{field_label}: file not found: {path}")
+        raw = path.read_text(encoding="utf-8")
+    try:
+        return _json.loads(raw)
+    except _json.JSONDecodeError as exc:
+        raise ValueError(f"{field_label}: invalid JSON — {exc}") from exc
+
+
+def _build_common_chart_kwargs(args, color_scheme):
+    """Shared optional kwargs for every chart layout."""
+    kwargs = {}
+    # --title is the graphic-level title; only pass to the chart if explicitly
+    # set (not the default) to avoid rendering "Modern Graphic" over every chart.
+    title = getattr(args, "title", None)
+    if title and title != "Modern Graphic":
+        kwargs["title"] = title
+    if getattr(args, "subtitle", None):
+        kwargs["subtitle"] = args.subtitle
+    if getattr(args, "x_label", None):
+        kwargs["x_axis_label"] = args.x_label
+    if getattr(args, "y_label", None):
+        kwargs["y_axis_label"] = args.y_label
+    if getattr(args, "no_legend", False):
+        kwargs["show_legend"] = False
+    if color_scheme is not None:
+        kwargs["color_scheme"] = color_scheme
+    return kwargs
+
+
+def _build_chart_labels_values(args, density, color_scheme):
+    """Bar / horizontal-bar / pie / donut: labels + values."""
+    labels = _parse_labels(getattr(args, "labels", None))
+    if not labels:
+        return _emit_create_error(args.layout, "--labels is required for this chart")
+    try:
+        values = _parse_values_list(getattr(args, "values", None))
+    except ValueError as exc:
+        return _emit_create_error(args.layout, f"--values: {exc}")
+    if not values:
+        return _emit_create_error(args.layout, "--values is required for this chart")
+    payload = {"labels": labels, "values": values}
+    kwargs = _build_common_chart_kwargs(args, color_scheme)
+    # Pie/donut don't take axis labels — strip silently.
+    if args.layout in ("pie-chart", "donut-chart"):
+        kwargs.pop("x_axis_label", None)
+        kwargs.pop("y_axis_label", None)
+    payload.update(kwargs)
+    return payload
+
+
+def _build_chart_labels_series(args, density, color_scheme):
+    """Line / grouped-bar / stacked-bar / grouped-stacked-bar / stacked-area."""
+    labels = _parse_labels(getattr(args, "labels", None))
+    if not labels:
+        return _emit_create_error(args.layout, "--labels is required for this chart")
+    try:
+        series = _load_json_arg(getattr(args, "series_json", None), "--series-json")
+    except ValueError as exc:
+        return _emit_create_error(args.layout, str(exc))
+    if not series:
+        return _emit_create_error(args.layout, "--series-json is required for this chart")
+    payload = {"labels": labels, "series": series}
+    payload.update(_build_common_chart_kwargs(args, color_scheme))
+    return payload
+
+
+def _build_sankey_payload(args, density, color_scheme):
+    try:
+        links = _load_json_arg(getattr(args, "links_json", None), "--links-json")
+    except ValueError as exc:
+        return _emit_create_error(args.layout, str(exc))
+    if not links:
+        return _emit_create_error(args.layout, "--links-json is required for sankey-chart")
+    payload = {"links": links}
+    nodes = _parse_labels(getattr(args, "nodes", None))
+    if nodes:
+        payload["nodes"] = nodes
+    kwargs = _build_common_chart_kwargs(args, color_scheme)
+    kwargs.pop("x_axis_label", None)
+    kwargs.pop("y_axis_label", None)
+    payload.update(kwargs)
+    return payload
+
+
+def _build_cohort_payload(args, density, color_scheme):
+    try:
+        cohorts = _load_json_arg(getattr(args, "cohorts_json", None), "--cohorts-json")
+    except ValueError as exc:
+        return _emit_create_error(args.layout, str(exc))
+    if not cohorts:
+        return _emit_create_error(args.layout, "--cohorts-json is required for cohort-chart")
+    payload = {"cohorts": cohorts}
+    period_labels = _parse_labels(getattr(args, "period_labels", None))
+    if period_labels:
+        payload["period_labels"] = period_labels
+    kwargs = _build_common_chart_kwargs(args, color_scheme)
+    kwargs.pop("x_axis_label", None)
+    kwargs.pop("y_axis_label", None)
+    if getattr(args, "subtitle", None):
+        kwargs["subtitle"] = args.subtitle
+    if color_scheme is not None:
+        kwargs["color_scheme"] = color_scheme
+    payload.update(kwargs)
+    return payload
+
+
 PAYLOAD_BUILDERS = {
     "hero": _build_hero_payload,
     "key-insight": _build_key_insight_payload,
@@ -259,6 +386,17 @@ PAYLOAD_BUILDERS = {
     "funnel": _build_funnel_payload,
     "grid": _build_grid_payload,
     "equation": _build_equation_payload,
+    "bar-chart": _build_chart_labels_values,
+    "horizontal-bar-chart": _build_chart_labels_values,
+    "pie-chart": _build_chart_labels_values,
+    "donut-chart": _build_chart_labels_values,
+    "line-chart": _build_chart_labels_series,
+    "grouped-bar-chart": _build_chart_labels_series,
+    "stacked-bar-chart": _build_chart_labels_series,
+    "grouped-stacked-bar-chart": _build_chart_labels_series,
+    "stacked-area-chart": _build_chart_labels_series,
+    "sankey-chart": _build_sankey_payload,
+    "cohort-chart": _build_cohort_payload,
 }
 PAYLOAD_BUILDERS["insight"] = PAYLOAD_BUILDERS["key-insight"]
 

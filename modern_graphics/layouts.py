@@ -75,6 +75,19 @@ def _build_default_registry() -> LayoutStrategyRegistry:
     from .diagrams.modern_hero import generate_modern_hero, generate_modern_hero_triptych
     from .diagrams.story_slide import generate_story_slide
     from .diagrams.equation import generate_equation
+    from .diagrams.cohort_chart import generate_cohort_chart
+    from .diagrams.charts import (
+        generate_line_chart,
+        generate_stacked_area_chart,
+        generate_bar_chart,
+        generate_grouped_bar_chart,
+        generate_stacked_bar_chart,
+        generate_grouped_stacked_bar_chart,
+        generate_horizontal_bar_chart,
+        generate_pie_chart,
+        generate_donut_chart,
+        generate_sankey_chart,
+    )
 
     def _render_comparison(generator: BaseGenerator, **kwargs: object) -> str:
         return generator.generate_comparison_diagram(
@@ -217,6 +230,95 @@ def _build_default_registry() -> LayoutStrategyRegistry:
             keywords=["story", "narrative", "what changed", "transformation", "journey", "evolution"],
         )
     )
+    def _chart_kwargs(kwargs: Dict[str, object], *keys: str) -> Dict[str, object]:
+        return {k: kwargs[k] for k in keys if k in kwargs and kwargs[k] is not None}
+
+    def _render_line_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_line_chart(
+            generator,
+            labels=kwargs["labels"],
+            series=kwargs["series"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "show_legend", "color_scheme"),
+        )
+
+    def _render_stacked_area_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_stacked_area_chart(
+            generator,
+            labels=kwargs["labels"],
+            series=kwargs["series"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "show_legend", "color_scheme"),
+        )
+
+    def _render_bar_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_bar_chart(
+            generator,
+            labels=kwargs["labels"],
+            values=kwargs["values"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "color_scheme"),
+        )
+
+    def _render_grouped_bar_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_grouped_bar_chart(
+            generator,
+            labels=kwargs["labels"],
+            series=kwargs["series"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "show_legend", "color_scheme"),
+        )
+
+    def _render_stacked_bar_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_stacked_bar_chart(
+            generator,
+            labels=kwargs["labels"],
+            series=kwargs["series"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "show_legend", "color_scheme"),
+        )
+
+    def _render_grouped_stacked_bar_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_grouped_stacked_bar_chart(
+            generator,
+            labels=kwargs["labels"],
+            series=kwargs["series"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "show_legend", "color_scheme"),
+        )
+
+    def _render_horizontal_bar_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_horizontal_bar_chart(
+            generator,
+            labels=kwargs["labels"],
+            values=kwargs["values"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "x_axis_label", "y_axis_label", "color_scheme"),
+        )
+
+    def _render_pie_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_pie_chart(
+            generator,
+            labels=kwargs["labels"],
+            values=kwargs["values"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "show_legend", "color_scheme"),
+        )
+
+    def _render_donut_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_donut_chart(
+            generator,
+            labels=kwargs["labels"],
+            values=kwargs["values"],
+            **_chart_kwargs(kwargs, "title", "subtitle", "show_legend", "color_scheme"),
+        )
+
+    def _render_cohort_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_cohort_chart(
+            generator,
+            cohorts=kwargs["cohorts"],
+            **_chart_kwargs(kwargs, "period_labels", "title", "subtitle", "date_label", "size_label", "color_scheme"),
+        )
+
+    def _render_sankey_chart(generator: BaseGenerator, **kwargs: object) -> str:
+        return generate_sankey_chart(
+            generator,
+            links=kwargs["links"],
+            **_chart_kwargs(kwargs, "nodes", "title", "subtitle", "color_scheme"),
+        )
+
     registry.register(
         LayoutStrategy(
             layout_type="equation",
@@ -225,6 +327,116 @@ def _build_default_registry() -> LayoutStrategyRegistry:
             description="Mathematical-style equation as visual centerpiece",
             example_command='modern-graphics create --layout equation --equation "Satisfaction = Perception - Expectation" --output equation.html',
             keywords=["equation", "formula", "math", "equals", "expression"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="line-chart",
+            render_fn=_render_line_chart,
+            required_args={"labels", "series"},
+            description="Line chart with one or more series over a shared x-axis (Chart.js)",
+            example_command='modern-graphics create --layout line-chart --labels "Q1,Q2,Q3,Q4" --series \'[{"name":"2024","values":[10,14,18,22]}]\' --output line.png',
+            keywords=["line chart", "trend", "over time", "time series", "growth"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="stacked-area-chart",
+            render_fn=_render_stacked_area_chart,
+            required_args={"labels", "series"},
+            description="Stacked area chart showing composition over time (Chart.js)",
+            example_command='modern-graphics create --layout stacked-area-chart --labels "2024,2025,2026" --series \'[{"name":"A","values":[10,20,30]}]\' --output stacked-area.png',
+            keywords=["stacked area", "area chart", "composition over time", "cohort revenue"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="bar-chart",
+            render_fn=_render_bar_chart,
+            required_args={"labels", "values"},
+            description="Single-series vertical bar chart (Chart.js)",
+            example_command='modern-graphics create --layout bar-chart --labels "A,B,C" --values "10,20,15" --output bar.png',
+            keywords=["bar chart", "bar graph", "column chart", "vertical bars"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="grouped-bar-chart",
+            render_fn=_render_grouped_bar_chart,
+            required_args={"labels", "series"},
+            description="Grouped (multi-series) vertical bar chart (Chart.js)",
+            example_command='modern-graphics create --layout grouped-bar-chart --labels "Q1,Q2" --series \'[{"name":"A","values":[10,12]},{"name":"B","values":[8,14]}]\' --output grouped.png',
+            keywords=["grouped bar", "clustered bar", "multi series bar", "side by side bars"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="stacked-bar-chart",
+            render_fn=_render_stacked_bar_chart,
+            required_args={"labels", "series"},
+            description="Stacked bar chart — one bar per x label, each a stack of series (Chart.js)",
+            example_command='modern-graphics create --layout stacked-bar-chart --labels "Q1,Q2,Q3" --series \'[{"name":"A","values":[10,12,14]},{"name":"B","values":[5,7,9]}]\' --output stacked-bar.png',
+            keywords=["stacked bar", "stacked column", "composition over time bar"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="grouped-stacked-bar-chart",
+            render_fn=_render_grouped_stacked_bar_chart,
+            required_args={"labels", "series"},
+            description="Grouped stacked bar chart (bars side-by-side per x label, each a stack)",
+            example_command='modern-graphics create --layout grouped-stacked-bar-chart --labels "Q1,Q2" --series \'[{"name":"A","stack":"2024","values":[10,12]},{"name":"B","stack":"2024","values":[5,7]},{"name":"A","stack":"2025","values":[15,17]},{"name":"B","stack":"2025","values":[8,10]}]\' --output gsb.png',
+            keywords=["grouped stacked bar", "stacked grouped bar", "side by side stacked bar", "stack comparison"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="horizontal-bar-chart",
+            render_fn=_render_horizontal_bar_chart,
+            required_args={"labels", "values"},
+            description="Horizontal bar chart for ranked categorical data (Chart.js)",
+            example_command='modern-graphics create --layout horizontal-bar-chart --labels "A,B,C" --values "10,20,15" --output hbar.png',
+            keywords=["horizontal bar", "ranking", "ranked list", "bar chart horizontal"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="pie-chart",
+            render_fn=_render_pie_chart,
+            required_args={"labels", "values"},
+            description="Pie chart showing parts-of-a-whole (Chart.js)",
+            example_command='modern-graphics create --layout pie-chart --labels "Mobile,Web,API" --values "55,30,15" --output pie.png',
+            keywords=["pie chart", "share", "composition", "parts of whole"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="donut-chart",
+            render_fn=_render_donut_chart,
+            required_args={"labels", "values"},
+            description="Donut chart (pie with a hollow center) for share/composition (Chart.js)",
+            example_command='modern-graphics create --layout donut-chart --labels "Mobile,Web,API" --values "55,30,15" --output donut.png',
+            keywords=["donut chart", "doughnut chart", "share", "composition"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="cohort-chart",
+            render_fn=_render_cohort_chart,
+            required_args={"cohorts"},
+            description="Cohort retention heatmap (Mixpanel-style): rows = cohorts, columns = period offsets",
+            example_command='modern-graphics create --layout cohort-chart --cohorts \'[{"date":"Sep 17","size":7262,"values":[95.6,33.5,31.3]}]\' --output cohort.png',
+            keywords=["cohort", "retention", "heatmap", "mixpanel", "amplitude", "retained"],
+        )
+    )
+    registry.register(
+        LayoutStrategy(
+            layout_type="sankey-chart",
+            render_fn=_render_sankey_chart,
+            required_args={"links"},
+            description="Sankey flow diagram (Chart.js + chartjs-chart-sankey plugin)",
+            example_command='modern-graphics create --layout sankey-chart --links \'[{"from":"Visit","to":"Trial","value":40}]\' --output sankey.png',
+            keywords=["sankey", "flow diagram", "flows", "allocation", "attribution"],
         )
     )
     return registry

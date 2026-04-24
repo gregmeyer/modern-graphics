@@ -20,6 +20,22 @@ Build hero slides, insight cards, and diagrams from one CLI with clarity-first d
 |---|---|
 | [![Equation dark example](examples/output/showcase/create-first/equation-dark.png)](examples/output/showcase/create-first/equation-dark.png) | [![Equation apple example](examples/output/showcase/create-first/equation-apple.png)](examples/output/showcase/create-first/equation-apple.png) |
 
+| Line Chart | Bar Chart | Grouped Bar |
+|---|---|---|
+| [![Line chart example](examples/output/showcase/charts/chart_line.png)](examples/output/showcase/charts/chart_line.png) | [![Bar chart example](examples/output/showcase/charts/chart_bar.png)](examples/output/showcase/charts/chart_bar.png) | [![Grouped bar example](examples/output/showcase/charts/chart_grouped_bar.png)](examples/output/showcase/charts/chart_grouped_bar.png) |
+
+| Horizontal Bar | Stacked Bar | Grouped Stacked Bar |
+|---|---|---|
+| [![Horizontal bar example](examples/output/showcase/charts/chart_horizontal_bar.png)](examples/output/showcase/charts/chart_horizontal_bar.png) | [![Stacked bar example](examples/output/showcase/charts/chart_stacked_bar.png)](examples/output/showcase/charts/chart_stacked_bar.png) | [![Grouped stacked bar example](examples/output/showcase/charts/chart_grouped_stacked_bar.png)](examples/output/showcase/charts/chart_grouped_stacked_bar.png) |
+
+| Stacked Area | Pie | Donut |
+|---|---|---|
+| [![Stacked area example](examples/output/showcase/charts/chart_stacked_area.png)](examples/output/showcase/charts/chart_stacked_area.png) | [![Pie chart example](examples/output/showcase/charts/chart_pie.png)](examples/output/showcase/charts/chart_pie.png) | [![Donut chart example](examples/output/showcase/charts/chart_donut.png)](examples/output/showcase/charts/chart_donut.png) |
+
+| Sankey | Cohort Retention Heatmap |
+|---|---|
+| [![Sankey example](examples/output/showcase/charts/chart_sankey.png)](examples/output/showcase/charts/chart_sankey.png) | [![Cohort retention example](examples/output/showcase/charts/chart_cohort.png)](examples/output/showcase/charts/chart_cohort.png) |
+
 Canonical showcase assets live in `examples/output/showcase/`.
 
 ## Quick Switch (Jobs To Be Done)
@@ -175,6 +191,52 @@ Defaults (good for most first runs):
 - Deprecation policy: [`docs/DEPRECATION_POLICY.md`](docs/DEPRECATION_POLICY.md)
 
 Full docs map: [`docs/README.md`](docs/README.md)
+
+## Data Charts
+
+Eleven chart layouts render quantitative data. Built on Chart.js (vendored locally — no network required for PNG export) plus a pure HTML/CSS cohort heatmap. All respect the active theme.
+
+| Layout | Required args | Use for |
+|---|---|---|
+| `line-chart` | `--labels`, `--series-json` | trends over time, multi-series |
+| `bar-chart` | `--labels`, `--values` | single-series category comparison |
+| `grouped-bar-chart` | `--labels`, `--series-json` | multi-series side-by-side |
+| `horizontal-bar-chart` | `--labels`, `--values` | ranked categories |
+| `stacked-bar-chart` | `--labels`, `--series-json` | composition per category |
+| `grouped-stacked-bar-chart` | `--labels`, `--series-json` (with `"stack"`) | two stacks side-by-side per x label |
+| `stacked-area-chart` | `--labels`, `--series-json` | composition over time |
+| `pie-chart` / `donut-chart` | `--labels`, `--values` | parts-of-a-whole |
+| `sankey-chart` | `--links-json` | flows, funnels, allocations |
+| `cohort-chart` | `--cohorts-json` | Mixpanel-style retention heatmap |
+
+Optional on every chart: `--title`, `--subtitle`, `--x-label`, `--y-label`, `--no-legend`, `--theme`. JSON args accept inline strings or `@path/to/file.json`.
+
+```bash
+# Simple bar chart
+modern-graphics create --layout bar-chart \
+  --labels "North,South,East,West" --values "42,58,71,34" \
+  --title "Units shipped" --y-label "Units (thousands)" \
+  --output bar.png --png
+
+# Multi-series line chart
+modern-graphics create --layout line-chart \
+  --labels "Q1,Q2,Q3,Q4" \
+  --series-json '[{"name":"2024","values":[42,58,71,88]},{"name":"2025","values":[60,75,95,118]}]' \
+  --title "Revenue growth" --y-label "Revenue (\$M)" \
+  --output line.png --png
+
+# Sankey flow
+modern-graphics create --layout sankey-chart \
+  --links-json '[{"from":"Visit","to":"Trial","value":80},{"from":"Trial","to":"Paid","value":35}]' \
+  --title "Funnel flow" --output sankey.png --png
+
+# Cohort retention heatmap (large data — use @file)
+modern-graphics create --layout cohort-chart \
+  --cohorts-json @cohorts.json \
+  --title "Weekly retention" --output cohort.png --png
+```
+
+Runnable examples for every chart live in [`examples/chart_*.py`](examples/). The same layouts are available via MCP (`generate_graphic`) and the web gallery.
 
 ## Text Rendering Mode
 
