@@ -245,6 +245,78 @@ Supports CSS and Pretext (`--text-render pretext`) rendering modes for pixel-per
 
 **Use cases**: Conceptual equations, business formulas, framework definitions, LinkedIn social graphics
 
+### Data Charts
+
+Eleven quantitative chart layouts, powered by a locally vendored Chart.js build (plus a pure HTML/CSS cohort heatmap). All are themeable and export cleanly to PNG via the same Playwright pipeline as other layouts.
+
+| Line | Bar | Grouped Bar |
+|---|---|---|
+| [![Line chart](../examples/output/showcase/charts/chart_line.png)](../examples/output/showcase/charts/chart_line.png) | [![Bar chart](../examples/output/showcase/charts/chart_bar.png)](../examples/output/showcase/charts/chart_bar.png) | [![Grouped bar](../examples/output/showcase/charts/chart_grouped_bar.png)](../examples/output/showcase/charts/chart_grouped_bar.png) |
+
+| Horizontal Bar | Stacked Bar | Grouped Stacked Bar |
+|---|---|---|
+| [![Horizontal bar](../examples/output/showcase/charts/chart_horizontal_bar.png)](../examples/output/showcase/charts/chart_horizontal_bar.png) | [![Stacked bar](../examples/output/showcase/charts/chart_stacked_bar.png)](../examples/output/showcase/charts/chart_stacked_bar.png) | [![Grouped stacked bar](../examples/output/showcase/charts/chart_grouped_stacked_bar.png)](../examples/output/showcase/charts/chart_grouped_stacked_bar.png) |
+
+| Stacked Area | Pie | Donut |
+|---|---|---|
+| [![Stacked area](../examples/output/showcase/charts/chart_stacked_area.png)](../examples/output/showcase/charts/chart_stacked_area.png) | [![Pie](../examples/output/showcase/charts/chart_pie.png)](../examples/output/showcase/charts/chart_pie.png) | [![Donut](../examples/output/showcase/charts/chart_donut.png)](../examples/output/showcase/charts/chart_donut.png) |
+
+| Sankey | Cohort Retention |
+|---|---|
+| [![Sankey](../examples/output/showcase/charts/chart_sankey.png)](../examples/output/showcase/charts/chart_sankey.png) | [![Cohort](../examples/output/showcase/charts/chart_cohort.png)](../examples/output/showcase/charts/chart_cohort.png) |
+
+**Common flags** (all charts): `--title`, `--subtitle`, `--x-label`, `--y-label`, `--no-legend`, `--theme`. JSON flags accept inline strings or `@path/to/file.json`.
+
+**Simple charts** (`bar-chart`, `horizontal-bar-chart`, `pie-chart`, `donut-chart`): take `--labels` and `--values`.
+
+```bash
+modern-graphics create --layout bar-chart \
+  --labels "North,South,East,West" --values "42,58,71,34" \
+  --y-label "Units" --output bar.png --png
+```
+
+**Multi-series** (`line-chart`, `grouped-bar-chart`, `stacked-bar-chart`, `stacked-area-chart`): take `--labels` and `--series-json` where each item is `{"name": str, "values": [...]}`.
+
+```bash
+modern-graphics create --layout line-chart \
+  --labels "Q1,Q2,Q3,Q4" \
+  --series-json '[{"name":"2024","values":[42,58,71,88]},{"name":"2025","values":[60,75,95,118]}]' \
+  --y-label "Revenue (\$M)" --output line.png --png
+```
+
+**Grouped stacked** (`grouped-stacked-bar-chart`): each series additionally carries a `"stack"` key; series sharing the same stack are layered, and different stacks sit side-by-side.
+
+```bash
+modern-graphics create --layout grouped-stacked-bar-chart \
+  --labels "Q1,Q2,Q3,Q4" \
+  --series-json '[
+    {"name":"Product A","stack":"2024","values":[40,52,60,72]},
+    {"name":"Product B","stack":"2024","values":[28,35,41,48]},
+    {"name":"Product A","stack":"2025","values":[55,68,80,95]},
+    {"name":"Product B","stack":"2025","values":[38,47,55,65]}
+  ]' --output gsb.png --png
+```
+
+**Sankey** (`sankey-chart`): `--links-json` as `[{"from": str, "to": str, "value": number}]`; `--nodes` optional (inferred otherwise).
+
+```bash
+modern-graphics create --layout sankey-chart \
+  --links-json '[{"from":"Visit","to":"Trial","value":80},{"from":"Trial","to":"Paid","value":35}]' \
+  --title "Funnel flow" --output sankey.png --png
+```
+
+**Cohort retention heatmap** (`cohort-chart`): `--cohorts-json` as `[{"date": str, "size": int, "values": [pct, ...]}]`; optional `--period-labels` for custom column headers. Cells are colored by retention % on an opacity ramp of the theme accent. Ragged rows (incomplete cohorts) are allowed.
+
+```bash
+modern-graphics create --layout cohort-chart \
+  --cohorts-json @cohorts.json \
+  --title "Weekly retention" --output cohort.png --png
+```
+
+Runnable Python examples for every chart live in [`examples/chart_*.py`](../examples/). The same layouts are available via MCP (`generate_graphic`).
+
+**Use cases**: performance dashboards, growth reports, attribution flows, retention analyses, social/investor graphics that need real data (not illustrative placeholders).
+
 ### Additional CLI Layouts
 
 The following supported layouts are currently exposed as dedicated CLI commands (not `create` layouts):

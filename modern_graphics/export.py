@@ -248,6 +248,16 @@ def export_html_to_png(
                 except Exception:
                     print("Warning: Pretext rendering did not complete in time, using fallback text.")
 
+            # Wait for Chart.js canvas layouts to finish animating.
+            has_chart = page.query_selector('[data-mg-chart]') is not None
+            if has_chart:
+                try:
+                    page.wait_for_function(
+                        "window.__chartReady === true", timeout=8000
+                    )
+                except Exception:
+                    print("Warning: Chart rendering did not complete in time, capturing partial frame.")
+
             page.screenshot(
                 path=str(temp_png_path),
                 full_page=True,
