@@ -978,6 +978,46 @@ OPERATOR_CLARITY_V2_SCHEME = ColorScheme(
     svg_accent="#14B8A6",
 )
 
+EDITORIAL_PAPER_SCHEME = ColorScheme(
+    name="Editorial Paper",
+    description="Warm editorial paper theme — a Charter-style serif on cream with muted, earthy accents (deliberately un-'AI-generated')",
+    google_font_name="Source Serif 4",
+    google_font_weights="400;600;700",
+    font_style="serif",
+    google_fonts_extra=["Source Sans 3"],
+    font_family_display="'Source Serif 4', 'Charter', Georgia, serif",
+    font_family_body="'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif",
+    # Earthy, desaturated semantic palette
+    primary="#b5533a",      # Terracotta / rust
+    secondary="#c1892d",    # Ochre
+    accent="#2f6f6a",       # Pine / teal
+    success="#4a7c59",      # Forest green
+    warning="#c1892d",      # Ochre
+    error="#a23b28",        # Deep rust-red
+    # Warm ink text hierarchy
+    text_primary="#241f18",
+    text_secondary="#6f6655",
+    text_tertiary="#948a76",
+    text_on_dark="#f6f0e4",
+    # Paper surfaces
+    bg_primary="#fffdf8",   # Card / note
+    bg_secondary="#f6f0e4", # Paper
+    bg_tertiary="#efe6d4",
+    bg_dark="#241f18",
+    # Warm borders
+    border_light="#e0d5c0",
+    border_medium="#ddd1ba",
+    border_dark="#b7a98d",
+    # SVG palette mapping (slate / rust / forest)
+    svg_primary="#40607a",
+    svg_secondary="#b5533a",
+    svg_accent="#4a7c59",
+    border_style="soft",
+    shadow_depth="subtle",
+    background_css="linear-gradient(180deg, #f6f0e4 0%, #efe6d4 100%)",
+    heading_scale=1.0,
+)
+
 
 def create_custom_scheme(
     name: str,
@@ -1050,6 +1090,9 @@ SCHEME_REGISTRY: Dict[str, ColorScheme] = {
     "postit": POSTIT_SCHEME,
     "post-it": POSTIT_SCHEME,
     "sticky": POSTIT_SCHEME,
+    "editorial-paper": EDITORIAL_PAPER_SCHEME,
+    "editorial": EDITORIAL_PAPER_SCHEME,
+    "paper": EDITORIAL_PAPER_SCHEME,
 }
 
 
